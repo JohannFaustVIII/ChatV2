@@ -1,4 +1,4 @@
-package org.faust.chat;
+package org.faust.chat.channel;
 
 import org.springframework.stereotype.Service;
 

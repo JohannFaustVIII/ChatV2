@@ -1,4 +1,4 @@
-package org.faust.chat;
+package org.faust.chat.channel;
 
 import org.springframework.web.bind.annotation.*;
 

@@ -1,0 +1,18 @@
+button {
+  border: 0px;
+  font-size: large;
+  margin: 6px;
+  
+}
+
+.out-box {
+  flex: 1;
+  /* position: absolute; */
+  border: 10px;
+  background-color: pink;
+  height: calc(100vh - 24px);
+  margin-top: 12px;
+  margin-bottom: 12px;
+  margin-left: 6px;
+  margin-right: 6px;
+}

@@ -1,0 +1,16 @@
+.main-box {
+  display: flex;
+  flex-direction: row;
+}
+
+.left-bar {
+  width: 128px;
+  display: flex;
+  margin-right: 6px;
+  background-color: red;
+}
+
+.right-box {
+  flex: 1;
+  background-color: cadetblue;
+}

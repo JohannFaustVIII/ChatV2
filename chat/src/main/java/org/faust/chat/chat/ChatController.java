@@ -1,9 +1,7 @@
 package org.faust.chat.chat;
 
-import jakarta.websocket.server.PathParam;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 

@@ -1,5 +1,5 @@
 <div class="out-box">
   <div *ngFor='let channel of channels'>
-    <button [routerLink] = "['/c', channel.id]">{{channel.name}}</button>
+    <button mat-flat-button [routerLink] = "['/c', channel.id]">{{channel.name}}</button>
   </div>
 </div>

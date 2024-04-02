@@ -8,20 +8,26 @@ import { ChannelSingleComponent } from './channel-single/channel-single.componen
 import { WelcomeComponent } from './welcome/welcome.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MatButtonModule } from '@angular/material/button'; 
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MessageComponent } from './message/message.component'; 
 
 @NgModule({
   declarations: [
     AppComponent,
     ChannelBarComponent,
     ChannelSingleComponent,
-    WelcomeComponent
+    WelcomeComponent,
+    MessageComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatButtonModule
+    MatButtonModule,
+    MatCardModule,
+    MatDividerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

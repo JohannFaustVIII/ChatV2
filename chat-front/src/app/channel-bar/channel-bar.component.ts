@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ChannelService } from '../services/channel.service';
 
 @Component({
   selector: 'app-channel-bar',
@@ -7,15 +8,10 @@ import { Component } from '@angular/core';
 })
 export class ChannelBarComponent {
 
-  channels = [
-    {
-      id: "a-b-c-d",
-      name: "Channel 1"
-    },
-    {
-      id: "e-f-g-h",
-      name: "Channel 2"
-    }
-  ]
+  channels : Array<any> = []
+
+  constructor(private channelService : ChannelService) {
+    this.channels = channelService.getChannels()
+  }
 
 }

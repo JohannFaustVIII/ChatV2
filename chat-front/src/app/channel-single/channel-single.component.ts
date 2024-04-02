@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-channel-single',
@@ -10,14 +11,17 @@ export class ChannelSingleComponent {
   id = '';
   title = '';
 
-  constructor(private route: ActivatedRoute) {
+  messages : Array<any> = []
 
+  constructor(private route: ActivatedRoute, private messageService: MessageService) {
+    this.messageService = messageService;
   }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(value => {
       const _id = value.get('id');
       this.id = _id !== null ? _id : '';
+      this.messages = this.messageService.getMessages(this.id)
     })
   }
 

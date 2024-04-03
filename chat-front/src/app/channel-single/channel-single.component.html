@@ -2,6 +2,14 @@
 
 <mat-divider></mat-divider>
 
-<div *ngFor='let m of messages'>
-  <app-message [message]='m'></app-message>
+<div class = "channel-content">
+  <div class = "channel-messages">
+    <div *ngFor='let m of messages'>
+      <app-message [message]='m'></app-message>
+    </div>
+  </div>
+  
+  <div clas = "channel-input">
+    <app-message-input></app-message-input>
+  </div>
 </div>

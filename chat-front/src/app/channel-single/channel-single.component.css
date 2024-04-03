@@ -1,3 +1,23 @@
 .mat-divider {
   --mat-divider-width: 2px;
 }
+
+.channel-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100% - 50px);
+}
+
+.channel-messages {
+  -webkit-flex: 0 1 auto;
+  -moz-flex: 0 1 auto;
+  -ms-flex: 0 1 auto;
+  flex: 0 1 auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 140px); /* TODO: fix it */
+}
+
+.channel-input {
+  height: fit-content;
+}

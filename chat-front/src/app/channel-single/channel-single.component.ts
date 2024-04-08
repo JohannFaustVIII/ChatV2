@@ -21,7 +21,7 @@ export class ChannelSingleComponent {
     this.route.paramMap.subscribe(value => {
       const _id = value.get('id');
       this.id = _id !== null ? _id : '';
-      this.messages = this.messageService.getMessages(this.id)
+      this.messageService.getMessages(this.id).subscribe(data => this.messages = data);
     })
   }
 

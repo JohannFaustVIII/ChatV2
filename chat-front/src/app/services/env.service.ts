@@ -6,7 +6,9 @@ import { environment } from 'src/environments/environment.development';
 })
 export class EnvService {
 
-  constructor() { }
+  constructor() {
+    console.log(environment.apiUrl);
+   }
 
   getApiUrl() : string {
     return environment.apiUrl;

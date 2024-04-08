@@ -11,7 +11,7 @@ export class ChannelBarComponent {
   channels : Array<any> = []
 
   constructor(private channelService : ChannelService) {
-    this.channels = channelService.getChannels()
+    channelService.getChannels().subscribe(data => this.channels = data)
   }
 
 }

@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { ApiHttpService } from './api-http.service';
+import { Message } from '../models/message.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,13 +20,13 @@ export class MessageService {
       ]
   };
 
-  constructor() { }
+  constructor(private api : ApiHttpService) { }
 
   getMessages(channelName : string) {
-    return this.messages[channelName];
+    return this.api.get<Array<Message>>('/chat/${string}');
   }
 
   addMessage(channelName : string, message : any) {
-    this.messages[channelName].push(message);
+    // this.messages[channelName].push(message);
   }
 }

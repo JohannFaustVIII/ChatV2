@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
+import { Channel } from '../models/channel.model';
+import { ApiHttpService } from './api-http.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChannelService {
 
-  channels : Array<any> = [
+  channels : Array<Channel> = [
     {
       id: "a-b-c-d",
       name: "Channel 1"
@@ -16,9 +18,9 @@ export class ChannelService {
     }
   ]
 
-  constructor() {}
+  constructor(private api: ApiHttpService) {}
 
   getChannels() {
-    return this.channels;
+    return this.api.get<Array<Channel>>('/channels');
   }
 }

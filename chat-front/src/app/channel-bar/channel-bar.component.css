@@ -1,6 +1,9 @@
+.mdc-button {
+  /* font-size: 0.4vw; TODO: fix it */
+}
+
 button {
   border: 0px;
-  font-size: large;
   margin: 6px;
 }
 

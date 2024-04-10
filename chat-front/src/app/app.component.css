@@ -6,6 +6,7 @@
 
 .left-bar {
   width: 128px;
+  max-width: 128px;
   display: flex;
   margin-right: 6px;
   background-color: red;

@@ -1,0 +1,2 @@
+front:
+  origin: ${FRONT_URL:http://localhost:4200}

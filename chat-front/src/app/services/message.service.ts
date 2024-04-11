@@ -23,7 +23,7 @@ export class MessageService {
   constructor(private api : ApiHttpService) { }
 
   getMessages(channelName : string) {
-    return this.api.get<Array<Message>>('/chat/${string}');
+    return this.api.get<Array<Message>>('/chat/' + channelName);
   }
 
   addMessage(channelName : string, message : any) {

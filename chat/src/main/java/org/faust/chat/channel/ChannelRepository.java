@@ -1,5 +1,6 @@
 package org.faust.chat.channel;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
+@Scope("singleton")
 public class ChannelRepository {
 
     private final List<Channel> channels;

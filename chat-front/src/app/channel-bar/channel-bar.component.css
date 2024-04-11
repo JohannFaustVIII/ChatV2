@@ -1,9 +1,9 @@
-.mdc-button {
+button {
   /* TODO: FIX IT */
   overflow: hidden;
   white-space: nowrap;
   display: block;
-  text-overflow: ellipsis;
+  text-overflow: ellipsis '..';
   min-width: calc(100% - 12px);
   max-width: calc(100% - 12px);
   border: 0px;

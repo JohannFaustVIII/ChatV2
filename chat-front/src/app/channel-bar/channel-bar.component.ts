@@ -10,8 +10,18 @@ export class ChannelBarComponent {
 
   channels : Array<any> = []
 
+  private interval : any;
+
   constructor(private channelService : ChannelService) {
-    channelService.getChannels().subscribe(data => this.channels = data)
   }
 
+  ngAfterViewInit(): void {
+    this.getChannels();
+    // TODO: is it fine to do it like that? maybe backend should emit an event that something has changed?
+    this.interval = setInterval(() => this.getChannels(), 1000);
+  }
+
+  getChannels() {
+    this.channelService.getChannels().subscribe(data => this.channels = data);
+  }
 }

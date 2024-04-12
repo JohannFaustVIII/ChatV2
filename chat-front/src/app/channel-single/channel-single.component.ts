@@ -12,6 +12,7 @@ export class ChannelSingleComponent {
   title = '';
 
   messages : Array<any> = []
+  private interval : any;
 
   constructor(private route: ActivatedRoute, private messageService: MessageService) {
     this.messageService = messageService;
@@ -21,8 +22,16 @@ export class ChannelSingleComponent {
     this.route.paramMap.subscribe(value => {
       const _id = value.get('id');
       this.id = _id !== null ? _id : '';
-      this.messageService.getMessages(this.id).subscribe(data => this.messages = data);
     })
+  }
+
+  ngAfterViewInit(): void {
+    this.getMessages();
+    this.interval = setInterval(() => this.getMessages(), 1000);
+  }
+
+  getMessages() {
+    this.messageService.getMessages(this.id).subscribe(data => this.messages = data);
   }
 
 }

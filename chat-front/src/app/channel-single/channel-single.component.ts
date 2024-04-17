@@ -1,21 +1,26 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MessageService } from '../services/message.service';
+import { Listener } from '../models/listener';
+import { SseService } from '../services/sse.service';
 
 @Component({
   selector: 'app-channel-single',
   templateUrl: './channel-single.component.html',
   styleUrls: ['./channel-single.component.css']
 })
-export class ChannelSingleComponent {
+export class ChannelSingleComponent extends Listener {
+
   id = '';
   title = '';
 
   messages : Array<any> = []
   private interval : any;
 
-  constructor(private route: ActivatedRoute, private messageService: MessageService) {
+  constructor(private route: ActivatedRoute, private messageService: MessageService, private sse : SseService, private changeDetector : ChangeDetectorRef) {
+    super();
     this.messageService = messageService;
+    sse.addListener('message', this);
   }
 
   ngOnInit(): void {
@@ -27,11 +32,17 @@ export class ChannelSingleComponent {
 
   ngAfterViewInit(): void {
     this.getMessages();
-    this.interval = setInterval(() => this.getMessages(), 1000);
   }
 
+  override notify(): void {
+    this.getMessages();
+  }
+  
   getMessages() {
-    this.messageService.getMessages(this.id).subscribe(data => this.messages = data);
+    this.messageService.getMessages(this.id).subscribe(data => {
+      this.messages = data;
+      this.changeDetector.detectChanges();
+    });
   }
 
 }

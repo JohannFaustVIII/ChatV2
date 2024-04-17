@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'; 
 import { EnvService } from './env.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -14,5 +15,22 @@ export class ApiHttpService {
   public get<T>(path: string, options? : any) {
     const url = this.env.getApiUrl() + path;
     return this.http.get<T>(url, {headers: this.headers});
+  }
+
+  public getStream<T>(path: string) {
+    const url = this.env.getApiUrl() + path;
+    return new Observable(
+      observer => {
+        let source = new EventSource(url);
+
+        source.onmessage = event => {
+          observer.next(event.data);
+        }
+
+        source.onerror = event => {
+          observer.error(event);
+        }
+      }
+    )
   }
 }

@@ -27,6 +27,7 @@ export class MessageService {
   }
 
   addMessage(channelName : string, message : any) {
+    this.api.post('/chat/' + channelName, message);
     // this.messages[channelName].push(message);
   }
 }

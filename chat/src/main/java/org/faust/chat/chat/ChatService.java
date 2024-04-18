@@ -39,7 +39,7 @@ public class ChatService {
                 message,
                 LocalDateTime.now()
         ));
-        sseService.emitEvents("message");
+        sseService.emitEvents(channel.toString());
     }
 
     private final static class ChannelUnknownException extends RuntimeException {}

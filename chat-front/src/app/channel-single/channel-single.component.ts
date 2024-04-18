@@ -20,13 +20,16 @@ export class ChannelSingleComponent extends Listener {
   constructor(private route: ActivatedRoute, private messageService: MessageService, private sse : SseService, private changeDetector : ChangeDetectorRef) {
     super();
     this.messageService = messageService;
-    sse.addListener('message', this);
+    this.getMessages();
   }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(value => {
       const _id = value.get('id');
       this.id = _id !== null ? _id : '';
+      if (_id !== null) {
+        this.sse.addListener(_id, this);
+      }
     })
   }
 

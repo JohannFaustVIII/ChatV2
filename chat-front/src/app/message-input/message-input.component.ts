@@ -24,7 +24,8 @@ export class MessageInputComponent {
   }
 
   sendMessage() : void {
-    this.messageService.addMessage(this.id, {id : 'RandomID', sender: 'RandomSender', message: this.new_message});
+    this.messageService.addMessage(this.id, this.new_message);
+    // this.messageService.addMessage(this.id, {id : 'RandomID', sender: 'RandomSender', message: this.new_message});
     this.new_message = '';
   }
 }

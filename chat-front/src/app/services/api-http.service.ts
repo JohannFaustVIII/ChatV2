@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class ApiHttpService {
 
+
   headers = new HttpHeaders({'Content-Type':'application/json; charset=utf-8'});
 
   constructor(private http: HttpClient, private env: EnvService) { }
@@ -15,6 +16,12 @@ export class ApiHttpService {
   public get<T>(path: string, options? : any) {
     const url = this.env.getApiUrl() + path;
     return this.http.get<T>(url, {headers: this.headers});
+  }
+
+  public post(path: string, message: any) {
+    const url = this.env.getApiUrl() + path;
+    console.log(path, message);
+    this.http.post(url, message,  {headers: this.headers});
   }
 
   public getStream<T>(path: string) {

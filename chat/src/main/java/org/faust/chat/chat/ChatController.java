@@ -15,15 +15,14 @@ public class ChatController {
         this.chatService = chatService;
     }
 
-    @CrossOrigin
     @GetMapping
     public List<Message> getMessages(@PathVariable("channel") UUID channel) {
         return chatService.getMessages(channel);
     }
 
-    @CrossOrigin
     @PostMapping
     public void addMessage(@PathVariable("channel") UUID channel, @RequestBody String message) {
+        System.out.println("Received to: " + channel + "message: " + message);
         chatService.addMessage(channel, message);
     }
 }

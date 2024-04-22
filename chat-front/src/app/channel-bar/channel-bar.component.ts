@@ -26,7 +26,6 @@ export class ChannelBarComponent extends Listener {
   }
 
   override notify(): void {
-    console.log('Notified bar');
     this.getChannels();
   }
 

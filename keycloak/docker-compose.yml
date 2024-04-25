@@ -23,7 +23,7 @@ services:
       KEYCLOAK_DATABASE_PASSWORD: keycloak
     entrypoint: /bin/bash -c
     command:
-      - /opt/bitnami/keycloak/bin/kc.sh import --file=/opt/keycloak/data/import/cv2realm.json --override true 2>/dev/null && /opt/bitnami/scripts/keycloak/run.sh --verbose
+      - /opt/bitnami/keycloak/bin/kc.sh import --file=/opt/keycloak/data/import/cv2.json --override true 2>/dev/null && /opt/bitnami/scripts/keycloak/run.sh --verbose
     healthcheck:
       test: curl --head -fsS http://localhost:8080
       interval: 60s

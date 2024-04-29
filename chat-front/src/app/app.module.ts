@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -17,6 +17,22 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MessageComponent } from './message/message.component';
 import { MessageInputComponent } from './message-input/message-input.component'; 
 import { HttpClientModule } from '@angular/common/http';
+import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
+
+function initializeKeycloak(keycloak : KeycloakService) {
+  return () => keycloak.init({
+    config: {
+      url: 'http://localhost:8180',
+      realm: 'ChatV2Realm',
+      clientId: 'cv2-frontend'
+    },
+    initOptions: {
+      checkLoginIframe: false
+    },
+    enableBearerInterceptor: true,
+    bearerPrefix: 'Bearer'
+  })
+}
 
 @NgModule({
   declarations: [
@@ -37,9 +53,17 @@ import { HttpClientModule } from '@angular/common/http';
     MatCardModule,
     MatDividerModule,
     MatInputModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    KeycloakAngularModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
+      multi: true,
+      deps: [KeycloakService]
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -54,6 +54,7 @@ public class WebConfig implements WebFluxConfigurer {
                 .authorizeExchange(auth -> {
                     auth
                             .pathMatchers(HttpMethod.OPTIONS, "**").permitAll()
+                            .pathMatchers("/events").permitAll()
                             .anyExchange().hasRole("chat_access");
                 })
                 .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec.jwt(jwt -> jwt

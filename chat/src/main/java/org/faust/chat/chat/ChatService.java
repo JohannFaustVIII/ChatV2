@@ -29,13 +29,14 @@ public class ChatService {
         return messageRepository.getAllMessages(channel);
     }
 
-    public void addMessage(UUID channel, String message) {
+    public void addMessage(UUID channel, String sender, String message) {
         if (!channelRepository.isChannelExist(channel)) {
             throw new ChannelUnknownException();
         }
         messageRepository.addMessage(new Message(
                 UUID.randomUUID(),
                 channel,
+                sender,
                 message,
                 LocalDateTime.now()
         ));

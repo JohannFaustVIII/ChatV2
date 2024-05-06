@@ -1,6 +1,6 @@
 package org.faust.chat.chat;
 
-import org.faust.chat.config.AuthenticationFilter;
+import org.faust.chat.config.AuthUser;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +23,7 @@ public class ChatController {
     }
 
     @PostMapping
-    public void addMessage(@PathVariable("channel") UUID channel, @RequestBody String message, @AuthenticationPrincipal AuthenticationFilter.AuthUser user) {
+    public void addMessage(@PathVariable("channel") UUID channel, @RequestBody String message, @AuthenticationPrincipal AuthUser user) {
         chatService.addMessage(channel, user.getName(), message);
     }
 }

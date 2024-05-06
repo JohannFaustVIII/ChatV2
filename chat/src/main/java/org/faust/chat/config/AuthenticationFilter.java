@@ -42,7 +42,7 @@ public class AuthenticationFilter implements WebFilter {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 Jwt jwt = jwtDecoder().decode(jwtToken);
                 Map<String, Object> claims = jwt.getClaims();
-                Converter<Jwt, Collection<GrantedAuthority>> authoritiesExtractor = new WebConfig.GrantedAuthoritiesExtractor();
+                Converter<Jwt, Collection<GrantedAuthority>> authoritiesExtractor = new GrantedAuthoritiesExtractor();
                 UserDetails userDetails = new User((String) claims.get("preferred_username"), "", authoritiesExtractor.convert(jwt));
                 AuthUser user = new AuthUser(userDetails);
                 return chain.filter(exchange).contextWrite(c -> ReactiveSecurityContextHolder.withAuthentication(user));
@@ -56,47 +56,5 @@ public class AuthenticationFilter implements WebFilter {
         return jwtDecoder;
     }
 
-    public static class AuthUser implements Authentication {
 
-        private final UserDetails userDetails;
-
-        public AuthUser(UserDetails userDetails) {
-            this.userDetails = userDetails;
-        }
-
-        @Override
-        public Collection<? extends GrantedAuthority> getAuthorities() {
-            return userDetails.getAuthorities();
-        }
-
-        @Override
-        public Object getCredentials() {
-            return userDetails.getPassword();
-        }
-
-        @Override
-        public Object getDetails() {
-            return "";
-        }
-
-        @Override
-        public Object getPrincipal() {
-            return "";
-        }
-
-        @Override
-        public boolean isAuthenticated() {
-            return true;
-        }
-
-        @Override
-        public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-
-        }
-
-        @Override
-        public String getName() {
-            return userDetails.getUsername();
-        }
-    }
 }

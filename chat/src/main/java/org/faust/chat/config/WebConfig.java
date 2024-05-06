@@ -10,7 +10,6 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
@@ -19,11 +18,6 @@ import org.springframework.web.reactive.config.CorsRegistry;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import reactor.core.publisher.Mono;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebFlux
@@ -68,20 +62,5 @@ public class WebConfig implements WebFluxConfigurer {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter
                 (new GrantedAuthoritiesExtractor());
         return new ReactiveJwtAuthenticationConverterAdapter(jwtAuthenticationConverter);
-    }
-
-    static class GrantedAuthoritiesExtractor
-            implements Converter<Jwt, Collection<GrantedAuthority>> {
-
-        public Collection<GrantedAuthority> convert(Jwt jwt) {
-            Collection<?> authorities = (Collection<?>) ((Map)
-                    jwt.getClaims().getOrDefault("realm_access", Collections.emptyMap())).getOrDefault("roles", Collections.emptyList());
-
-            return authorities.stream()
-                    .map(Object::toString)
-                    .map(role -> "ROLE_" + role)
-                    .map(org.springframework.security.core.authority.SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
-        }
     }
 }

@@ -22,7 +22,7 @@ public class ChannelService {
                 UUID.randomUUID(),
                 name
         ));
-        sseService.emitEvents("channel");
+        sseService.emitEvents("channel"); // TODO: this can be handled in aspect?
     }
 
     public List<Channel> getAllChannels() {

@@ -9,7 +9,7 @@ import java.util.UUID;
 @Repository
 public class MessageRepository {
 
-    private List<Message> messages;
+    private final List<Message> messages;
 
     public MessageRepository() {
         this.messages = new LinkedList<>();

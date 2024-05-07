@@ -29,7 +29,7 @@ public class ChannelRepository {
         return channels;
     }
 
-    public boolean isChannelExist(UUID channel) {
+    public boolean existsChannel(UUID channel) {
         return channels.stream().map(Channel::id).anyMatch(c -> c.equals(channel));
     }
 }

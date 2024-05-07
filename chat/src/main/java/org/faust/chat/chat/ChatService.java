@@ -23,14 +23,14 @@ public class ChatService {
     }
 
     public List<Message> getMessages(UUID channel) {
-        if (!channelRepository.isChannelExist(channel)) {
+        if (!channelRepository.existsChannel(channel)) {
             throw new ChannelUnknownException();
         }
         return messageRepository.getAllMessages(channel);
     }
 
     public void addMessage(UUID channel, String sender, String message) {
-        if (!channelRepository.isChannelExist(channel)) {
+        if (!channelRepository.existsChannel(channel)) {
             throw new ChannelUnknownException();
         }
         messageRepository.addMessage(new Message(
@@ -40,7 +40,7 @@ public class ChatService {
                 message,
                 LocalDateTime.now()
         ));
-        sseService.emitEvents(channel.toString());
+        sseService.emitEvents(channel.toString()); // TODO: this can be handled in aspect?
     }
 
     private final static class ChannelUnknownException extends RuntimeException {}

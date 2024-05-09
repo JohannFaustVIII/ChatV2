@@ -1,7 +1,6 @@
 package org.faust.chat.chat;
 
 import org.faust.chat.channel.ChannelRepository;
-import org.faust.chat.sse.SSEService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,12 +13,9 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final ChannelRepository channelRepository;
 
-    private final SSEService sseService;
-
-    public ChatService(MessageRepository messageRepository, ChannelRepository channelRepository, SSEService sseService) {
+    public ChatService(MessageRepository messageRepository, ChannelRepository channelRepository) {
         this.messageRepository = messageRepository;
         this.channelRepository = channelRepository;
-        this.sseService = sseService;
     }
 
     public List<Message> getMessages(UUID channel) {
@@ -29,7 +25,7 @@ public class ChatService {
         return messageRepository.getAllMessages(channel);
     }
 
-    public void addMessage(UUID channel, String sender, String message) {
+    public String addMessage(UUID channel, String sender, String message) {
         if (!channelRepository.existsChannel(channel)) {
             throw new ChannelUnknownException();
         }
@@ -40,7 +36,7 @@ public class ChatService {
                 message,
                 LocalDateTime.now()
         ));
-        sseService.emitEvents(channel.toString()); // TODO: this can be handled in aspect?
+        return channel.toString();
     }
 
     private final static class ChannelUnknownException extends RuntimeException {}

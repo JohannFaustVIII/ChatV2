@@ -15,7 +15,6 @@ export class ChannelSingleComponent extends Listener {
   title = '';
 
   messages : Array<any> = []
-  private interval : any;
 
   constructor(private route: ActivatedRoute, private messageService: MessageService, private sse : SseService, private changeDetector : ChangeDetectorRef) {
     super();
@@ -31,10 +30,6 @@ export class ChannelSingleComponent extends Listener {
         this.getMessages();
       }
     })
-  }
-
-  ngAfterViewInit(): void {
-    this.getMessages();
   }
 
   override notify(): void {

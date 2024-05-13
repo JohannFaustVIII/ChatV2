@@ -7,7 +7,7 @@ import reactor.core.publisher.Sinks;
 @Service
 public class SSEService {
 
-    private final Sinks.Many processor;
+    private final Sinks.Many<String> processor;
 
 
     public SSEService() {

@@ -2,26 +2,30 @@ package org.faust.chat.config;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public class AuthUser implements Authentication {
 
-    private final UserDetails userDetails;
+    private final String username;
+    private final UUID id;
+    private final Collection<GrantedAuthority> authorities;
 
-    public AuthUser(UserDetails userDetails) {
-        this.userDetails = userDetails;
+    public AuthUser(String username, UUID id, Collection<GrantedAuthority> authorities) {
+        this.username = username;
+        this.id = id;
+        this.authorities = authorities;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return userDetails.getAuthorities();
+        return authorities;
     }
 
     @Override
     public Object getCredentials() {
-        return userDetails.getPassword();
+        return "";
     }
 
     @Override
@@ -46,6 +50,10 @@ public class AuthUser implements Authentication {
 
     @Override
     public String getName() {
-        return userDetails.getUsername();
+        return username;
+    }
+
+    public UUID getId() {
+        return id;
     }
 }

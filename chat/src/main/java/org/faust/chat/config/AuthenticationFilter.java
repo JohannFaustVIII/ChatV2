@@ -3,12 +3,9 @@ package org.faust.chat.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -21,6 +18,7 @@ import reactor.core.publisher.Mono;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class AuthenticationFilter implements WebFilter {
@@ -43,8 +41,11 @@ public class AuthenticationFilter implements WebFilter {
                 Jwt jwt = jwtDecoder().decode(jwtToken);
                 Map<String, Object> claims = jwt.getClaims();
                 Converter<Jwt, Collection<GrantedAuthority>> authoritiesExtractor = new GrantedAuthoritiesExtractor();
-                UserDetails userDetails = new User((String) claims.get("preferred_username"), "", authoritiesExtractor.convert(jwt));
-                AuthUser user = new AuthUser(userDetails);
+                AuthUser user = new AuthUser(
+                        (String) claims.get("preferred_username"),
+                        UUID.fromString((String) claims.get("sub")),
+                        authoritiesExtractor.convert(jwt)
+                );
                 return chain.filter(exchange).contextWrite(c -> ReactiveSecurityContextHolder.withAuthentication(user));
             }
         }

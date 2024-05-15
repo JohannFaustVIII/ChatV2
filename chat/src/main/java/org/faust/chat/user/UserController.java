@@ -2,9 +2,12 @@ package org.faust.chat.user;
 
 import org.faust.chat.config.AuthUser;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -29,6 +32,11 @@ public class UserController {
     @PostMapping("/offline")
     public void setOffline(@AuthenticationPrincipal AuthUser user) {
         service.setOffline(user.getId(), user.getName());
+    }
+
+    @GetMapping
+    public List<UserInfo> getActiveUsers() {
+        return this.service.getActiveUsers();
     }
 
 }

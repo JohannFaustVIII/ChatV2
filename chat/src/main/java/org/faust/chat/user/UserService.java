@@ -2,6 +2,7 @@ package org.faust.chat.user;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,5 +24,9 @@ public class UserService {
 
     public void setOffline(UUID id, String username) {
         repository.setOffline(id, username);
+    }
+
+    public List<UserInfo> getActiveUsers() {
+        return this.repository.getActiveUsers();
     }
 }

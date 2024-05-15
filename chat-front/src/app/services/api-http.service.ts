@@ -18,7 +18,7 @@ export class ApiHttpService {
     return this.http.get<T>(url, {headers: this.headers});
   }
 
-  public post(path: string, message: any) {
+  public post(path: string, message?: any) {
     const url = this.env.getApiUrl() + path;
     this.http.post(url, message,  {headers: this.headers}).subscribe();
   }

@@ -16,6 +16,10 @@ public class ChannelRepository {
     public ChannelRepository() {
         this.channels = new ArrayList<>();
         // TODO: remove it, only for testing
+        addRandomChannels();
+    }
+
+    private void addRandomChannels() {
         this.channels.add(new Channel(UUID.randomUUID(), "RandomChannel1"));
         this.channels.add(new Channel(UUID.randomUUID(), "RandomChannel2"));
         this.channels.add(new Channel(UUID.randomUUID(), "RC3"));

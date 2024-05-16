@@ -18,8 +18,8 @@ public class ChatController {
     }
 
     @GetMapping
-    public List<Message> getMessages(@PathVariable("channel") UUID channel) {
-        return chatService.getMessages(channel);
+    public List<Message> getMessages(@PathVariable("channel") UUID channel, @RequestParam(required = false) UUID before, @RequestParam(required = false) UUID after, @RequestParam(defaultValue = "10") int limit) {
+        return chatService.getMessages(channel, before, after, limit);
     }
 
     @PostMapping

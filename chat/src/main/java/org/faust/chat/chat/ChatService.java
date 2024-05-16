@@ -1,6 +1,7 @@
 package org.faust.chat.chat;
 
 import org.faust.chat.channel.ChannelRepository;
+import org.faust.chat.channel.ChannelService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -11,22 +12,36 @@ import java.util.UUID;
 public class ChatService {
 
     private final MessageRepository messageRepository;
-    private final ChannelRepository channelRepository;
+    private final ChannelService channelService;
 
-    public ChatService(MessageRepository messageRepository, ChannelRepository channelRepository) {
+    public ChatService(MessageRepository messageRepository, ChannelService channelService) {
         this.messageRepository = messageRepository;
-        this.channelRepository = channelRepository;
+        this.channelService = channelService;
+        // TODO: remove it, only for testing purposes
+        addRandomMessages();
     }
 
-    public List<Message> getMessages(UUID channel) {
-        if (!channelRepository.existsChannel(channel)) {
+    private void addRandomMessages() {
+        channelService.getAllChannels().forEach(c -> {
+            for (int i = 0; i != 30; i++) {
+                addMessage(
+                        c.id(),
+                        "System generated",
+                        "" + i + c.id().toString()
+                );
+            }
+        });
+    }
+
+    public List<Message> getMessages(UUID channel, UUID before, UUID after, int limit) {
+        if (!channelService.existsChannel(channel)) {
             throw new ChannelUnknownException();
         }
-        return messageRepository.getAllMessages(channel);
+        return messageRepository.getAllMessages(channel, before, after, limit);
     }
 
     public String addMessage(UUID channel, String sender, String message) {
-        if (!channelRepository.existsChannel(channel)) {
+        if (!channelService.existsChannel(channel)) {
             throw new ChannelUnknownException();
         }
         messageRepository.addMessage(new Message(

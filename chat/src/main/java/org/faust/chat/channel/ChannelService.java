@@ -25,4 +25,8 @@ public class ChannelService {
         return channelRepository.getAllChannels();
     }
 
+    public boolean existsChannel(UUID channelUUID) {
+        return channelRepository.existsChannel(channelUUID);
+    }
+
 }

@@ -9,8 +9,15 @@ export class MessageService {
 
   constructor(private api : ApiHttpService) { }
 
-  getMessages(channelName : string) {
-    return this.api.get<Array<Message>>('/chat/' + channelName);
+  getMessages(channelId : string) {
+    return this.api.get<Array<Message>>('/chat/' + channelId);
+  }
+
+  getOlderMessages(channelId: string, firstMessageId: any) {
+    return this.api.get<Array<Message>>('/chat/' + channelId + '?before=' + firstMessageId);
+  }
+  getMessagesAfter(channelId: string, lastMessageId: any) {
+    return this.api.get<Array<Message>>('/chat/' + channelId + '?after=' + lastMessageId);
   }
 
   addMessage(channelName : string, message : any) {

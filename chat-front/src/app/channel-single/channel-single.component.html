@@ -5,7 +5,7 @@
     <mat-divider></mat-divider>
   </div>
 
-  <div class = "channel-messages" >
+  <div class = "channel-messages" infiniteScroll (scrolledUp)="getOlderMessages()" [scrollWindow]="false">
     <div *ngFor='let m of messages'>
       <app-message  [message]='m'></app-message>
     </div>

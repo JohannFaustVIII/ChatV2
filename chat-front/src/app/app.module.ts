@@ -18,6 +18,7 @@ import { MessageComponent } from './message/message.component';
 import { MessageInputComponent } from './message-input/message-input.component'; 
 import { HttpClientModule } from '@angular/common/http';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 function initializeKeycloak(keycloak : KeycloakService) {
   return () => keycloak.init({
@@ -49,6 +50,7 @@ function initializeKeycloak(keycloak : KeycloakService) {
     BrowserAnimationsModule,
     FormsModule,
     HttpClientModule,
+    InfiniteScrollModule,
     MatButtonModule,
     MatCardModule,
     MatDividerModule,

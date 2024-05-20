@@ -2,9 +2,7 @@ package org.faust.chat.chat;
 
 import org.springframework.stereotype.Repository;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public class MessageRepository {
@@ -36,6 +34,10 @@ public class MessageRepository {
         }
 
         List<Message> messagesInRange = channelMessages.stream().limit(beforeSkip).skip(afterSkip).toList();
-        return messagesInRange.stream().skip(Math.max(0, messagesInRange.size() - limit)).toList();
+        List<Message> reversedResult =  messagesInRange.stream().skip(Math.max(0, messagesInRange.size() - limit)).toList();
+        List<Message> result = new ArrayList<>(reversedResult.size());
+        result.addAll(reversedResult);
+        Collections.reverse(result);
+        return result;
     }
 }

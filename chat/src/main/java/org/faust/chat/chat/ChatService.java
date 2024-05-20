@@ -27,7 +27,7 @@ public class ChatService {
                 addMessage(
                         c.id(),
                         "System generated",
-                        "" + i + c.id().toString()
+                        "" + i + "-" +  c.id().toString()
                 );
             }
         });

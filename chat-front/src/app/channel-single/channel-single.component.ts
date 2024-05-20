@@ -38,14 +38,13 @@ export class ChannelSingleComponent extends Listener {
   
   getMessages() {
     this.messageService.getMessages(this.id).subscribe(data => {
-      this.messages = data.reverse();
+      this.messages = data;
       this.changeDetector.detectChanges();
     });
   }
 
   getNewMessages() {
     this.messageService.getMessagesAfter(this.id, this.messages.at(0).id).subscribe(data => {
-      data = data.reverse()
       this.messages = [...data, ...this.messages]
       this.changeDetector.detectChanges();
     });
@@ -53,7 +52,6 @@ export class ChannelSingleComponent extends Listener {
 
   getOlderMessages() {
     this.messageService.getOlderMessages(this.id, this.messages.at(-1).id).subscribe(data => {
-      data = data.reverse();
       this.messages.push(...data);
       this.changeDetector.detectChanges();
     });

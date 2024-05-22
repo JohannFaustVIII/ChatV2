@@ -23,3 +23,4 @@ Simple chat application (Work In Progress).
 ### Other
  - Keycloak - authentication and authorization
  - Docker - containerization
+ - PostgreSQL - database for backend

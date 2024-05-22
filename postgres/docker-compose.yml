@@ -1,0 +1,14 @@
+services:
+  postgres:
+    container_name: c2_db
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - 'pgsql_data:/var/lib/postgresql/data'
+
+volumes:
+  pgsql_data:
+    driver: local

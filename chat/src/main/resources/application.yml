@@ -7,3 +7,11 @@ spring:
       resource-server:
         jwt:
           jwk-set-uri: ${JWT_PROVIDER_URI:http://localhost:8180/realms/ChatV2Realm/protocol/openid-connect/certs}
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/postgres}
+  jpa:
+    hibernate:
+      ddlAuto: validate

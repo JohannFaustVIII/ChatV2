@@ -1,0 +1,20 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <property name="uuid_function" value="uid.uuid_generate_v4()" dbms="postgresql"/>
+
+    <changeSet id="1" author="faust">
+        <createTable tableName="channelTable">
+            <column name="id" type="uuid" valueComputed="${uuid_function}">
+                <constraints primaryKey="true" primaryKeyName="channel_id_pk" />
+            </column>
+            <column name="name" type="nvarchar"></column>
+        </createTable>
+        <rollback>
+            <!--            executed when above fails-->
+            <dropTable tableName="channelTable"></dropTable>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

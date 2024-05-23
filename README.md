@@ -8,6 +8,9 @@ Simple chat application (Work In Progress).
 
  - `FRONT_URL` - frontend URL to enable CORS, default is `http://localhost:4200`
  - `JWT_PROVIDER_URI` - Keycloak's URL to certificates, default is `http://localhost:8180/realms/ChatV2Realm/protocol/openid-connect/certs`
+ - `POSTGRES_URL` - URL to database in JDBC format, default is `jdbc:postgresql://localhost:5432/postgres`
+ - `POSTGRES_USER` - username to database, default is `postgres`
+ - `POSTGRES_PASSWORD` - password to database, default is `postgres`
 
 ## Technologies
 

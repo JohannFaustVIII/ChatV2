@@ -1,5 +1,6 @@
 package org.faust.chat.channel;
 
+import org.jooq.DSLContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +14,10 @@ public class ChannelRepository {
 
     private final List<Channel> channels;
 
-    public ChannelRepository() {
+    private final DSLContext context;
+
+    public ChannelRepository(DSLContext context) {
+        this.context = context;
         this.channels = new ArrayList<>();
         // TODO: remove it, only for testing
         addRandomChannels();

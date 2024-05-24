@@ -1,5 +1,6 @@
 package org.faust.chat.chat;
 
+import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -9,7 +10,10 @@ public class MessageRepository {
 
     private final List<Message> messages;
 
-    public MessageRepository() {
+    private final DSLContext context;
+
+    public MessageRepository(DSLContext context) {
+        this.context = context;
         this.messages = new LinkedList<>();
     }
 

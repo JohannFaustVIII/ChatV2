@@ -8,7 +8,7 @@
     <changeSet id="2" author="faust">
         <createTable tableName="messageTable">
             <column name="id" type="uuid" valueComputed="${uuid_function}">
-                <constraints primaryKey="true" primaryKeyName="channel_id_pk" />
+                <constraints primaryKey="true" primaryKeyName="message_id_pk" />
             </column>
             <column name="channelId" type="uuid" valueComputed="${uuid_function}">
             </column>

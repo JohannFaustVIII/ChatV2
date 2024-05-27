@@ -1,10 +1,10 @@
 package org.faust.chat.channel;
 
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,32 +12,31 @@ import java.util.UUID;
 @Scope("singleton")
 public class ChannelRepository {
 
-    private final List<Channel> channels;
+    private final String CHANNEL_TABLE = "channelTable";
 
     private final DSLContext context;
 
     public ChannelRepository(DSLContext context) {
         this.context = context;
-        this.channels = new ArrayList<>();
-        // TODO: remove it, only for testing
-        addRandomChannels();
-    }
-
-    private void addRandomChannels() {
-        this.channels.add(new Channel(UUID.randomUUID(), "RandomChannel1"));
-        this.channels.add(new Channel(UUID.randomUUID(), "RandomChannel2"));
-        this.channels.add(new Channel(UUID.randomUUID(), "RC3"));
     }
 
     public void addChannel(Channel channel) {
-        channels.add(channel);
+        context
+                .insertInto(DSL.table(DSL.name("channelTable")))
+                .set(DSL.field(DSL.name("name")), channel.name())
+                .execute();
     }
 
     public List<Channel> getAllChannels() {
-        return channels;
+        return context.selectFrom(DSL.table(CHANNEL_TABLE)).fetchInto(Channel.class);
     }
 
     public boolean existsChannel(UUID channel) {
-        return channels.stream().map(Channel::id).anyMatch(c -> c.equals(channel));
+        return context.fetchExists(
+                context
+                        .selectOne()
+                        .from(DSL.table(DSL.name(CHANNEL_TABLE))) // WTF??? Why needs a different way?
+                        .where(DSL.field("id", UUID.class).eq(channel))
+        );
     }
 }

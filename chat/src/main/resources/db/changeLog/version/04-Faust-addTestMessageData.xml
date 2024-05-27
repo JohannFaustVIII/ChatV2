@@ -1,0 +1,191 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <property name="now" value="now()" dbms="postgresql"/>
+
+    <changeSet id="4" author="faust">
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="1" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="2" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="3" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="4" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="5" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="6" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="7" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="8" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="9" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="10" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="11" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="12" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="13" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="14" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="15" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="16" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="17" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="18" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="19" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="20" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="21" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="22" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="23" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="24" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="25" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="26" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="27" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="28" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="29" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+        <insert tableName="messageTable">
+            <column name="channelId" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
+            <column name="sender" value="System generated" type="nvarchar"></column>
+            <column name="message" value="30" type="nvarchar"></column>
+            <column name="serverTime" value="${now}" type="dateTime"></column>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>

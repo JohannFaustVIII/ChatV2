@@ -7,4 +7,5 @@
     <include file="version/01-Faust-addChannelTable.xml" relativeToChangelogFile="true"/>
     <include file="version/02-Faust-addMessageTable.xml" relativeToChangelogFile="true"/>
     <include file="version/03-Faust-addTestChannelData.xml" relativeToChangelogFile="true"/>
+    <include file="version/04-Faust-addTestMessageData.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

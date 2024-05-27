@@ -18,7 +18,7 @@ public class ChatService {
         this.messageRepository = messageRepository;
         this.channelService = channelService;
         // TODO: remove it, only for testing purposes
-        addRandomMessages();
+//        addRandomMessages();
     }
 
     private void addRandomMessages() {

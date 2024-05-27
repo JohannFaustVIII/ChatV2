@@ -6,6 +6,7 @@
 
     <changeSet id="3" author="faust">
         <insert tableName="channelTable">
+            <column name="id" value="9eb5f7be-8cc1-446b-8259-f273604bbd3a" type="uuid"></column>
             <column name="name" value="RandomChannel1" type="nvarchar"></column>
         </insert>
         <insert tableName="channelTable">

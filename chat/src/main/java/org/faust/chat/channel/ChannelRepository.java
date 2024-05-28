@@ -12,7 +12,8 @@ import java.util.UUID;
 @Scope("singleton")
 public class ChannelRepository {
 
-    private final String CHANNEL_TABLE = "channelTable";
+    private final String SELECT_CHANNEL_TABLE = "\"channelTable\"";
+    private final String INSERT_CHANNEL_TABLE = "channelTable";
 
     private final DSLContext context;
 
@@ -22,20 +23,20 @@ public class ChannelRepository {
 
     public void addChannel(Channel channel) {
         context
-                .insertInto(DSL.table(DSL.name("channelTable")))
+                .insertInto(DSL.table(DSL.name(INSERT_CHANNEL_TABLE)))
                 .set(DSL.field(DSL.name("name")), channel.name())
                 .execute();
     }
 
     public List<Channel> getAllChannels() {
-        return context.selectFrom(DSL.table(CHANNEL_TABLE)).fetchInto(Channel.class);
+        return context.selectFrom(DSL.table(SELECT_CHANNEL_TABLE)).fetchInto(Channel.class);
     }
 
     public boolean existsChannel(UUID channel) {
         return context.fetchExists(
                 context
                         .selectOne()
-                        .from(DSL.table(DSL.name(CHANNEL_TABLE))) // WTF??? Why needs a different way?
+                        .from(DSL.table(DSL.name(INSERT_CHANNEL_TABLE))) // WTF??? Why needs a different way?
                         .where(DSL.field("id", UUID.class).eq(channel))
         );
     }

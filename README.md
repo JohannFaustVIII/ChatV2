@@ -19,6 +19,8 @@ Simple chat application (Work In Progress).
  - Spring Boot
  - Spring Webflux - for Server Sent Events
  - Spring AOP - aspects to send events without interfering into the business code
+ - JOOQ - communication with a database
+ - Liquibase - version control of database
 
 ### Frontend
  - Angular

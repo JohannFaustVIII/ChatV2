@@ -7,20 +7,13 @@ import { ApiHttpService } from './api-http.service';
 })
 export class ChannelService {
 
-  channels : Array<Channel> = [
-    {
-      id: "a-b-c-d",
-      name: "Channel 1"
-    },
-    {
-      id: "e-f-g-h",
-      name: "Channel 2"
-    }
-  ]
-
   constructor(private api: ApiHttpService) {}
 
   getChannels() {
     return this.api.get<Array<Channel>>('/channels');
+  }
+
+  addChannel(channelName : string) {
+    this.api.post('/channels', channelName);
   }
 }

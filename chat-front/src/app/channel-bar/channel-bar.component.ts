@@ -21,8 +21,6 @@ export class ChannelBarComponent extends Listener {
 
   ngAfterViewInit(): void {
     this.getChannels();
-    // TODO: is it fine to do it like that? maybe backend should emit an event that something has changed?
-    // maybe open a stream of events to notify front about change on backend?
   }
 
   override notify(): void {

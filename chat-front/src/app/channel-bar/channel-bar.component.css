@@ -12,14 +12,20 @@ button {
 }
 
 .out-box {
-  flex: 1;
-  /* position: absolute; */
-  border: 10px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
   background-color: pink;
   max-width: calc(128px - 12px);
   height: calc(100vh - 24px);
+  /* position: absolute; */
+  border: 10px;
   margin-top: 12px;
   margin-bottom: 12px;
   margin-left: 6px;
   margin-right: 6px;
+}
+
+.channels {
+  flex: 1;
 }

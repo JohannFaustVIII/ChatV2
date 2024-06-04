@@ -19,6 +19,7 @@ import { MessageInputComponent } from './message-input/message-input.component';
 import { HttpClientModule } from '@angular/common/http';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { ChannelInputComponent } from './channel-input/channel-input.component';
 
 function initializeKeycloak(keycloak : KeycloakService) {
   return () => keycloak.init({
@@ -39,6 +40,7 @@ function initializeKeycloak(keycloak : KeycloakService) {
   declarations: [
     AppComponent,
     ChannelBarComponent,
+    ChannelInputComponent,
     ChannelSingleComponent,
     WelcomeComponent,
     MessageComponent,

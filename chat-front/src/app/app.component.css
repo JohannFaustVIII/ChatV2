@@ -9,11 +9,19 @@
   max-width: 128px;
   display: flex;
   margin-right: 6px;
-  background-color: red;
+  background-color: #B43F54;
 }
 
 .right-box {
   flex: 1;
-  background-color: cadetblue;
+  background-color: #1E141F;
   height: 100%
+}
+
+element {
+  --light-shades: #F4F8F5;
+  --light-accent: #78849E;
+  --main-color: #32A407;
+  --dark-accent: #B43F54;
+  --dark-shades: #1E141F;
 }

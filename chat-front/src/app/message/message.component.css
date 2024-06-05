@@ -1,3 +1,43 @@
+.message-box {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  margin-left: 10px;
+  margin-right: 10px;
+  background-color: #F4F8F5;
+  padding: 8px;
+  border: 0px;
+  border-style: solid;
+  border-radius: 10px;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-bottom: 1px solid;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: large;
+  color: #1E141F;
+}
+
+.subtitle {
+  font-size: small;
+  color: #32A407
+}
+
+.message {
+  font-size: medium;
+  color: #1E141F;
+}
+
+p {
+  margin: 0px;
+  word-break: break-all;
+}
+
 mat-card {
   margin: 10px;
 }

@@ -15,7 +15,7 @@ button {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  background-color: pink;
+  background-color: #B43F54;
   max-width: calc(128px - 12px);
   height: calc(100vh - 24px);
   /* position: absolute; */

@@ -4,11 +4,23 @@ button {
   white-space: nowrap;
   display: block;
   text-overflow: ellipsis '..';
-  min-width: calc(100% - 12px);
-  max-width: calc(100% - 12px);
+  min-width: calc(100% - 0px);
+  max-width: calc(100% - 0px);
   border: 0px;
-  margin: 6px;
+  margin: 0px;
   font-size: 1em;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-radius: 2px;
+  background-color: #f4f8f500;
+  color: #1E141F;
+  font-weight: 600;
+  transition: background-color 0.5s;
+}
+
+button:hover {
+  background-color: #f4f8f546;
+  cursor: pointer;
 }
 
 .out-box {
@@ -16,14 +28,15 @@ button {
   justify-content: space-between;
   flex-direction: column;
   background-color: #B43F54;
-  max-width: calc(128px - 12px);
+  max-width: calc(128px - 0px);
   height: calc(100vh - 24px);
   /* position: absolute; */
   border: 10px;
   margin-top: 12px;
   margin-bottom: 12px;
-  margin-left: 6px;
-  margin-right: 6px;
+  margin-left: 0px;
+  margin-right: 0px;
+  padding: 0px;
 }
 
 .channels {

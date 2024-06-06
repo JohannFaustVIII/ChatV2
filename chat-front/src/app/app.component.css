@@ -8,11 +8,12 @@
   width: 128px;
   max-width: 128px;
   display: flex;
-  margin-right: 6px;
+  border-right: 1px solid #F4F8F5;
   background-color: #B43F54;
 }
 
 .right-box {
+  padding-left: 8px;
   flex: 1;
   background-color: #1E141F;
   height: 100%

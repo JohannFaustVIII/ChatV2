@@ -1,9 +1,9 @@
-mat-form-field  {
+input {
   font-size: 14px;
   width: 100%;
-  height: 80px;
-}
-
-mat-label {
-  font-size: 12px;
+  height: 32px;
+  background-color: #F4F8F5;
+  color: #32A407;
+  outline: 0px;
+  border: 0px;
 }

@@ -17,20 +17,6 @@ public class ChatService {
     public ChatService(MessageRepository messageRepository, ChannelService channelService) {
         this.messageRepository = messageRepository;
         this.channelService = channelService;
-        // TODO: remove it, only for testing purposes
-//        addRandomMessages();
-    }
-
-    private void addRandomMessages() {
-        channelService.getAllChannels().forEach(c -> {
-            for (int i = 0; i != 30; i++) {
-                addMessage(
-                        c.id(),
-                        "System generated",
-                        "" + i + "-" +  c.id().toString()
-                );
-            }
-        });
     }
 
     public List<Message> getMessages(UUID channel, UUID before, UUID after, int limit) {

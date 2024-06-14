@@ -1,5 +1,6 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { UserService } from './services/user.service';
+import { IdleUserService } from './services/idle-user.service';
 
 @Component({
   selector: 'app-root',
@@ -9,10 +10,9 @@ import { UserService } from './services/user.service';
 export class AppComponent implements OnInit{
   title = 'chat-front';
 
-  constructor(private userService : UserService) {}
+  constructor(private userService : UserService, private idleUserService : IdleUserService) {}
 
   ngOnInit(): void {
-    this.userService.setOnline();
   }
 
   @HostListener('window:beforeunload', ['$event'])

@@ -12,6 +12,11 @@ import java.util.stream.Collectors;
 @Repository
 public class UserRepository {
 
+    // TODO: this has to be changed into... event stream? Idk, the idea is that each app using this backend can sent user status
+    // if one of them RECENTLY sent ONLINE, then the user is ONLINE
+    // else if one of them RECENTLY sent AFK, then the user is AFK,
+    // else if there is no user status or OFFLINE, then the user is OFFLINE
+    // BUT, it needs time evaluation? or remove frontend interval and sent status only if changed, but how to find OFFLINE then?
     private final Map<UUID, UserInfo> users = new HashMap<>();
 
     public List<UserInfo> getActiveUsers() {

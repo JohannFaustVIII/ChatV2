@@ -12,11 +12,14 @@ export enum IdleTimes {
 export class IdleUserService {
 
   private timeoutId: any;
+  private isOnline: boolean = true;
+  private activityLoop: any;
 
   userInactive: Subject<boolean> = new Subject();
 
   constructor(private userService : UserService) { 
     this.initListeners();
+    this.initActivityLoop();
   }
 
   initListeners() {
@@ -29,15 +32,25 @@ export class IdleUserService {
     window.addEventListener('MSPointerMove', () => this.reset());
   }
 
-  reset(): any {
+  initActivityLoop() {
+    this.activityLoop = setInterval(() => {
+      if (this.isOnline) {
+        this.userService.setOnline();
+      } else {
+        this.userService.setOffline(); // set afk?
+      }
+    }, 10000)
+  }
+
+  private reset(): any {
     clearTimeout(this.timeoutId);
-    this.userService.setOnline(); // TODO: TO FIX, it sends a lot of requests about being online 
+    this.isOnline = true;
     this.startIdleTimer();
   }
 
-  startIdleTimer() {
+  private startIdleTimer() {
     this.timeoutId = setTimeout(() => {
-      // send AFK status?
+      this.isOnline = false;
       console.log("You are AFK");
     }, IdleTimes.IdleTime);
   }

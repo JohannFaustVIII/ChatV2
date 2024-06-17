@@ -15,4 +15,8 @@ export class UserService {
   setOffline() {
     this.api.post("/user/offline");
   }
+
+  setAfk() {
+    this.api.post("/user/afk");
+  }
 }

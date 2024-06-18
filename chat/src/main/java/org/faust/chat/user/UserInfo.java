@@ -1,7 +1,7 @@
 package org.faust.chat.user;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record UserInfo(UUID userId, String username, UserStatus status, LocalDateTime updateTime) {
+// TODO: it doesn't contain username anymore, requires to do another way to get usernames
+public record UserInfo(UUID userId, UserStatus status) {
 }

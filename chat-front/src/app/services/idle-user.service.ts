@@ -37,9 +37,9 @@ export class IdleUserService {
       if (this.isOnline) {
         this.userService.setOnline();
       } else {
-        this.userService.setOffline(); // set afk?
+        this.userService.setAfk(); // set afk?
       }
-    }, 10000)
+    }, 60000);
   }
 
   private reset(): any {

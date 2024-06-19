@@ -13,6 +13,7 @@ export class IdleUserService {
 
   private timeoutId: any;
   private isOnline: boolean = true;
+  private isOffline: boolean = false;
   private activityLoop: any;
 
   userInactive: Subject<boolean> = new Subject();
@@ -22,7 +23,12 @@ export class IdleUserService {
     this.initActivityLoop();
   }
 
-  initListeners() {
+  setOffline() {
+    this.isOffline = true;
+    this.userService.setOffline();
+  }
+
+  private initListeners() {
     window.addEventListener('mousemove', () => this.reset());
     window.addEventListener('click', () => this.reset());
     window.addEventListener('keypress', () => this.reset());
@@ -32,12 +38,14 @@ export class IdleUserService {
     window.addEventListener('MSPointerMove', () => this.reset());
   }
 
-  initActivityLoop() {
+  private initActivityLoop() {
     this.activityLoop = setInterval(() => {
       if (this.isOnline) {
         this.userService.setOnline();
+      } else if (!this.isOffline) {
+        this.userService.setAfk();
       } else {
-        this.userService.setAfk(); // set afk?
+        this.userService.setOffline();
       }
     }, 60000);
   }

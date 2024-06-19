@@ -1,5 +1,4 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { UserService } from './services/user.service';
 import { IdleUserService } from './services/idle-user.service';
 
 @Component({
@@ -10,13 +9,13 @@ import { IdleUserService } from './services/idle-user.service';
 export class AppComponent implements OnInit{
   title = 'chat-front';
 
-  constructor(private userService : UserService, private idleUserService : IdleUserService) {}
+  constructor(private idleUserService : IdleUserService) {}
 
   ngOnInit(): void {
   }
 
   @HostListener('window:beforeunload', ['$event'])
   unloadHandler() {
-    this.userService.setOffline(); //TODO: think about it, as it is aborted when changing page
+    this.idleUserService.setOffline(); //TODO: think about it, as it is aborted when changing page
   }
 }

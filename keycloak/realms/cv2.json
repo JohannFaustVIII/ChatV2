@@ -46,6 +46,14 @@
   "failureFactor" : 30,
   "roles" : {
     "realm" : [ {
+      "id" : "f321e131-3b76-4195-9e83-79a11a035784",
+      "name" : "user_management",
+      "description" : "",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "79386cea-8745-4a09-89bd-f3c4f6ff4db6",
+      "attributes" : { }
+    }, {
       "id" : "f0a5dd46-9059-49b6-a3ce-b0e0375535cf",
       "name" : "default-roles-chatv2realm",
       "description" : "${role_default-roles}",
@@ -463,6 +471,10 @@
     "roles" : [ "offline_access" ]
   } ],
   "clientScopeMappings" : {
+    "realm-management" : [ {
+      "clientScope" : "user_management",
+      "roles" : [ "manage-users", "view-users" ]
+    } ],
     "account" : [ {
       "client" : "account-console",
       "roles" : [ "manage-account", "view-groups" ]
@@ -711,6 +723,7 @@
       "oidc.ciba.grant.enabled" : "false",
       "client.secret.creation.time" : "1714475469",
       "backchannel.logout.session.required" : "true",
+      "post.logout.redirect.uris" : "+",
       "oauth2.device.authorization.grant.enabled" : "false",
       "display.on.consent.screen" : "false",
       "backchannel.logout.revoke.offline.tokens" : "false"
@@ -792,10 +805,21 @@
         "jsonType.label" : "String"
       }
     } ],
-    "defaultClientScopes" : [ "web-origins", "acr", "profile", "roles", "email" ],
+    "defaultClientScopes" : [ "web-origins", "acr", "profile", "roles", "user_management", "email" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   } ],
   "clientScopes" : [ {
+    "id" : "dcaf5481-6289-4dd6-a21c-9dc87565e3a6",
+    "name" : "user_management",
+    "description" : "",
+    "protocol" : "openid-connect",
+    "attributes" : {
+      "include.in.token.scope" : "false",
+      "display.on.consent.screen" : "true",
+      "gui.order" : "",
+      "consent.screen.text" : ""
+    }
+  }, {
     "id" : "362b4193-d433-4973-aad7-9c11984fdd76",
     "name" : "address",
     "description" : "OpenID Connect built-in scope: address",
@@ -1286,7 +1310,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "saml-user-attribute-mapper", "oidc-full-name-mapper", "saml-role-list-mapper", "saml-user-property-mapper", "oidc-usermodel-attribute-mapper", "oidc-address-mapper", "oidc-sha256-pairwise-sub-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "oidc-usermodel-attribute-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper", "saml-user-attribute-mapper", "oidc-address-mapper", "saml-user-property-mapper", "saml-role-list-mapper" ]
       }
     }, {
       "id" : "0e0e8587-67f1-4646-97dd-afd64a781378",
@@ -1328,7 +1352,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "oidc-address-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-full-name-mapper", "oidc-usermodel-attribute-mapper", "saml-role-list-mapper", "saml-user-attribute-mapper", "saml-user-property-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-usermodel-attribute-mapper", "saml-user-property-mapper", "oidc-usermodel-property-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-attribute-mapper", "oidc-full-name-mapper", "saml-role-list-mapper", "oidc-address-mapper" ]
       }
     }, {
       "id" : "81bc7457-669f-47df-9b3f-facc4916a283",

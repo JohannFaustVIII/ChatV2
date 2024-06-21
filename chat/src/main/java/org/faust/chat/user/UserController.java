@@ -1,6 +1,7 @@
 package org.faust.chat.user;
 
 import org.faust.chat.config.AuthUser;
+import org.faust.chat.keycloak.KeycloakService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,8 +16,10 @@ public class UserController {
     
     private final UserService service;
 
-    public UserController(UserService service) {
+    private final KeycloakService keycloakService;
+    public UserController(UserService service, KeycloakService keycloakService) {
         this.service = service;
+        this.keycloakService = keycloakService;
     }
 
     @PostMapping("/active")
@@ -39,4 +42,8 @@ public class UserController {
         return this.service.getActiveUsers();
     }
 
+    @GetMapping("/info")
+    public void getUserInfo() {
+        keycloakService.getUsers();
+    }
 }

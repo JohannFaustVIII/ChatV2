@@ -17,3 +17,9 @@ spring:
       ddlAuto: validate
   jooq:
     sqlDialect:  POSTGRES
+
+keycloak:
+  url: ${KEYCLOAK_URI:http://localhost:8180}
+  realm: ${KEYCLOAK_REALM:ChatV2Realm}
+  clientId: ${KEYCLOAK_ID:cv2-backend}
+  clientSecret: ${KEYCLOAK_SECRET:GJJuJksZfQUpiAV4X8QprPXmMDx0B0Dq}

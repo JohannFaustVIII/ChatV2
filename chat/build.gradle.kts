@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
+    implementation("org.keycloak:keycloak-admin-client:25.0.0")
     implementation("org.liquibase:liquibase-core")
     implementation("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-aop")

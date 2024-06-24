@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Collection;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
     
     private final UserService service;
@@ -38,12 +38,12 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserInfo> getActiveUsers() {
+    public Collection<UserInfo> getActiveUsers() {
         return this.service.getActiveUsers();
     }
 
-    @GetMapping("/info")
-    public void getUserInfo() {
-        keycloakService.getUsers();
+    @GetMapping("/details")
+    public Collection<UserDetails> getUserDetails() {
+        return keycloakService.getUsers();
     }
 }

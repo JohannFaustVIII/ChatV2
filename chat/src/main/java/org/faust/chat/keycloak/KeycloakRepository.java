@@ -1,8 +1,13 @@
 package org.faust.chat.keycloak;
 
+import org.faust.chat.user.UserDetails;
 import org.keycloak.admin.client.Keycloak;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collection;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class KeycloakRepository {
@@ -16,16 +21,15 @@ public class KeycloakRepository {
         this.keycloak = keycloak;
     }
 
-    public void getUsers() {
-        keycloak
+    public Collection<UserDetails> getUsers() {
+        return keycloak
                 .realm(realm)
                 .users()
                 .list()
-                .forEach(
-                        u -> {
-                            System.out.println(u.getId());
-                            System.out.println(u.getUsername());
-                        }
-                );
+                .stream().map(representation -> new UserDetails(
+                        UUID.fromString(representation.getId()),
+                        representation.getUsername()
+                ))
+                .collect(Collectors.toList());
     }
 }

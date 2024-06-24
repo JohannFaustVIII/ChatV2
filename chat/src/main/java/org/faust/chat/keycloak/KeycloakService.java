@@ -1,6 +1,9 @@
 package org.faust.chat.keycloak;
 
+import org.faust.chat.user.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
 
 @Service
 public class KeycloakService {
@@ -11,7 +14,7 @@ public class KeycloakService {
         this.repository = repository;
     }
 
-    public void getUsers() {
-        repository.getUsers();
+    public Collection<UserDetails> getUsers() {
+        return repository.getUsers();
     }
 }

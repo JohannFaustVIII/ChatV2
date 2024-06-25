@@ -29,7 +29,7 @@ public class MessageRepository {
                 .execute();
     }
 
-    public List<Message> getAllMessages(UUID channel, UUID before, UUID after, int limit) {
+    public Collection<Message> getAllMessages(UUID channel, UUID before, UUID after, int limit) {
         List<Condition> conditions = new ArrayList<>();
         conditions.add(DSL.field("\"channelId\"", UUID.class).eq(channel));
         if (before != null) {

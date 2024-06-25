@@ -2,7 +2,8 @@ package org.faust.chat.channel;
 
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Collection;
+
 
 @RestController
 @RequestMapping("/channels")
@@ -20,7 +21,7 @@ public class ChannelController {
     }
 
     @GetMapping
-    public List<Channel> getChannels() {
+    public Collection<Channel> getChannels() {
         return channelService.getAllChannels();
     }
 }

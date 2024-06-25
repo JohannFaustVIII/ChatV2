@@ -2,7 +2,7 @@ package org.faust.chat.channel;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 @Service
@@ -21,7 +21,7 @@ public class ChannelService {
         ));
     }
 
-    public List<Channel> getAllChannels() {
+    public Collection<Channel> getAllChannels() {
         return channelRepository.getAllChannels();
     }
 

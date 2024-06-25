@@ -1,11 +1,10 @@
 package org.faust.chat.chat;
 
-import org.faust.chat.channel.ChannelRepository;
 import org.faust.chat.channel.ChannelService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 @Service
@@ -19,7 +18,7 @@ public class ChatService {
         this.channelService = channelService;
     }
 
-    public List<Message> getMessages(UUID channel, UUID before, UUID after, int limit) {
+    public Collection<Message> getMessages(UUID channel, UUID before, UUID after, int limit) {
         if (!channelService.existsChannel(channel)) {
             throw new ChannelUnknownException();
         }

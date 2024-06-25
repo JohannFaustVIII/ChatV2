@@ -4,7 +4,7 @@ import org.faust.chat.config.AuthUser;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 @RestController
@@ -18,7 +18,7 @@ public class ChatController {
     }
 
     @GetMapping
-    public List<Message> getMessages(@PathVariable("channel") UUID channel, @RequestParam(required = false) UUID before, @RequestParam(required = false) UUID after, @RequestParam(defaultValue = "10") int limit) {
+    public Collection<Message> getMessages(@PathVariable("channel") UUID channel, @RequestParam(required = false) UUID before, @RequestParam(required = false) UUID after, @RequestParam(defaultValue = "10") int limit) {
         return chatService.getMessages(channel, before, after, limit);
     }
 

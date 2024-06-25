@@ -4,10 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -16,7 +13,7 @@ public class UserRepository {
 
     private final Map<UUID, Cache<UserStatus, UserStatus>> users = new HashMap<>();
 
-    public List<UserInfo> getActiveUsers() {
+    public Collection<UserInfo> getActiveUsers() {
         return
                 users.entrySet()
                         .stream()

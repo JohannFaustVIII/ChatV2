@@ -5,7 +5,7 @@ import org.jooq.impl.DSL;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 @Repository
@@ -28,7 +28,7 @@ public class ChannelRepository {
                 .execute();
     }
 
-    public List<Channel> getAllChannels() {
+    public Collection<Channel> getAllChannels() {
         return context.selectFrom(DSL.table(SELECT_CHANNEL_TABLE)).fetchInto(Channel.class);
     }
 

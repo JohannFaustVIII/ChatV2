@@ -2,6 +2,7 @@ package org.faust.chat.keycloak;
 
 import org.faust.chat.user.UserDetails;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -31,5 +32,18 @@ public class KeycloakRepository {
                         representation.getUsername()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public UserDetails getUserInfo(UUID userId) {
+        UserRepresentation userRepresentation =
+                keycloak
+                        .realm(realm)
+                        .users()
+                        .get(userId.toString())
+                        .toRepresentation();
+        return new UserDetails(
+                UUID.fromString(userRepresentation.getId()),
+                userRepresentation.getUsername()
+        );
     }
 }

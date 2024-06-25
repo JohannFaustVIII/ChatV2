@@ -4,6 +4,7 @@ import org.faust.chat.user.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.UUID;
 
 @Service
 public class KeycloakService {
@@ -16,5 +17,9 @@ public class KeycloakService {
 
     public Collection<UserDetails> getUsers() {
         return repository.getUsers();
+    }
+
+    public UserDetails getUserInfo(UUID userId) {
+        return repository.getUserInfo(userId);
     }
 }

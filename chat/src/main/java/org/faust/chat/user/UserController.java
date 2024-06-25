@@ -3,12 +3,10 @@ package org.faust.chat.user;
 import org.faust.chat.config.AuthUser;
 import org.faust.chat.keycloak.KeycloakService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -45,5 +43,10 @@ public class UserController {
     @GetMapping("/details")
     public Collection<UserDetails> getUserDetails() {
         return keycloakService.getUsers();
+    }
+
+    @GetMapping("/details/{id}")
+    public UserDetails getUser(@PathVariable UUID id) {
+        return keycloakService.getUserInfo(id);
     }
 }

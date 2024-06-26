@@ -3,6 +3,7 @@ package org.faust.chat.sse;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.faust.chat.user.UserRepository;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -11,8 +12,9 @@ public class SSEAspect {
 
     private final SSEService sseService;
 
-    public SSEAspect(SSEService sseService) {
+    public SSEAspect(SSEService sseService, UserRepository userRepository) {
         this.sseService = sseService;
+        userRepository.addListener(this::updateUsers);
     }
 
 
@@ -26,6 +28,11 @@ public class SSEAspect {
 
     }
 
+    @Pointcut("execution(* org.faust.chat.user.UserService.set*(..))")
+    public void userPointcut() {
+
+    }
+
     @AfterReturning(pointcut = "channelPointcut()")
     public void updateChannels() {
         sseService.emitEvents("channel");
@@ -36,4 +43,8 @@ public class SSEAspect {
         sseService.emitEvents(retVal);
     }
 
+    @AfterReturning(pointcut = "userPointcut()")
+    public void updateUsers() {
+        sseService.emitEvents("users");
+    }
 }

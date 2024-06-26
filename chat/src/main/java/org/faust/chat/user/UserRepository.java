@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class UserRepository {
 
     private final Map<UUID, Cache<UserStatus, UserStatus>> users = new HashMap<>();
+    private final Collection<Runnable> listeners = new LinkedList<>();
 
     public Collection<UserInfo> getActiveUsers() {
         return
@@ -39,6 +40,7 @@ public class UserRepository {
                     id,
                     Caffeine.newBuilder()
                             .expireAfterWrite(70, TimeUnit.SECONDS)
+                            .removalListener((k, v, cause) -> notifyListeners()) // TODO: removing happens on read, not after real expiration
                             .build()
             );
         }
@@ -56,5 +58,15 @@ public class UserRepository {
             status = UserStatus.OFFLINE;
         }
         return new UserInfo(userId, status);
+    }
+
+    public void addListener(Runnable r) {
+        listeners.add(r);
+    }
+
+    private void notifyListeners() {
+        for (Runnable r: listeners) {
+            r.run();
+        }
     }
 }

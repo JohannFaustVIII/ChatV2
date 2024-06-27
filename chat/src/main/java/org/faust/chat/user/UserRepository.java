@@ -2,6 +2,7 @@ package org.faust.chat.user;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.Scheduler;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -40,7 +41,8 @@ public class UserRepository {
                     id,
                     Caffeine.newBuilder()
                             .expireAfterWrite(70, TimeUnit.SECONDS)
-                            .removalListener((k, v, cause) -> notifyListeners()) // TODO: removing happens on read, not after real expiration
+                            .removalListener((k, v, cause) -> notifyListeners())
+                            .scheduler(Scheduler.systemScheduler())
                             .build()
             );
         }

@@ -20,7 +20,7 @@ public class UserController {
         this.keycloakService = keycloakService;
     }
 
-    @PostMapping("/active")
+    @PostMapping("/online")
     public void setActive(@AuthenticationPrincipal AuthUser user) {
         service.setActive(user.getId(), user.getName());
     }

@@ -9,14 +9,14 @@ export class UserService {
   constructor(private api : ApiHttpService) { }
 
   setOnline() {
-    this.api.post("/user/active");
+    this.api.post("/users/online");
   }
 
   setOffline() {
-    this.api.post("/user/offline");
+    this.api.post("/users/offline");
   }
 
   setAfk() {
-    this.api.post("/user/afk");
+    this.api.post("/users/afk");
   }
 }

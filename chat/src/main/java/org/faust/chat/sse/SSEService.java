@@ -19,6 +19,10 @@ public class SSEService {
     }
 
     public Flux<String> getEvents() {
-        return processor.asFlux();
+        return processor.asFlux()
+                .doOnCancel(
+                () -> System.out.println("Flux was cancelled")); // if cancel happened, then front-end probably was closed, but:
+        // what if multiple frontends are open? how to distinguish them?
+        // how to get info about the user? this endpoint doesn't require authorization header
     }
 }

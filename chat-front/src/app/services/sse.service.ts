@@ -11,6 +11,7 @@ export class SseService {
 
   constructor(private api : ApiHttpService) {
     this.api.getStream<string>('/events').subscribe(data => {
+      console.log(data)
       var key = typeof data === 'string' ? data : '';
       if (key in this.listeners) {
         this.listeners[key].notify();

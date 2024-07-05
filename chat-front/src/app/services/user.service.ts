@@ -19,4 +19,8 @@ export class UserService {
   setAfk() {
     this.api.post("/users/afk");
   }
+
+  setHook() {
+    this.api.postHookStream("/users/hook").subscribe();
+  }
 }

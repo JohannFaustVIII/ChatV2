@@ -25,20 +25,23 @@ export class ApiHttpService {
 
   public getStream<T>(path: string) {
     const url = this.env.getApiUrl() + path;
-    return this.http.get(url, {headers: new HttpHeaders({ "Content-Type": "text/plain" }), observe: 'events', responseType: 'text', reportProgress: true}); // this has a problem that partialText contains all data
-    // const url = this.env.getApiUrl() + path;
-    // return new Observable(
-    //   observer => {
-    //     let source = new EventSource(url, {withCredentials: true});
+    return new Observable(
+      observer => {
+        let source = new EventSource(url, {withCredentials: true});
 
-    //     source.onmessage = event => {
-    //       observer.next(event.data);
-    //     }
+        source.onmessage = event => {
+          observer.next(event.data);
+        }
 
-    //     source.onerror = event => {
-    //       observer.error(event);
-    //     }
-    //   }
-    // )
+        source.onerror = event => {
+          observer.error(event);
+        }
+      }
+    )
+  }
+
+  public postHookStream<T>(path: string) {
+    const url = this.env.getApiUrl() + path;
+    return this.http.post(url, {headers: new HttpHeaders({ "Content-Type": "text/plain" }), observe: 'events', responseType: 'text', reportProgress: true});
   }
 }

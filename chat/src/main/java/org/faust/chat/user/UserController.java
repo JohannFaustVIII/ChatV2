@@ -4,6 +4,7 @@ import org.faust.chat.config.AuthUser;
 import org.faust.chat.keycloak.KeycloakService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -33,6 +34,11 @@ public class UserController {
     @PostMapping("/offline")
     public void setOffline(@AuthenticationPrincipal AuthUser user) {
         service.setOffline(user.getId(), user.getName());
+    }
+
+    @PostMapping("/hook")
+    public Flux<Void> setActiveHook() {
+        return service.setActivityHook(); // TODO: fix it, cause it cancels SSE
     }
 
     @GetMapping

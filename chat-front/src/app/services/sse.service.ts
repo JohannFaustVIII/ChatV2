@@ -11,18 +11,11 @@ export class SseService {
   listeners : {[id : string] : any} = {}
 
   constructor(private api : ApiHttpService) {
-    var previous = ''; // to think: is it safe?
-    this.api.getStream<Object>('/events').subscribe(data => {
-        if (data.type === HttpEventType.DownloadProgress) {
-          var progress = data as HttpDownloadProgressEvent;
-          var toAnalyze = progress.partialText?.substring(previous.length);
-          previous = typeof progress.partialText === 'string' ? progress.partialText : '';
-          console.log(toAnalyze);
-          var key = typeof data === 'string' ? data : '';
-          if (key in this.listeners) {
-            this.listeners[key].notify();
-          }
-        }
+    this.api.getStream<string>('/events').subscribe(data => {
+      var key = typeof data === 'string' ? data : '';
+      if (key in this.listeners) {
+        this.listeners[key].notify();
+      }
     });
   }
 

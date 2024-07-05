@@ -21,6 +21,7 @@ export class IdleUserService {
   constructor(private userService : UserService) { 
     this.initListeners();
     this.initActivityLoop();
+    this.initHook();
   }
 
   setOffline() {
@@ -61,5 +62,9 @@ export class IdleUserService {
       this.isOnline = false;
       console.log("You are AFK");
     }, IdleTimes.IdleTime);
+  }
+
+  private initHook() {
+    this.userService.setHook();
   }
 }

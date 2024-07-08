@@ -6,20 +6,23 @@ import com.github.benmanes.caffeine.cache.Scheduler;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Repository
 public class UserRepository {
 
     private final Map<UUID, Cache<UserStatus, UserStatus>> users = new HashMap<>();
+    private final Map<UUID, AtomicInteger> activityCounters = new ConcurrentHashMap<>();
     private final Collection<Runnable> listeners = new LinkedList<>();
 
     public Collection<UserInfo> getActiveUsers() {
         return
                 users.entrySet()
                         .stream()
-                        .map(UserRepository::mapEntryToUserInfo)
+                        .map(this::mapEntryToUserInfo)
                         .collect(Collectors.toList());
     }
 
@@ -49,8 +52,14 @@ public class UserRepository {
         users.get(id).put(status, status);
     }
 
-    private static UserInfo mapEntryToUserInfo(Map.Entry<UUID, Cache<UserStatus, UserStatus>> entry) {
+    private UserInfo mapEntryToUserInfo(Map.Entry<UUID, Cache<UserStatus, UserStatus>> entry) {
         UUID userId = entry.getKey();
+
+        AtomicInteger userCounter = activityCounters.get(userId);
+        if (userCounter == null || userCounter.get() == 0) {
+            return new UserInfo(userId, UserStatus.OFFLINE);
+        }
+
         Cache<UserStatus, UserStatus> cache = entry.getValue();
         UserStatus status = cache.getIfPresent(UserStatus.ONLINE);
         if (null == status) {
@@ -70,5 +79,13 @@ public class UserRepository {
         for (Runnable r: listeners) {
             r.run();
         }
+    }
+
+    public void incrementUserActivity(UUID userId) {
+        activityCounters.computeIfAbsent(userId, id -> new AtomicInteger(0)).incrementAndGet();
+    }
+
+    public void decrementUserActivity(UUID userId) {
+        activityCounters.get(userId).decrementAndGet();
     }
 }

@@ -31,9 +31,10 @@ public class UserService {
         repository.setOffline(id, username);
     }
 
-    public Flux<Void> setActivityHook() {
+    public Flux<Void> setActivityHook(UUID userId) {
+        repository.incrementUserActivity(userId);
         return hookSink.asFlux().doOnCancel( () -> {
-            System.out.println("Do something");
+            repository.decrementUserActivity(userId);
         });
     }
 

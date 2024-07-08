@@ -27,7 +27,7 @@ export class ApiHttpService {
     const url = this.env.getApiUrl() + path;
     return new Observable(
       observer => {
-        let source = new EventSource(url, {withCredentials: true});
+        let source = new EventSource(url);
 
         source.onmessage = event => {
           observer.next(event.data);

@@ -38,7 +38,7 @@ public class UserController {
 
     @PostMapping("/hook")
     public Flux<Void> setActiveHook() {
-        return service.setActivityHook(); // TODO: fix it, cause it cancels SSE
+        return service.setActivityHook();
     }
 
     @GetMapping

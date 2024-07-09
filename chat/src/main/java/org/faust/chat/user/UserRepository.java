@@ -3,13 +3,13 @@ package org.faust.chat.user;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Scheduler;
+import org.faust.chat.keycloak.KeycloakRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Repository
 public class UserRepository {
@@ -18,12 +18,39 @@ public class UserRepository {
     private final Map<UUID, AtomicInteger> activityCounters = new ConcurrentHashMap<>();
     private final Collection<Runnable> listeners = new LinkedList<>();
 
-    public Collection<UserInfo> getActiveUsers() {
-        return
-                users.entrySet()
-                        .stream()
-                        .map(this::mapEntryToUserInfo)
-                        .collect(Collectors.toList());
+    private final KeycloakRepository keycloakRepository;
+
+    public UserRepository(KeycloakRepository keycloakRepository) {
+        this.keycloakRepository = keycloakRepository;
+    }
+
+    public Map<UserStatus, Collection<UserDetails>> getUsers() {
+        Map<UserStatus, Collection<UserDetails>> result = initStatusMap();
+
+        keycloakRepository
+                .getUsers()
+                .stream()
+                .map(this::mapUserDetailsToEntry)
+                .forEach(entry -> result.get(entry.getValue()).add(entry.getKey()));
+        return result;
+    }
+
+    private static Map<UserStatus, Collection<UserDetails>> initStatusMap() {
+        UserStatus[] statuses = UserStatus.values();
+        Map<UserStatus, Collection<UserDetails>> result = new HashMap<>(statuses.length);
+        Arrays.stream(statuses).forEach(status -> result.put(status, new LinkedList<>()));
+        return result;
+    }
+
+    private AbstractMap.SimpleEntry<UserDetails, UserStatus> mapUserDetailsToEntry(UserDetails details) {
+        Cache<UserStatus, UserStatus> cache = users.get(details.id());
+        UserStatus status;
+        if (cache == null) {
+            status = UserStatus.OFFLINE;
+        } else {
+            status = mapEntryToUserInfo(details.id(), cache);
+        }
+        return new AbstractMap.SimpleEntry<UserDetails, UserStatus>(details, status);
     }
 
     public void setActive(UUID id, String username) {
@@ -52,15 +79,12 @@ public class UserRepository {
         users.get(id).put(status, status);
     }
 
-    private UserInfo mapEntryToUserInfo(Map.Entry<UUID, Cache<UserStatus, UserStatus>> entry) {
-        UUID userId = entry.getKey();
-
+    private UserStatus mapEntryToUserInfo(UUID userId, Cache<UserStatus, UserStatus> cache) {
         AtomicInteger userCounter = activityCounters.get(userId);
         if (userCounter == null || userCounter.get() == 0) {
-            return new UserInfo(userId, UserStatus.OFFLINE);
+            return UserStatus.OFFLINE;
         }
 
-        Cache<UserStatus, UserStatus> cache = entry.getValue();
         UserStatus status = cache.getIfPresent(UserStatus.ONLINE);
         if (null == status) {
             status = cache.getIfPresent(UserStatus.AFK);
@@ -68,7 +92,7 @@ public class UserRepository {
         if (null == status) {
             status = UserStatus.OFFLINE;
         }
-        return new UserInfo(userId, status);
+        return status;
     }
 
     public void addListener(Runnable r) {

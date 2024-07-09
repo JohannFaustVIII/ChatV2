@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -42,8 +43,8 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<UserInfo> getActiveUsers() {
-        return this.service.getActiveUsers();
+    public Map<UserStatus, Collection<UserDetails>> getUsers() {
+        return this.service.getUsers();
     }
 
     @GetMapping("/details")

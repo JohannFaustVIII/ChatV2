@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,7 @@ public class KeycloakRepository {
                         UUID.fromString(representation.getId()),
                         representation.getUsername()
                 ))
+                .sorted(Comparator.comparing(UserDetails::name))
                 .collect(Collectors.toList());
     }
 

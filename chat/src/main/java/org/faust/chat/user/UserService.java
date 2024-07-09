@@ -5,6 +5,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -38,7 +39,7 @@ public class UserService {
         });
     }
 
-    public Collection<UserInfo> getActiveUsers() {
-        return this.repository.getActiveUsers();
+    public Map<UserStatus, Collection<UserDetails>> getUsers() {
+        return this.repository.getUsers();
     }
 }

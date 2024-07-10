@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApiHttpService } from './api-http.service';
+import { UserDetails } from '../models/userDetails.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,5 +23,9 @@ export class UserService {
 
   setHook() {
     this.api.postHookStream("/users/hook").subscribe();
+  }
+
+  getUsers() {
+    return this.api.get<{[key : string] : UserDetails[]}>('/users');
   }
 }

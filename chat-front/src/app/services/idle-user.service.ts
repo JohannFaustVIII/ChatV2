@@ -41,18 +41,15 @@ export class IdleUserService {
 
   private initActivityLoop() {
     this.activityLoop = setInterval(() => {
-      if (this.isOnline) {
-        this.userService.setOnline();
-      } else if (!this.isOffline) {
-        this.userService.setAfk();
-      } else {
-        this.userService.setOffline();
-      }
+      this.updateState();
     }, 60000);
   }
 
   private reset(): any {
     clearTimeout(this.timeoutId);
+    if (!this.isOnline) {
+      this.updateState();
+    }
     this.isOnline = true;
     this.startIdleTimer();
   }
@@ -60,11 +57,22 @@ export class IdleUserService {
   private startIdleTimer() {
     this.timeoutId = setTimeout(() => {
       this.isOnline = false;
+      this.updateState();
       console.log("You are AFK");
     }, IdleTimes.IdleTime);
   }
 
   private initHook() {
     this.userService.setHook();
+  }
+
+  private updateState() {
+    if (this.isOnline) {
+      this.userService.setOnline();
+    } else if (!this.isOffline) {
+      this.userService.setAfk();
+    } else {
+      this.userService.setOffline();
+    }
   }
 }

@@ -1,8 +1,8 @@
-<h1>{{title}}</h1>
+<div class="title">{{title}}</div>
 
 <div *ngFor='let u of users'>
-  <div>
-    <p>{{u.id}}</p>
-    <p>{{u.name}}</p>
+  <div class="user">
+    <div class="name">{{u.name}}</div>
+    <div class="id">{{u.id}}</div>
   </div>
 </div>

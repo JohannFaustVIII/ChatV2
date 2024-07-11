@@ -1,0 +1,28 @@
+.title {
+  font-size: 36px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.user {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.name {
+  display: inline-block;
+  margin-left: 8px;
+  margin-right: 8px;
+  font-size: 24px;
+}
+
+.id {
+  display: inline-block;
+  margin-left: 8px;
+  margin-right: 8px;
+  font-size: 12px;
+}
+
+.title, .name, .id {
+  color: #F4F8F5;
+}

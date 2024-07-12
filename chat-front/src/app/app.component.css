@@ -4,16 +4,26 @@
   height: 100%;
 }
 
-.left-bar {
+.left-bar, .right-bar {
   width: 128px;
   max-width: 128px;
   display: flex;
-  border-right: 1px solid #F4F8F5;
   background-color: #B43F54;
+  height: 100%;
+  max-height: 100%;
 }
 
-.right-box {
+.left-bar {
+  border-right: 1px solid #F4F8F5;
+}
+
+.right-bar {
+  border-left: 1px solid #F4F8F5;
+}
+
+.middle-box {
   padding-left: 8px;
+  margin-right: 1px;
   flex: 1;
   background-color: #1E141F;
   height: 100%

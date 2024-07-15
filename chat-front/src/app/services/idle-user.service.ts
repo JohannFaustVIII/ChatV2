@@ -40,6 +40,7 @@ export class IdleUserService {
   }
 
   private initActivityLoop() {
+    this.updateState();
     this.activityLoop = setInterval(() => {
       this.updateState();
     }, 60000);

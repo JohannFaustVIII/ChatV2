@@ -3,5 +3,5 @@ export interface Message {
   channelId: string;
   sender: string;
   message: string;
-  serverTime: string;
+  serverTime: Date;
 }

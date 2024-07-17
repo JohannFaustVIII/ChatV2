@@ -26,4 +26,14 @@ public class ChatController {
     public void addMessage(@PathVariable("channel") UUID channel, @RequestBody String message, @AuthenticationPrincipal AuthUser user) {
         chatService.addMessage(channel, user.getName(), message);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @AuthenticationPrincipal AuthUser user) {
+        chatService.deleteMessage(channel, messageId, user.getName());
+    }
+
+    @PutMapping("/{id}")
+    public void editMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @RequestBody String newMessage, @AuthenticationPrincipal AuthUser user) {
+        chatService.editMessage(channel, messageId, user.getName(), newMessage);
+    }
 }

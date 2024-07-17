@@ -58,4 +58,39 @@ public class MessageRepository {
                 .limit(limit)
                 .fetchInto(Message.class);
     }
+
+    public void editMessage(UUID channel, UUID messageId, String sender, String newMessage) {
+        if (getMessage(channel, messageId, sender) == null) {
+            throw new RuntimeException("Message not found.");
+        }
+        context.update(DSL.table(SELECT_MESSAGE_TABLE))
+                .set(DSL.row(DSL.field("\"message\"")), DSL.row(newMessage))
+                .where(
+                        DSL.field("\"id\"").eq(messageId),
+                        DSL.field("\"channelId\"").eq(channel),
+                        DSL.field("\"sender\"").eq(sender)
+                ).execute();
+    }
+
+    public void deleteMessage(UUID channel, UUID messageId, String sender) {
+        if (getMessage(channel, messageId, sender) == null) {
+            throw new RuntimeException("Message not found.");
+        }
+        context.deleteFrom(DSL.table(SELECT_MESSAGE_TABLE))
+                .where(
+                        DSL.field("\"id\"").eq(messageId),
+                        DSL.field("\"channelId\"").eq(channel),
+                        DSL.field("\"sender\"").eq(sender))
+                .execute();
+    }
+
+    private Message getMessage(UUID channel, UUID messageId, String sender) {
+        List<Message> messages = context.selectFrom(DSL.table(SELECT_MESSAGE_TABLE))
+                .where(
+                        DSL.field("\"id\"").eq(messageId),
+                        DSL.field("\"channelId\"").eq(channel),
+                        DSL.field("\"sender\"").eq(sender)
+                ).fetchInto(Message.class);
+        return messages.isEmpty() ? null: messages.get(0);
+    }
 }

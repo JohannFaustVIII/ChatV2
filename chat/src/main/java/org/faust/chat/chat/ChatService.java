@@ -1,6 +1,7 @@
 package org.faust.chat.chat;
 
 import org.faust.chat.channel.ChannelService;
+import org.faust.chat.config.AuthUser;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,6 +38,14 @@ public class ChatService {
                 LocalDateTime.now()
         ));
         return channel.toString();
+    }
+
+    public void editMessage(UUID channel, UUID messageId, String user, String newMessage) {
+        messageRepository.editMessage(channel, messageId, user, newMessage);
+    }
+
+    public void deleteMessage(UUID channel, UUID messageId, String user) {
+        messageRepository.deleteMessage(channel, messageId, user);
     }
 
     private final static class ChannelUnknownException extends RuntimeException {}

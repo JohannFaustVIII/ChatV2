@@ -59,37 +59,25 @@ public class MessageRepository {
                 .fetchInto(Message.class);
     }
 
-    public void editMessage(UUID channel, UUID messageId, String sender, String newMessage) {
-        if (getMessage(channel, messageId, sender) == null) {
-            throw new RuntimeException("Message not found.");
-        }
+    public void editMessage(UUID messageId, String newMessage) {
         context.update(DSL.table(SELECT_MESSAGE_TABLE))
                 .set(DSL.row(DSL.field("\"message\"")), DSL.row(newMessage))
                 .where(
-                        DSL.field("\"id\"").eq(messageId),
-                        DSL.field("\"channelId\"").eq(channel),
-                        DSL.field("\"sender\"").eq(sender)
+                        DSL.field("\"id\"").eq(messageId)
                 ).execute();
     }
 
-    public void deleteMessage(UUID channel, UUID messageId, String sender) {
-        if (getMessage(channel, messageId, sender) == null) {
-            throw new RuntimeException("Message not found.");
-        }
+    public void deleteMessage(UUID messageId) {
         context.deleteFrom(DSL.table(SELECT_MESSAGE_TABLE))
                 .where(
-                        DSL.field("\"id\"").eq(messageId),
-                        DSL.field("\"channelId\"").eq(channel),
-                        DSL.field("\"sender\"").eq(sender))
-                .execute();
+                        DSL.field("\"id\"").eq(messageId)
+                ).execute();
     }
 
-    private Message getMessage(UUID channel, UUID messageId, String sender) {
+    public Message getMessage(UUID messageId) {
         List<Message> messages = context.selectFrom(DSL.table(SELECT_MESSAGE_TABLE))
                 .where(
-                        DSL.field("\"id\"").eq(messageId),
-                        DSL.field("\"channelId\"").eq(channel),
-                        DSL.field("\"sender\"").eq(sender)
+                        DSL.field("\"id\"").eq(messageId)
                 ).fetchInto(Message.class);
         return messages.isEmpty() ? null: messages.get(0);
     }

@@ -1,6 +1,9 @@
 package org.faust.chat.chat;
 
 import org.faust.chat.channel.ChannelService;
+import org.faust.chat.exception.ChannelUnknownException;
+import org.faust.chat.exception.MessageUnknownException;
+import org.faust.chat.exception.InvalidPermissionsException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,13 +45,13 @@ public class ChatService {
     public void editMessage(UUID channel, UUID messageId, String user, String newMessage) {
         Message oldMessage = messageRepository.getMessage(messageId);
         if (oldMessage == null) {
-            throw new MessageNotExistException();
+            throw new MessageUnknownException();
         }
         if (!oldMessage.channelId().equals(channel)) {
-            throw new MessageNotExistException();
+            throw new MessageUnknownException();
         }
         if (!oldMessage.sender().equals(user)) { // it should use UUID instead user's name
-            throw new NotEnoughPermissionsException();
+            throw new InvalidPermissionsException();
         }
 
         messageRepository.editMessage(messageId, newMessage);
@@ -57,21 +60,16 @@ public class ChatService {
     public void deleteMessage(UUID channel, UUID messageId, String user) {
         Message oldMessage = messageRepository.getMessage(messageId);
         if (oldMessage == null) {
-            throw new MessageNotExistException();
+            throw new MessageUnknownException();
         }
         if (!oldMessage.channelId().equals(channel)) {
-            throw new MessageNotExistException();
+            throw new MessageUnknownException();
         }
         if (!oldMessage.sender().equals(user)) { // here, user with admin access should be able to remove too, also should use UUID instead user's name
-            throw new NotEnoughPermissionsException();
+            throw new InvalidPermissionsException();
         }
 
         messageRepository.deleteMessage(messageId);
     }
 
-    private final static class ChannelUnknownException extends RuntimeException {}
-
-    private final static class MessageNotExistException extends RuntimeException {}
-
-    private final static class NotEnoughPermissionsException extends RuntimeException {}
 }

@@ -37,7 +37,8 @@ public class ChatService {
                 channel,
                 sender,
                 message,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         ));
         return channel.toString();
     }

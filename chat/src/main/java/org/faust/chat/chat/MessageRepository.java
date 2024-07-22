@@ -5,6 +5,7 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
@@ -61,7 +62,7 @@ public class MessageRepository {
 
     public void editMessage(UUID messageId, String newMessage) {
         context.update(DSL.table(SELECT_MESSAGE_TABLE))
-                .set(DSL.row(DSL.field("\"message\"")), DSL.row(newMessage))
+                .set(DSL.row(DSL.field("\"message\""), DSL.field("\"editTime\"")), DSL.row(newMessage, LocalDateTime.now()))
                 .where(
                         DSL.field("\"id\"").eq(messageId)
                 ).execute();

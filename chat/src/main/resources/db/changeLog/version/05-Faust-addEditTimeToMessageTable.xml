@@ -3,8 +3,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <property name="uuid_function" value="gen_random_uuid()" dbms="postgresql"/>
 
-    <include file="version/01-Faust-addChannelTable.xml" relativeToChangelogFile="true"/>
-    <include file="version/02-Faust-addMessageTable.xml" relativeToChangelogFile="true"/>
-    <include file="version/05-Faust-addEditTimeToMessageTable.xml" relativeToChangelogFile="true"/>
+    <changeSet id="5" author="faust">
+        <addColumn tableName="messageTable">
+            <column name="editTime"
+                    type="datetime"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

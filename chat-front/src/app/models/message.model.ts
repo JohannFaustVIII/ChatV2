@@ -5,4 +5,5 @@ export interface Message {
   message: string;
   serverTime: Date;
   editTime: Date;
+  senderId : string;
 }

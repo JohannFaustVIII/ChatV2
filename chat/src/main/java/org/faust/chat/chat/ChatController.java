@@ -24,7 +24,7 @@ public class ChatController {
 
     @PostMapping
     public void addMessage(@PathVariable("channel") UUID channel, @RequestBody String message, @AuthenticationPrincipal AuthUser user) {
-        chatService.addMessage(channel, user.getName(), message);
+        chatService.addMessage(channel, user.getName(), user.getId(), message);
     }
 
     @DeleteMapping("/{id}")

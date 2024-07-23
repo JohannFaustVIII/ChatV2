@@ -28,7 +28,7 @@ public class ChatService {
         return messageRepository.getAllMessages(channel, before, after, limit);
     }
 
-    public String addMessage(UUID channel, String sender, String message) {
+    public String addMessage(UUID channel, String sender, UUID senderId, String message) {
         if (!channelService.existsChannel(channel)) {
             throw new ChannelUnknownException();
         }
@@ -38,7 +38,8 @@ public class ChatService {
                 sender,
                 message,
                 LocalDateTime.now(),
-                null
+                null,
+                senderId
         ));
         return channel.toString();
     }

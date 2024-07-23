@@ -7,4 +7,6 @@
     <include file="version/01-Faust-addChannelTable.xml" relativeToChangelogFile="true"/>
     <include file="version/02-Faust-addMessageTable.xml" relativeToChangelogFile="true"/>
     <include file="version/05-Faust-addEditTimeToMessageTable.xml" relativeToChangelogFile="true"/>
+    <include file="version/06-Faust-addSenderId.xml" relativeToChangelogFile="true"/>
+    <include file="version/08-Faust-makeSenderIdNotNull.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

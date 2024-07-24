@@ -2,6 +2,8 @@ package org.faust.chat.chat;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.RecordMapper;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
@@ -57,7 +59,8 @@ public class MessageRepository {
                 .where(conditions)
                 .orderBy(DSL.field("\"serverTime\"").desc())
                 .limit(limit)
-                .fetchInto(Message.class);
+                .fetch()
+                .map(mapToMessage());
     }
 
     public void editMessage(UUID messageId, String newMessage) {
@@ -79,7 +82,20 @@ public class MessageRepository {
         List<Message> messages = context.selectFrom(DSL.table(SELECT_MESSAGE_TABLE))
                 .where(
                         DSL.field("\"id\"").eq(messageId)
-                ).fetchInto(Message.class);
+                ).fetch()
+                .map(mapToMessage());
         return messages.isEmpty() ? null: messages.get(0);
+    }
+
+    private static RecordMapper<Record, Message> mapToMessage() {
+        return record -> new Message(
+                record.getValue("\"messageTable\".\"id\"", UUID.class),
+                record.getValue("\"messageTable\".\"channelId\"", UUID.class),
+                record.getValue("\"messageTable\".\"sender\"", String.class),
+                record.getValue("\"messageTable\".\"message\"", String.class),
+                record.getValue("\"messageTable\".\"serverTime\"", LocalDateTime.class),
+                record.getValue("\"messageTable\".\"editTime\"", LocalDateTime.class),
+                record.getValue("\"messageTable\".\"senderId\"", UUID.class)
+        );
     }
 }

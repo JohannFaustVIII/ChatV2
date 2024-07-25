@@ -47,8 +47,8 @@ public class ChannelRepository {
 
     private static RecordMapper<Record, Channel> mapToChannel() {
         return record -> new Channel(
-                record.getValue(DSL.field("\"channelTable\".\"id\"", UUID.class)),
-                record.getValue(DSL.field("\"channelTable\".\"name\"", String.class))
+                record.get("id", UUID.class),
+                record.get("name", String.class)
         );
     }
 }

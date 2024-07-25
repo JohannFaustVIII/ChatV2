@@ -89,13 +89,13 @@ public class MessageRepository {
 
     private static RecordMapper<Record, Message> mapToMessage() {
         return record -> new Message(
-                record.getValue("\"messageTable\".\"id\"", UUID.class),
-                record.getValue("\"messageTable\".\"channelId\"", UUID.class),
-                record.getValue("\"messageTable\".\"sender\"", String.class),
-                record.getValue("\"messageTable\".\"message\"", String.class),
-                record.getValue("\"messageTable\".\"serverTime\"", LocalDateTime.class),
-                record.getValue("\"messageTable\".\"editTime\"", LocalDateTime.class),
-                record.getValue("\"messageTable\".\"senderId\"", UUID.class)
+                record.get("id", UUID.class),
+                record.get("channelId", UUID.class),
+                record.get("sender", String.class),
+                record.get("message", String.class),
+                record.get("serverTime", LocalDateTime.class),
+                record.get("editTime", LocalDateTime.class),
+                record.get("senderId", UUID.class)
         );
     }
 }

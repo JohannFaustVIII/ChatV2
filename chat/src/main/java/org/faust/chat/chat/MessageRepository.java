@@ -2,8 +2,6 @@ package org.faust.chat.chat;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.RecordMapper;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
@@ -60,7 +58,7 @@ public class MessageRepository {
                 .orderBy(DSL.field("\"serverTime\"").desc())
                 .limit(limit)
                 .fetch()
-                .map(mapToMessage());
+                .map(Message::mapToMessage);
     }
 
     public void editMessage(UUID messageId, String newMessage) {
@@ -83,19 +81,7 @@ public class MessageRepository {
                 .where(
                         DSL.field("\"id\"").eq(messageId)
                 ).fetch()
-                .map(mapToMessage());
+                .map(Message::mapToMessage);
         return messages.isEmpty() ? null: messages.get(0);
-    }
-
-    private static RecordMapper<Record, Message> mapToMessage() {
-        return record -> new Message(
-                record.get("id", UUID.class),
-                record.get("channelId", UUID.class),
-                record.get("sender", String.class),
-                record.get("message", String.class),
-                record.get("serverTime", LocalDateTime.class),
-                record.get("editTime", LocalDateTime.class),
-                record.get("senderId", UUID.class)
-        );
     }
 }

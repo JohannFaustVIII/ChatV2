@@ -1,8 +1,6 @@
 package org.faust.chat.channel;
 
 import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.RecordMapper;
 import org.jooq.impl.DSL;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
@@ -33,7 +31,7 @@ public class ChannelRepository {
     public Collection<Channel> getAllChannels() {
         return context.select().from(DSL.table(SELECT_CHANNEL_TABLE))
                 .fetch()
-                .map(mapToChannel());
+                .map(Channel::mapToChannel);
     }
 
     public boolean existsChannel(UUID channel) {
@@ -42,13 +40,6 @@ public class ChannelRepository {
                         .selectOne()
                         .from(DSL.table(DSL.name(INSERT_CHANNEL_TABLE))) // WTF??? Why needs a different way?
                         .where(DSL.field("id", UUID.class).eq(channel))
-        );
-    }
-
-    private static RecordMapper<Record, Channel> mapToChannel() {
-        return record -> new Channel(
-                record.get("id", UUID.class),
-                record.get("name", String.class)
         );
     }
 }

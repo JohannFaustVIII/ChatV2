@@ -9,4 +9,13 @@ export class MessageComponent {
 
   @Input() message: any; 
 
+  getTime() : string {
+    var result = '';
+    result += this.message.serverTime;
+    if (this.message.editTime != null) {
+      result += ' [ edited:' + this.message.editTime + ' ]';
+    }
+    return result;
+  }
+
 }

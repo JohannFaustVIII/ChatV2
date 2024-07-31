@@ -1,6 +1,6 @@
 # ChatV2
 
-Simple chat application (Work In Progress).
+Simple chat application. Main focus is put on backend side. Frontend side is kept simple and may not implement all possibilities given by backen.
 
 ## Environment Variables
 
@@ -19,13 +19,21 @@ Simple chat application (Work In Progress).
  - Spring Boot
  - Spring Webflux - for Server Sent Events
  - Spring AOP - aspects to send events without interfering into the business code
+ - Spring OAuth2 Resource Server - to get info about users from Keycloak
  - JOOQ - communication with a database
  - Liquibase - version control of database
+ - Caffeine - cache with time to live implemented
+ - JUnit 5 - testing (TODO)
+ - Mockito - mocking in tests (TODO) 
 
 ### Frontend
  - Angular
+ - HTML
+ - CSS
+ - Typescript
 
 ### Other
  - Keycloak - authentication and authorization
  - Docker - containerization
  - PostgreSQL - database for backend
+ - Gradle

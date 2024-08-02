@@ -5,32 +5,32 @@ import org.junit.jupiter.api.Test;
 class ChannelServiceTest {
 
     @Test
-    public void whenAddingChannelThenSuccess() {
+    public void whenAddChannelThenSuccess() {
 
     }
 
     @Test
-    public void whenAddingChannelWithExistingNameThenException() {
+    public void whenAddChannelWithExistingNameThenException() {
 
     }
 
     @Test
-    public void whenGettingNoChannelsThenEmptyCollection() {
+    public void whenGetNoChannelsThenEmptyCollection() {
 
     }
 
     @Test
-    public void whenGettingExistingChannelsThenAllReturned() {
+    public void whenGetExistingChannelsThenAllReturned() {
 
     }
 
     @Test
-    public void whenCheckingExistingChannelThenTrue() {
+    public void whenCheckExistingChannelThenTrue() {
 
     }
 
     @Test
-    public void whenCheckingNotExistingChannelThenFalse() {
+    public void whenCheckNotExistingChannelThenFalse() {
 
     }
 

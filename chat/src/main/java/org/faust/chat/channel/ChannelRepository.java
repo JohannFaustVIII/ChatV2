@@ -34,12 +34,21 @@ public class ChannelRepository {
                 .map(Channel::mapToChannel);
     }
 
-    public boolean existsChannel(UUID channel) {
+    public boolean existsChannelWithId(UUID channel) {
         return context.fetchExists(
                 context
                         .selectOne()
                         .from(DSL.table(DSL.name(INSERT_CHANNEL_TABLE))) // WTF??? Why needs a different way?
                         .where(DSL.field("id", UUID.class).eq(channel))
+        );
+    }
+
+    public boolean existsChannelWithName(String name) {
+        return context.fetchExists(
+                context
+                        .selectOne()
+                        .from(DSL.table(DSL.name(INSERT_CHANNEL_TABLE)))
+                        .where(DSL.field("name", String.class).eq(name))
         );
     }
 }

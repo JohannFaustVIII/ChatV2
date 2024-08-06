@@ -1,5 +1,6 @@
 package org.faust.chat.channel;
 
+import org.faust.chat.exception.ChannelExistsException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -15,6 +16,10 @@ public class ChannelService {
     }
 
     public void addChannel(String name) {
+        if (channelRepository.existsChannelWithName(name)) {
+            throw new ChannelExistsException();
+        }
+
         channelRepository.addChannel(new Channel(
                 UUID.randomUUID(),
                 name
@@ -26,7 +31,7 @@ public class ChannelService {
     }
 
     public boolean existsChannel(UUID channelUUID) {
-        return channelRepository.existsChannel(channelUUID);
+        return channelRepository.existsChannelWithId(channelUUID);
     }
 
 }

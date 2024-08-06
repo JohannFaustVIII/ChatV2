@@ -53,12 +53,7 @@ class ChannelServiceTest {
 
         List<Channel> addedChannels = new ArrayList<>();
         addedChannels.add(new Channel(channelId, channelToAdd));
-        when(channelRepository.getAllChannels()).thenReturn(addedChannels);
-        doAnswer(invocation -> {
-            addedChannels.add(invocation.getArgument(0));
-            return null;
-        }).when(channelRepository).addChannel(any(Channel.class));
-        when(channelRepository.existsChannel(channelId)).thenReturn(true);
+        when(channelRepository.existsChannelWithName(channelToAdd)).thenReturn(true);
 
         ChannelService testedService = new ChannelService(channelRepository);
 
@@ -105,7 +100,7 @@ class ChannelServiceTest {
     public void whenCheckExistingChannelThenTrue() {
         //given
         UUID channelToCheck = UUID.randomUUID();
-        when(channelRepository.existsChannel(channelToCheck)).thenReturn(true);
+        when(channelRepository.existsChannelWithId(channelToCheck)).thenReturn(true);
 
         ChannelService testedService = new ChannelService(channelRepository);
 
@@ -120,7 +115,7 @@ class ChannelServiceTest {
     public void whenCheckNotExistingChannelThenFalse() {
         //given
         UUID channelToCheck = UUID.randomUUID();
-        when(channelRepository.existsChannel(channelToCheck)).thenReturn(false);
+        when(channelRepository.existsChannelWithId(channelToCheck)).thenReturn(false);
 
         ChannelService testedService = new ChannelService(channelRepository);
 

@@ -12,4 +12,5 @@
     <include file="version/06-Faust-addSenderId.xml" relativeToChangelogFile="true"/>
     <include file="version/07-Faust-setSenderIdForExistingMessages.xml" relativeToChangelogFile="true"/>
     <include file="version/08-Faust-makeSenderIdNotNull.xml" relativeToChangelogFile="true"/>
+    <include file="version/09-Faust-makeChannelNameUnique.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

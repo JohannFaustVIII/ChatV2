@@ -23,3 +23,7 @@ keycloak:
   realm: ${KEYCLOAK_REALM:ChatV2Realm}
   clientId: ${KEYCLOAK_ID:cv2-backend}
   clientSecret: ${KEYCLOAK_SECRET:GJJuJksZfQUpiAV4X8QprPXmMDx0B0Dq}
+
+server:
+  error:
+    include-message: always

@@ -20,7 +20,10 @@ export class ApiHttpService {
 
   public post(path: string, message?: any) {
     const url = this.env.getApiUrl() + path;
-    this.http.post(url, message,  {headers: this.headers}).subscribe();
+    this.http.post(url, message,  {headers: this.headers})
+    .subscribe({
+      error: (e) => alert(e.error.message)
+    });
   }
 
   public getStream<T>(path: string) {

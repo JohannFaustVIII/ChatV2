@@ -1,5 +1,6 @@
 package org.faust.chat.keycloak;
 
+import org.faust.chat.exception.UserUnknownException;
 import org.faust.chat.user.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,10 @@ public class KeycloakService {
     }
 
     public UserDetails getUserInfo(UUID userId) {
-        return repository.getUserInfo(userId);
+        UserDetails result = repository.getUserInfo(userId);
+        if (result == null) {
+            throw new UserUnknownException();
+        }
+        return result;
     }
 }

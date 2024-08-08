@@ -1,5 +1,6 @@
 package org.faust.chat.keycloak;
 
+import jakarta.ws.rs.NotFoundException;
 import org.faust.chat.user.UserDetails;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -37,12 +38,17 @@ public class KeycloakRepository {
     }
 
     public UserDetails getUserInfo(UUID userId) {
-        UserRepresentation userRepresentation =
-                keycloak
-                        .realm(realm)
-                        .users()
-                        .get(userId.toString())
-                        .toRepresentation();
+        UserRepresentation userRepresentation;
+        try {
+            userRepresentation =
+                    keycloak
+                            .realm(realm)
+                            .users()
+                            .get(userId.toString())
+                            .toRepresentation();
+        } catch (NotFoundException ex) {
+            return null;
+        }
         return new UserDetails(
                 UUID.fromString(userRepresentation.getId()),
                 userRepresentation.getUsername()

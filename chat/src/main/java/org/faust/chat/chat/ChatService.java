@@ -21,6 +21,10 @@ public class ChatService {
         this.channelService = channelService;
     }
 
+    public Collection<Message> getMessages(UUID channel) {
+        return getMessages(channel, null, null, 10);
+    }
+
     public Collection<Message> getMessages(UUID channel, UUID before, UUID after, int limit) {
         if (!channelService.existsChannel(channel)) {
             throw new ChannelUnknownException();

@@ -15,8 +15,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ChatServiceTest {
@@ -35,26 +34,30 @@ class ChatServiceTest {
         UUID senderId = UUID.randomUUID();
         String senderName = "random user";
 
-        List<Message> addedMessages = new ArrayList<>();
-        when(messageRepository.getAllMessages(eq(channel), any(UUID.class), any(UUID.class), anyInt())).thenReturn(addedMessages); //TODO: something fails here
-        doAnswer(invocation -> {
+        Collection<Message> addedMessages = new ArrayList<>();
+//        doReturn(addedMessages).when(messageRepository).getAllMessages(channel, any(UUID.class), any(UUID.class), 10); //TODO: something fails here
+        lenient().when(messageRepository.getAllMessages(eq(channel), any(UUID.class), any(UUID.class), anyInt())).thenReturn(addedMessages);
+        lenient().doAnswer(invocation -> {
             addedMessages.add(invocation.getArgument(0));
             return null;
         }).when(messageRepository).addMessage(any(Message.class));
-        when(channelService.existsChannel(channel)).thenReturn(true);
+        lenient().when(channelService.existsChannel(channel)).thenReturn(true);
 
 
         ChatService testedService = new ChatService(messageRepository, channelService);
 
         //then before
         Assertions.assertEquals(testedService.getMessages(channel).size(), 0);
+        Assertions.assertEquals(testedService.getMessages(channel), addedMessages);
 
         //when
 
         testedService.addMessage(channel, senderName, senderId, messageToAdd);
 
         //then after
-        Collection<Message> resultChannels = testedService.getMessages(channel);
+        lenient().when(messageRepository.getAllMessages(eq(channel), any(UUID.class), any(UUID.class), anyInt())).thenReturn(addedMessages);
+        Collection<Message> resultChannels = testedService.getMessages(channel); // AND HERE IS A COPY?!
+        Assertions.assertEquals(resultChannels, addedMessages);
         Assertions.assertEquals(resultChannels.size(), 1);
         Assertions.assertTrue(resultChannels.stream().anyMatch(c -> c.message().equals(messageToAdd)));
         Assertions.assertTrue(resultChannels.stream().anyMatch(c -> c.channelId().equals(channel)));

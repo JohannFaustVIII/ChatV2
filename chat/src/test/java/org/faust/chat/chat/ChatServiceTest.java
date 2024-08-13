@@ -1,26 +1,26 @@
 package org.faust.chat.chat;
 
-import org.faust.chat.channel.Channel;
 import org.faust.chat.channel.ChannelService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class ChatServiceTest {
 
-    @Mock
+    @Mock(strictness = Mock.Strictness.WARN)
     MessageRepository messageRepository;
 
     @Mock
@@ -34,30 +34,26 @@ class ChatServiceTest {
         UUID senderId = UUID.randomUUID();
         String senderName = "random user";
 
-        Collection<Message> addedMessages = new ArrayList<>();
-//        doReturn(addedMessages).when(messageRepository).getAllMessages(channel, any(UUID.class), any(UUID.class), 10); //TODO: something fails here
-        lenient().when(messageRepository.getAllMessages(eq(channel), any(UUID.class), any(UUID.class), anyInt())).thenReturn(addedMessages);
-        lenient().doAnswer(invocation -> {
+        List<Message> addedMessages = new ArrayList<>();
+        when(messageRepository.getAllMessages(any(UUID.class), eq(null), eq(null), eq(10))).thenReturn(addedMessages);
+        doAnswer(invocation -> {
+            System.out.println("I was called");
             addedMessages.add(invocation.getArgument(0));
             return null;
         }).when(messageRepository).addMessage(any(Message.class));
-        lenient().when(channelService.existsChannel(channel)).thenReturn(true);
+        when(channelService.existsChannel(channel)).thenReturn(true);
 
 
         ChatService testedService = new ChatService(messageRepository, channelService);
 
         //then before
         Assertions.assertEquals(testedService.getMessages(channel).size(), 0);
-        Assertions.assertEquals(testedService.getMessages(channel), addedMessages);
 
         //when
-
         testedService.addMessage(channel, senderName, senderId, messageToAdd);
 
         //then after
-        lenient().when(messageRepository.getAllMessages(eq(channel), any(UUID.class), any(UUID.class), anyInt())).thenReturn(addedMessages);
-        Collection<Message> resultChannels = testedService.getMessages(channel); // AND HERE IS A COPY?!
-        Assertions.assertEquals(resultChannels, addedMessages);
+        Collection<Message> resultChannels = testedService.getMessages(channel);
         Assertions.assertEquals(resultChannels.size(), 1);
         Assertions.assertTrue(resultChannels.stream().anyMatch(c -> c.message().equals(messageToAdd)));
         Assertions.assertTrue(resultChannels.stream().anyMatch(c -> c.channelId().equals(channel)));

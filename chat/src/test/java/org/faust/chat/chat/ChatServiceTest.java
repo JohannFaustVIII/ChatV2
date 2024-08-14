@@ -1,6 +1,9 @@
 package org.faust.chat.chat;
 
 import org.faust.chat.channel.ChannelService;
+import org.faust.chat.exception.ChannelUnknownException;
+import org.faust.chat.exception.UserUnknownException;
+import org.faust.chat.keycloak.KeycloakService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +29,9 @@ class ChatServiceTest {
     @Mock
     ChannelService channelService;
 
+    @Mock
+    KeycloakService keycloakService;
+
     @Test
     public void whenAddMessageThenAdded() {
         //given
@@ -42,9 +48,10 @@ class ChatServiceTest {
             return null;
         }).when(messageRepository).addMessage(any(Message.class));
         when(channelService.existsChannel(channel)).thenReturn(true);
+        when(keycloakService.existsUser(senderId)).thenReturn(true);
 
 
-        ChatService testedService = new ChatService(messageRepository, channelService);
+        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
 
         //then before
         Assertions.assertEquals(testedService.getMessages(channel).size(), 0);
@@ -63,13 +70,55 @@ class ChatServiceTest {
 
     @Test
     public void whenAddMessageToNotExistingChannelThenException() {
+        //given
+        String messageToAdd = "Random message 1";
+        UUID channel = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "random user";
 
+        when(channelService.existsChannel(channel)).thenReturn(false);
+        when(keycloakService.existsUser(senderId)).thenReturn(true);
+
+        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
+
+        //when-then
+        Assertions.assertThrows(ChannelUnknownException.class, () -> testedService.addMessage(channel, senderName, senderId, messageToAdd));
     }
 
     @Test
     public void whenAddMessageByNotExistingUserThenException() {
+        //given
+        String messageToAdd = "Random message 1";
+        UUID channel = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "random user";
 
+        when(channelService.existsChannel(channel)).thenReturn(true);
+        when(keycloakService.existsUser(senderId)).thenReturn(false);
+
+        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
+
+        //when-then
+        Assertions.assertThrows(UserUnknownException.class, () -> testedService.addMessage(channel, senderName, senderId, messageToAdd));
     }
+
+    @Test
+    public void whenAddMessageByNotExistingUserAndNotExistingChannelThenException() {
+        //given
+        String messageToAdd = "Random message 1";
+        UUID channel = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "random user";
+
+        when(channelService.existsChannel(channel)).thenReturn(false);
+        when(keycloakService.existsUser(senderId)).thenReturn(false);
+
+        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
+
+        //when-then
+        Assertions.assertThrows(UserUnknownException.class, () -> testedService.addMessage(channel, senderName, senderId, messageToAdd));
+    }
+
 
     @Test
     public void whenEditMessageThenAdded() {

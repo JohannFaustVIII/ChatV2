@@ -4,6 +4,8 @@ import org.faust.chat.channel.ChannelService;
 import org.faust.chat.exception.ChannelUnknownException;
 import org.faust.chat.exception.MessageUnknownException;
 import org.faust.chat.exception.InvalidPermissionsException;
+import org.faust.chat.exception.UserUnknownException;
+import org.faust.chat.keycloak.KeycloakService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,10 +17,12 @@ public class ChatService {
 
     private final MessageRepository messageRepository;
     private final ChannelService channelService;
+    private final KeycloakService keycloakService;
 
-    public ChatService(MessageRepository messageRepository, ChannelService channelService) {
+    public ChatService(MessageRepository messageRepository, ChannelService channelService, KeycloakService keycloakService) {
         this.messageRepository = messageRepository;
         this.channelService = channelService;
+        this.keycloakService = keycloakService;
     }
 
     public Collection<Message> getMessages(UUID channel) {
@@ -33,6 +37,10 @@ public class ChatService {
     }
 
     public String addMessage(UUID channel, String sender, UUID senderId, String message) {
+        if (!keycloakService.existsUser(senderId)) {
+            throw new UserUnknownException();
+        }
+
         if (!channelService.existsChannel(channel)) {
             throw new ChannelUnknownException();
         }

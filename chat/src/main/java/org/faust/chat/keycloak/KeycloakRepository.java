@@ -54,4 +54,8 @@ public class KeycloakRepository {
                 userRepresentation.getUsername()
         );
     }
+
+    public boolean existsUser(UUID userId) {
+        return getUserInfo(userId) != null;
+    }
 }

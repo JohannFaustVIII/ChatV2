@@ -27,4 +27,8 @@ public class KeycloakService {
         }
         return result;
     }
+
+    public boolean existsUser(UUID userId) {
+        return repository.existsUser(userId);
+    }
 }

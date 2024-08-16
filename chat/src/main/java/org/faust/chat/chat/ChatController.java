@@ -34,6 +34,6 @@ public class ChatController {
 
     @PutMapping("/{id}")
     public void editMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @RequestBody String newMessage, @AuthenticationPrincipal AuthUser user) {
-        chatService.editMessage(channel, messageId, user.getName(), newMessage);
+        chatService.editMessage(channel, messageId, user.getId(), newMessage);
     }
 }

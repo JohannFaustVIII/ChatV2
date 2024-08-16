@@ -56,7 +56,15 @@ public class ChatService {
         return channel.toString();
     }
 
-    public void editMessage(UUID channel, UUID messageId, String user, String newMessage) {
+    public void editMessage(UUID channel, UUID messageId, UUID userId, String newMessage) {
+        if (!channelService.existsChannel(channel)) {
+            throw new ChannelUnknownException();
+        }
+
+        if (!keycloakService.existsUser(userId)) {
+            throw new UserUnknownException();
+        }
+
         Message oldMessage = messageRepository.getMessage(messageId);
         if (oldMessage == null) {
             throw new MessageUnknownException();
@@ -64,7 +72,7 @@ public class ChatService {
         if (!oldMessage.channelId().equals(channel)) {
             throw new MessageUnknownException();
         }
-        if (!oldMessage.sender().equals(user)) { // it should use UUID instead user's name
+        if (!oldMessage.senderId().equals(userId)) { // it should use UUID instead user's name
             throw new InvalidPermissionsException();
         }
 

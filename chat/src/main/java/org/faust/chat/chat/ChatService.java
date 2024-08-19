@@ -72,14 +72,22 @@ public class ChatService {
         if (!oldMessage.channelId().equals(channel)) {
             throw new MessageUnknownException();
         }
-        if (!oldMessage.senderId().equals(userId)) { // it should use UUID instead user's name
+        if (!oldMessage.senderId().equals(userId)) {
             throw new InvalidPermissionsException();
         }
 
         messageRepository.editMessage(messageId, newMessage);
     }
 
-    public void deleteMessage(UUID channel, UUID messageId, String user) {
+    public void deleteMessage(UUID channel, UUID messageId,UUID userId) {
+        if (!channelService.existsChannel(channel)) {
+            throw new ChannelUnknownException();
+        }
+
+        if (!keycloakService.existsUser(userId)) {
+            throw new UserUnknownException();
+        }
+
         Message oldMessage = messageRepository.getMessage(messageId);
         if (oldMessage == null) {
             throw new MessageUnknownException();
@@ -87,7 +95,7 @@ public class ChatService {
         if (!oldMessage.channelId().equals(channel)) {
             throw new MessageUnknownException();
         }
-        if (!oldMessage.sender().equals(user)) { // here, user with admin access should be able to remove too, also should use UUID instead user's name
+        if (!oldMessage.senderId().equals(userId)) {
             throw new InvalidPermissionsException();
         }
 

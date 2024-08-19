@@ -162,10 +162,10 @@ class ChatServiceTest {
         testedService.editMessage(channel, messageId, user, message);
 
         // then
-        Collection<Message> resultChannels = testedService.getMessages(channel);
-        Assertions.assertEquals(resultChannels.size(), 1);
+        Collection<Message> resultMessages = testedService.getMessages(channel);
+        Assertions.assertEquals(resultMessages.size(), 1);
 
-        Message resultMessage = resultChannels.iterator().next();
+        Message resultMessage = resultMessages.iterator().next();
         Assertions.assertEquals(resultMessage.message(), message);
         Assertions.assertEquals(resultMessage.channelId(), channel);
         Assertions.assertEquals(resultMessage.id(), messageId);
@@ -230,10 +230,10 @@ class ChatServiceTest {
         Assertions.assertThrows(ChannelUnknownException.class, () -> testedService.editMessage(channel, messageId, user, message));
 
         // then
-        Collection<Message> resultChannels = testedService.getMessages(channel2);
-        Assertions.assertEquals(resultChannels.size(), 1);
+        Collection<Message> resultMessages = testedService.getMessages(channel2);
+        Assertions.assertEquals(resultMessages.size(), 1);
 
-        Message resultMessage = resultChannels.iterator().next();
+        Message resultMessage = resultMessages.iterator().next();
         Assertions.assertEquals(resultMessage.message(), original);
         Assertions.assertEquals(resultMessage.channelId(), channel2);
         Assertions.assertEquals(resultMessage.id(), messageId);
@@ -280,10 +280,10 @@ class ChatServiceTest {
         Assertions.assertThrows(MessageUnknownException.class, () -> testedService.editMessage(channel, messageId, user, message));
 
         // then
-        Collection<Message> resultChannels = testedService.getMessages(channel2);
-        Assertions.assertEquals(resultChannels.size(), 1);
+        Collection<Message> resultMessages = testedService.getMessages(channel2);
+        Assertions.assertEquals(resultMessages.size(), 1);
 
-        Message resultMessage = resultChannels.iterator().next();
+        Message resultMessage = resultMessages.iterator().next();
         Assertions.assertEquals(resultMessage.message(), original);
         Assertions.assertEquals(resultMessage.channelId(), channel2);
         Assertions.assertEquals(resultMessage.id(), messageId);
@@ -330,10 +330,10 @@ class ChatServiceTest {
         Assertions.assertThrows(UserUnknownException.class, () -> testedService.editMessage(channel, messageId, user2, message));
 
         // then
-        Collection<Message> resultChannels = testedService.getMessages(channel);
-        Assertions.assertEquals(resultChannels.size(), 1);
+        Collection<Message> resultMessages = testedService.getMessages(channel);
+        Assertions.assertEquals(resultMessages.size(), 1);
 
-        Message resultMessage = resultChannels.iterator().next();
+        Message resultMessage = resultMessages.iterator().next();
         Assertions.assertEquals(resultMessage.message(), original);
         Assertions.assertEquals(resultMessage.channelId(), channel);
         Assertions.assertEquals(resultMessage.id(), messageId);
@@ -380,10 +380,10 @@ class ChatServiceTest {
         Assertions.assertThrows(InvalidPermissionsException.class, () -> testedService.editMessage(channel, messageId, user2, message));
 
         // then
-        Collection<Message> resultChannels = testedService.getMessages(channel);
-        Assertions.assertEquals(resultChannels.size(), 1);
+        Collection<Message> resultMessages = testedService.getMessages(channel);
+        Assertions.assertEquals(resultMessages.size(), 1);
 
-        Message resultMessage = resultChannels.iterator().next();
+        Message resultMessage = resultMessages.iterator().next();
         Assertions.assertEquals(resultMessage.message(), original);
         Assertions.assertEquals(resultMessage.channelId(), channel);
         Assertions.assertEquals(resultMessage.id(), messageId);
@@ -391,23 +391,247 @@ class ChatServiceTest {
     }
 
     @Test
-    public void whenDeleteMessageThenAdded() {
+    public void whenDeleteMessageThenRemoved() {
+        // given
+        UUID channel = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID user = UUID.randomUUID();
 
+        Message message = new Message(messageId, channel, "User", "Random text", null, null, user);
+        List<Message> messages = new ArrayList<>();
+        messages.add(message);
+
+        when(messageRepository.getMessage(messageId)).thenReturn(message);
+        doAnswer(inv -> {
+            messages.stream().filter(m -> m.id().equals(inv.getArgument(0))).findFirst().ifPresent(
+                    messages::remove
+            );
+            return null;
+        }).when(messageRepository).deleteMessage(messageId);
+        when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
+            return messages;
+        });
+        when(channelService.existsChannel(channel)).thenReturn(true);
+        when(keycloakService.existsUser(user)).thenReturn(true);
+
+        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
+        // when
+        testedService.deleteMessage(channel, messageId, user);
+
+        // then
+        Collection<Message> result = testedService.getMessages(channel);
+        Assertions.assertEquals(result.size(), 0);
+    }
+
+    @Test
+    public void whenDeleteNotExistingMessageThenException() {
+        // given
+        UUID channel = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID user = UUID.randomUUID();
+
+        UUID messageId2 = UUID.randomUUID();
+
+        Message message = new Message(messageId, channel, "User", "Random text", null, null, user);
+        List<Message> messages = new ArrayList<>();
+        messages.add(message);
+
+        when(messageRepository.getMessage(messageId)).thenReturn(message);
+        doAnswer(inv -> {
+            messages.stream().filter(m -> m.id().equals(inv.getArgument(0))).findFirst().ifPresent(
+                    messages::remove
+            );
+            return null;
+        }).when(messageRepository).deleteMessage(messageId);
+        when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
+            return messages;
+        });
+        when(channelService.existsChannel(channel)).thenReturn(true);
+        when(keycloakService.existsUser(user)).thenReturn(true);
+
+        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
+        // when
+        Assertions.assertThrows(MessageUnknownException.class, () -> testedService.deleteMessage(channel, messageId2, user));
+
+        // then
+        Collection<Message> result = testedService.getMessages(channel);
+        Assertions.assertEquals(result.size(), 1);
+
+        Message resultMessage = result.iterator().next();
+        Assertions.assertEquals(resultMessage.message(), "Random text");
+        Assertions.assertEquals(resultMessage.channelId(), channel);
+        Assertions.assertEquals(resultMessage.id(), messageId);
+        Assertions.assertEquals(resultMessage.senderId(), user);
     }
 
     @Test
     public void whenDeleteMessageToNotExistingChannelThenException() {
+        // given
+        UUID channel = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID user = UUID.randomUUID();
 
+        UUID channelId2 = UUID.randomUUID();
+
+        Message message = new Message(messageId, channel, "User", "Random text", null, null, user);
+        List<Message> messages = new ArrayList<>();
+        messages.add(message);
+
+        when(messageRepository.getMessage(messageId)).thenReturn(message);
+        doAnswer(inv -> {
+            messages.stream().filter(m -> m.id().equals(inv.getArgument(0))).findFirst().ifPresent(
+                    messages::remove
+            );
+            return null;
+        }).when(messageRepository).deleteMessage(messageId);
+        when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
+            return messages;
+        });
+        when(channelService.existsChannel(channel)).thenReturn(true);
+        when(channelService.existsChannel(channelId2)).thenReturn(false);
+        when(keycloakService.existsUser(user)).thenReturn(true);
+
+        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
+        // when
+        Assertions.assertThrows(ChannelUnknownException.class, () -> testedService.deleteMessage(channelId2, messageId, user));
+
+        // then
+        Collection<Message> result = testedService.getMessages(channel);
+        Assertions.assertEquals(result.size(), 1);
+
+        Message resultMessage = result.iterator().next();
+        Assertions.assertEquals(resultMessage.message(), "Random text");
+        Assertions.assertEquals(resultMessage.channelId(), channel);
+        Assertions.assertEquals(resultMessage.id(), messageId);
+        Assertions.assertEquals(resultMessage.senderId(), user);
+    }
+
+    @Test
+    public void whenDeleteMessageFromWrongChannelThenException() {
+        // given
+        UUID channel = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID user = UUID.randomUUID();
+
+        UUID channelId2 = UUID.randomUUID();
+
+        Message message = new Message(messageId, channel, "User", "Random text", null, null, user);
+        List<Message> messages = new ArrayList<>();
+        messages.add(message);
+
+        when(messageRepository.getMessage(messageId)).thenReturn(message);
+        doAnswer(inv -> {
+            messages.stream().filter(m -> m.id().equals(inv.getArgument(0))).findFirst().ifPresent(
+                    messages::remove
+            );
+            return null;
+        }).when(messageRepository).deleteMessage(messageId);
+        when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
+            return messages;
+        });
+        when(channelService.existsChannel(channel)).thenReturn(true);
+        when(channelService.existsChannel(channelId2)).thenReturn(true);
+        when(keycloakService.existsUser(user)).thenReturn(true);
+
+        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
+        // when
+        Assertions.assertThrows(MessageUnknownException.class, () -> testedService.deleteMessage(channelId2, messageId, user));
+
+        // then
+        Collection<Message> result = testedService.getMessages(channel);
+        Assertions.assertEquals(result.size(), 1);
+
+        Message resultMessage = result.iterator().next();
+        Assertions.assertEquals(resultMessage.message(), "Random text");
+        Assertions.assertEquals(resultMessage.channelId(), channel);
+        Assertions.assertEquals(resultMessage.id(), messageId);
+        Assertions.assertEquals(resultMessage.senderId(), user);
     }
 
     @Test
     public void whenDeleteMessageByNotExistingUserThenException() {
+        // given
+        UUID channel = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID user = UUID.randomUUID();
 
+        UUID userId2 = UUID.randomUUID();
+
+        Message message = new Message(messageId, channel, "User", "Random text", null, null, user);
+        List<Message> messages = new ArrayList<>();
+        messages.add(message);
+
+        when(messageRepository.getMessage(messageId)).thenReturn(message);
+        doAnswer(inv -> {
+            messages.stream().filter(m -> m.id().equals(inv.getArgument(0))).findFirst().ifPresent(
+                    messages::remove
+            );
+            return null;
+        }).when(messageRepository).deleteMessage(messageId);
+        when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
+            return messages;
+        });
+        when(channelService.existsChannel(channel)).thenReturn(true);
+        when(keycloakService.existsUser(user)).thenReturn(true);
+
+        when(keycloakService.existsUser(userId2)).thenReturn(false);
+
+        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
+        // when
+        Assertions.assertThrows(UserUnknownException.class, () -> testedService.deleteMessage(channel, messageId, userId2));
+
+        // then
+        Collection<Message> result = testedService.getMessages(channel);
+        Assertions.assertEquals(result.size(), 1);
+
+        Message resultMessage = result.iterator().next();
+        Assertions.assertEquals(resultMessage.message(), "Random text");
+        Assertions.assertEquals(resultMessage.channelId(), channel);
+        Assertions.assertEquals(resultMessage.id(), messageId);
+        Assertions.assertEquals(resultMessage.senderId(), user);
     }
 
     @Test
     public void whenDeleteMessageByNotPermittedUserThenException() {
+        // given
+        UUID channel = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID user = UUID.randomUUID();
 
+        UUID userId2 = UUID.randomUUID();
+
+        Message message = new Message(messageId, channel, "User", "Random text", null, null, user);
+        List<Message> messages = new ArrayList<>();
+        messages.add(message);
+
+        when(messageRepository.getMessage(messageId)).thenReturn(message);
+        doAnswer(inv -> {
+            messages.stream().filter(m -> m.id().equals(inv.getArgument(0))).findFirst().ifPresent(
+                    messages::remove
+            );
+            return null;
+        }).when(messageRepository).deleteMessage(messageId);
+        when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
+            return messages;
+        });
+        when(channelService.existsChannel(channel)).thenReturn(true);
+        when(keycloakService.existsUser(user)).thenReturn(true);
+
+        when(keycloakService.existsUser(userId2)).thenReturn(true);
+
+        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
+        // when
+        Assertions.assertThrows(InvalidPermissionsException.class, () -> testedService.deleteMessage(channel, messageId, userId2));
+
+        // then
+        Collection<Message> result = testedService.getMessages(channel);
+        Assertions.assertEquals(result.size(), 1);
+
+        Message resultMessage = result.iterator().next();
+        Assertions.assertEquals(resultMessage.message(), "Random text");
+        Assertions.assertEquals(resultMessage.channelId(), channel);
+        Assertions.assertEquals(resultMessage.id(), messageId);
+        Assertions.assertEquals(resultMessage.senderId(), user);
     }
 
     @Test

@@ -29,7 +29,7 @@ public class ChatController {
 
     @DeleteMapping("/{id}")
     public void deleteMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @AuthenticationPrincipal AuthUser user) {
-        chatService.deleteMessage(channel, messageId, user.getName());
+        chatService.deleteMessage(channel, messageId, user.getId());
     }
 
     @PutMapping("/{id}")

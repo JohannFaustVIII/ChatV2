@@ -568,53 +568,19 @@ class ChatServiceTest {
     // TODO: think how to handle cases before, as limit is implemented by repository
 
     @Test
-    public void whenGetLimitedMessagesThenReturnLastLimitedMessages() {
+    public void whenGetLimitedMessagesThenCallsRepositoryCorrectlyAndOnce() {
+        // given
+        UUID channelId = UUID.randomUUID();
+        UUID messageBefore = UUID.randomUUID();
+        UUID messageAfter = UUID.randomUUID();
+        int limit = 123;
 
+        when(channelService.existsChannel(channelId)).thenReturn(true);
+
+        // when
+        testedService.getMessages(channelId, messageBefore, messageAfter, limit);
+
+        // then
+        verify(messageRepository, times(1)).getAllMessages(channelId, messageBefore, messageAfter, limit);
     }
-
-    @Test
-    public void whenGetLimitedNotEnoughMessagesThenReturnAll() {
-
-    }
-
-    @Test
-    public void whenGetMessagesBeforeGivenAndLimitedThenReturnLimitedMessagesBeforeGiven() {
-
-    }
-
-    @Test
-    public void whenGetMessagesBeforeGivenAndLimitedButNotEnoughThenReturnAllMessagesBeforeGiven() {
-
-    }
-
-    @Test
-    public void whenGetMessagesAfterGivenAndLimitedThenReturnLimitedMessagesAfterGiven() {
-
-    }
-
-    @Test
-    public void whenGetMessagesAfterGivenAndLimitedButNotEnoughThenReturnAllMessagesAfterGiven() {
-
-    }
-
-    @Test
-    public void whenGetMessagesBetweenGivenAndLimitedThenReturnLimitedMessagesBeforeGiven() {
-
-    }
-
-    @Test
-    public void whenGetMessagesBetweenGivenAndLimitedButNotEnoughThenReturnAllMessagesBetweenGiven() {
-
-    }
-
-    @Test
-    public void whenGetMessagesBetweenIsEmptyThenEmptyCollection() {
-
-    }
-
-    @Test
-    public void whenGetMessagesBetweenInIncorrectOrderButThenException() {
-
-    }
-    // TODO: what if by not existing user and not existing channel? what takes priority?
 }

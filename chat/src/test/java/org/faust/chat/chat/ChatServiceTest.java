@@ -9,6 +9,7 @@ import org.faust.chat.keycloak.KeycloakService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -23,10 +24,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ChatServiceTest {
 
-    @Mock(strictness = Mock.Strictness.WARN)
+    @Mock
     MessageRepository messageRepository;
 
     @Mock
@@ -34,6 +34,9 @@ class ChatServiceTest {
 
     @Mock
     KeycloakService keycloakService;
+
+    @InjectMocks
+    ChatService testedService;
 
     @Test
     public void whenAddMessageThenAdded() {
@@ -52,9 +55,6 @@ class ChatServiceTest {
         }).when(messageRepository).addMessage(any(Message.class));
         when(channelService.existsChannel(channel)).thenReturn(true);
         when(keycloakService.existsUser(senderId)).thenReturn(true);
-
-
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
 
         //then before
         Assertions.assertEquals(testedService.getMessages(channel).size(), 0);
@@ -82,8 +82,6 @@ class ChatServiceTest {
         when(channelService.existsChannel(channel)).thenReturn(false);
         when(keycloakService.existsUser(senderId)).thenReturn(true);
 
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
-
         //when-then
         Assertions.assertThrows(ChannelUnknownException.class, () -> testedService.addMessage(channel, senderName, senderId, messageToAdd));
     }
@@ -96,10 +94,7 @@ class ChatServiceTest {
         UUID senderId = UUID.randomUUID();
         String senderName = "random user";
 
-        when(channelService.existsChannel(channel)).thenReturn(true);
         when(keycloakService.existsUser(senderId)).thenReturn(false);
-
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
 
         //when-then
         Assertions.assertThrows(UserUnknownException.class, () -> testedService.addMessage(channel, senderName, senderId, messageToAdd));
@@ -113,10 +108,7 @@ class ChatServiceTest {
         UUID senderId = UUID.randomUUID();
         String senderName = "random user";
 
-        when(channelService.existsChannel(channel)).thenReturn(false);
         when(keycloakService.existsUser(senderId)).thenReturn(false);
-
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
 
         //when-then
         Assertions.assertThrows(UserUnknownException.class, () -> testedService.addMessage(channel, senderName, senderId, messageToAdd));
@@ -155,9 +147,6 @@ class ChatServiceTest {
         when(channelService.existsChannel(channel)).thenReturn(true);
         when(keycloakService.existsUser(user)).thenReturn(true);
 
-
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
-
         // when
         testedService.editMessage(channel, messageId, user, message);
 
@@ -184,8 +173,6 @@ class ChatServiceTest {
         when(channelService.existsChannel(channel)).thenReturn(true);
         when(keycloakService.existsUser(user)).thenReturn(true);
 
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
-
         // when-then
         Assertions.assertThrows(MessageUnknownException.class, () -> testedService.editMessage(channel, messageId, user, message));
     }
@@ -202,19 +189,6 @@ class ChatServiceTest {
 
         AtomicReference<Message> originalMessage = new AtomicReference<>(new Message(messageId, channel2, "User", original, null, null, user));
 
-        when(messageRepository.getMessage(messageId)).thenAnswer(a -> originalMessage.get());
-        doAnswer(inv -> {
-            originalMessage.set(new Message(
-                    messageId,
-                    channel2,
-                    "User",
-                    inv.getArgument(1),
-                    null,
-                    null,
-                    user
-            ));
-            return null;
-        }).when(messageRepository).editMessage(messageId, message);
         when(messageRepository.getAllMessages(channel2, null, null, 10)).thenAnswer(inv -> {
             List<Message> messages = new ArrayList<>();
             messages.add(originalMessage.get());
@@ -222,9 +196,6 @@ class ChatServiceTest {
         });
         when(channelService.existsChannel(channel)).thenReturn(false);
         when(channelService.existsChannel(channel2)).thenReturn(true);
-        when(keycloakService.existsUser(user)).thenReturn(true);
-
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
 
         // when
         Assertions.assertThrows(ChannelUnknownException.class, () -> testedService.editMessage(channel, messageId, user, message));
@@ -253,18 +224,6 @@ class ChatServiceTest {
         AtomicReference<Message> originalMessage = new AtomicReference<>(new Message(messageId, channel2, "User", original, null, null, user));
 
         when(messageRepository.getMessage(messageId)).thenAnswer(a -> originalMessage.get());
-        doAnswer(inv -> {
-            originalMessage.set(new Message(
-                    messageId,
-                    channel2,
-                    "User",
-                    inv.getArgument(1),
-                    null,
-                    null,
-                    user
-            ));
-            return null;
-        }).when(messageRepository).editMessage(messageId, message);
         when(messageRepository.getAllMessages(channel2, null, null, 10)).thenAnswer(inv -> {
             List<Message> messages = new ArrayList<>();
             messages.add(originalMessage.get());
@@ -273,8 +232,6 @@ class ChatServiceTest {
         when(channelService.existsChannel(channel)).thenReturn(true);
         when(channelService.existsChannel(channel2)).thenReturn(true);
         when(keycloakService.existsUser(user)).thenReturn(true);
-
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
 
         // when
         Assertions.assertThrows(MessageUnknownException.class, () -> testedService.editMessage(channel, messageId, user, message));
@@ -302,29 +259,13 @@ class ChatServiceTest {
 
         AtomicReference<Message> originalMessage = new AtomicReference<>(new Message(messageId, channel, "User", original, null, null, user));
 
-        when(messageRepository.getMessage(messageId)).thenAnswer(a -> originalMessage.get());
-        doAnswer(inv -> {
-            originalMessage.set(new Message(
-                    messageId,
-                    channel,
-                    "User",
-                    inv.getArgument(1),
-                    null,
-                    null,
-                    user
-            ));
-            return null;
-        }).when(messageRepository).editMessage(messageId, message);
         when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
             List<Message> messages = new ArrayList<>();
             messages.add(originalMessage.get());
             return messages;
         });
         when(channelService.existsChannel(channel)).thenReturn(true);
-        when(keycloakService.existsUser(user)).thenReturn(true);
         when(keycloakService.existsUser(user2)).thenReturn(false);
-
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
 
         // when
         Assertions.assertThrows(UserUnknownException.class, () -> testedService.editMessage(channel, messageId, user2, message));
@@ -353,28 +294,13 @@ class ChatServiceTest {
         AtomicReference<Message> originalMessage = new AtomicReference<>(new Message(messageId, channel, "User", original, null, null, user));
 
         when(messageRepository.getMessage(messageId)).thenAnswer(a -> originalMessage.get());
-        doAnswer(inv -> {
-            originalMessage.set(new Message(
-                    messageId,
-                    channel,
-                    "User",
-                    inv.getArgument(1),
-                    null,
-                    null,
-                    user
-            ));
-            return null;
-        }).when(messageRepository).editMessage(messageId, message);
         when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
             List<Message> messages = new ArrayList<>();
             messages.add(originalMessage.get());
             return messages;
         });
         when(channelService.existsChannel(channel)).thenReturn(true);
-        when(keycloakService.existsUser(user)).thenReturn(true);
         when(keycloakService.existsUser(user2)).thenReturn(true);
-
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
 
         // when
         Assertions.assertThrows(InvalidPermissionsException.class, () -> testedService.editMessage(channel, messageId, user2, message));
@@ -413,8 +339,6 @@ class ChatServiceTest {
         });
         when(channelService.existsChannel(channel)).thenReturn(true);
         when(keycloakService.existsUser(user)).thenReturn(true);
-
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
         // when
         testedService.deleteMessage(channel, messageId, user);
 
@@ -436,20 +360,11 @@ class ChatServiceTest {
         List<Message> messages = new ArrayList<>();
         messages.add(message);
 
-        when(messageRepository.getMessage(messageId)).thenReturn(message);
-        doAnswer(inv -> {
-            messages.stream().filter(m -> m.id().equals(inv.getArgument(0))).findFirst().ifPresent(
-                    messages::remove
-            );
-            return null;
-        }).when(messageRepository).deleteMessage(messageId);
         when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
             return messages;
         });
         when(channelService.existsChannel(channel)).thenReturn(true);
         when(keycloakService.existsUser(user)).thenReturn(true);
-
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
         // when
         Assertions.assertThrows(MessageUnknownException.class, () -> testedService.deleteMessage(channel, messageId2, user));
 
@@ -477,21 +392,12 @@ class ChatServiceTest {
         List<Message> messages = new ArrayList<>();
         messages.add(message);
 
-        when(messageRepository.getMessage(messageId)).thenReturn(message);
-        doAnswer(inv -> {
-            messages.stream().filter(m -> m.id().equals(inv.getArgument(0))).findFirst().ifPresent(
-                    messages::remove
-            );
-            return null;
-        }).when(messageRepository).deleteMessage(messageId);
         when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
             return messages;
         });
         when(channelService.existsChannel(channel)).thenReturn(true);
         when(channelService.existsChannel(channelId2)).thenReturn(false);
-        when(keycloakService.existsUser(user)).thenReturn(true);
 
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
         // when
         Assertions.assertThrows(ChannelUnknownException.class, () -> testedService.deleteMessage(channelId2, messageId, user));
 
@@ -520,12 +426,6 @@ class ChatServiceTest {
         messages.add(message);
 
         when(messageRepository.getMessage(messageId)).thenReturn(message);
-        doAnswer(inv -> {
-            messages.stream().filter(m -> m.id().equals(inv.getArgument(0))).findFirst().ifPresent(
-                    messages::remove
-            );
-            return null;
-        }).when(messageRepository).deleteMessage(messageId);
         when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
             return messages;
         });
@@ -533,7 +433,6 @@ class ChatServiceTest {
         when(channelService.existsChannel(channelId2)).thenReturn(true);
         when(keycloakService.existsUser(user)).thenReturn(true);
 
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
         // when
         Assertions.assertThrows(MessageUnknownException.class, () -> testedService.deleteMessage(channelId2, messageId, user));
 
@@ -561,22 +460,13 @@ class ChatServiceTest {
         List<Message> messages = new ArrayList<>();
         messages.add(message);
 
-        when(messageRepository.getMessage(messageId)).thenReturn(message);
-        doAnswer(inv -> {
-            messages.stream().filter(m -> m.id().equals(inv.getArgument(0))).findFirst().ifPresent(
-                    messages::remove
-            );
-            return null;
-        }).when(messageRepository).deleteMessage(messageId);
         when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
             return messages;
         });
         when(channelService.existsChannel(channel)).thenReturn(true);
-        when(keycloakService.existsUser(user)).thenReturn(true);
 
         when(keycloakService.existsUser(userId2)).thenReturn(false);
 
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
         // when
         Assertions.assertThrows(UserUnknownException.class, () -> testedService.deleteMessage(channel, messageId, userId2));
 
@@ -605,21 +495,13 @@ class ChatServiceTest {
         messages.add(message);
 
         when(messageRepository.getMessage(messageId)).thenReturn(message);
-        doAnswer(inv -> {
-            messages.stream().filter(m -> m.id().equals(inv.getArgument(0))).findFirst().ifPresent(
-                    messages::remove
-            );
-            return null;
-        }).when(messageRepository).deleteMessage(messageId);
         when(messageRepository.getAllMessages(channel, null, null, 10)).thenAnswer(inv -> {
             return messages;
         });
         when(channelService.existsChannel(channel)).thenReturn(true);
-        when(keycloakService.existsUser(user)).thenReturn(true);
 
         when(keycloakService.existsUser(userId2)).thenReturn(true);
 
-        ChatService testedService = new ChatService(messageRepository, channelService, keycloakService);
         // when
         Assertions.assertThrows(InvalidPermissionsException.class, () -> testedService.deleteMessage(channel, messageId, userId2));
 
@@ -636,18 +518,54 @@ class ChatServiceTest {
 
     @Test
     public void whenGetMessagesFromNotExistingChannelThenException() {
+        // given
+        UUID channel = UUID.randomUUID();
 
+        when(channelService.existsChannel(channel)).thenReturn(false);
+
+        // when-then
+        Assertions.assertThrows(ChannelUnknownException.class, () -> testedService.getMessages(channel));
     }
 
     @Test
     public void whenGetNoMessagesThenEmptyCollection() {
+        // given
+        UUID channel = UUID.randomUUID();
 
+        List<Message> messages = new ArrayList<>();
+        when(channelService.existsChannel(channel)).thenReturn(true);
+        when(messageRepository.getAllMessages(channel, null, null, 10)).thenReturn(messages);
+
+        // when
+        Collection<Message> result = testedService.getMessages(channel);
+
+        // then
+        Assertions.assertTrue(result.isEmpty());
     }
 
     @Test
     public void whenGetMessagesThenAllReturned() {
+        // given
+        UUID channel = UUID.randomUUID();
 
+        List<Message> messages = new ArrayList<>();
+        messages.add(new Message(UUID.randomUUID(), channel, "RandomSender", "RandomMessage", null, null, UUID.randomUUID()));
+        when(channelService.existsChannel(channel)).thenReturn(true);
+        when(messageRepository.getAllMessages(channel, null, null, 10)).thenReturn(messages);
+
+        // when
+        Collection<Message> result = testedService.getMessages(channel);
+
+        // then
+        Assertions.assertFalse(result.isEmpty());
+
+        Message message = result.iterator().next();
+        Assertions.assertEquals(message.channelId(), channel);
+        Assertions.assertEquals(message.sender(), "RandomSender");
+        Assertions.assertEquals(message.message(), "RandomMessage");
     }
+
+    // TODO: think how to handle cases before, as limit is implemented by repository
 
     @Test
     public void whenGetLimitedMessagesThenReturnLastLimitedMessages() {

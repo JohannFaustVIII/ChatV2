@@ -565,8 +565,6 @@ class ChatServiceTest {
         Assertions.assertEquals(message.message(), "RandomMessage");
     }
 
-    // TODO: think how to handle cases before, as limit is implemented by repository
-
     @Test
     public void whenGetLimitedMessagesThenCallsRepositoryCorrectlyAndOnce() {
         // given

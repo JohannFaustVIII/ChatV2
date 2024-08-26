@@ -91,8 +91,10 @@ class UserRepositoryTest {
         when(keycloakRepository.getUsers()).thenReturn(users);
 
         // when
+        testedRepository.incrementUserActivity(user1);
         testedRepository.setOffline(user1, "User 1");
         Map<UserStatus, Collection<UserDetails>> result = testedRepository.getUsers();
+        testedRepository.decrementUserActivity(user1);
 
         // then
         Assertions.assertFalse(result.isEmpty());
@@ -115,8 +117,10 @@ class UserRepositoryTest {
         when(keycloakRepository.getUsers()).thenReturn(users);
 
         // when
+        testedRepository.incrementUserActivity(user1);
         testedRepository.setAfk(user1, "User 1");
         Map<UserStatus, Collection<UserDetails>> result = testedRepository.getUsers();
+        testedRepository.decrementUserActivity(user1);
 
         // then
         Assertions.assertFalse(result.isEmpty());
@@ -139,8 +143,10 @@ class UserRepositoryTest {
         when(keycloakRepository.getUsers()).thenReturn(users);
 
         // when
+        testedRepository.incrementUserActivity(user1);
         testedRepository.setActive(user1, "User 1");
         Map<UserStatus, Collection<UserDetails>> result = testedRepository.getUsers();
+        testedRepository.decrementUserActivity(user1);
 
         // then
         Assertions.assertFalse(result.isEmpty());
@@ -163,9 +169,11 @@ class UserRepositoryTest {
         when(keycloakRepository.getUsers()).thenReturn(users);
 
         // when
+        testedRepository.incrementUserActivity(user1);
         testedRepository.setActive(user1, "User 1");
         testedRepository.setOffline(user1, "User 1");
         Map<UserStatus, Collection<UserDetails>> result = testedRepository.getUsers();
+        testedRepository.decrementUserActivity(user1);
 
         // then
         Assertions.assertFalse(result.isEmpty());
@@ -188,9 +196,11 @@ class UserRepositoryTest {
         when(keycloakRepository.getUsers()).thenReturn(users);
 
         // when
+        testedRepository.incrementUserActivity(user1);
         testedRepository.setAfk(user1, "User 1");
         testedRepository.setOffline(user1, "User 1");
         Map<UserStatus, Collection<UserDetails>> result = testedRepository.getUsers();
+        testedRepository.decrementUserActivity(user1);
 
         // then
         Assertions.assertFalse(result.isEmpty());
@@ -213,9 +223,11 @@ class UserRepositoryTest {
         when(keycloakRepository.getUsers()).thenReturn(users);
 
         // when
+        testedRepository.incrementUserActivity(user1);
         testedRepository.setActive(user1, "User 1");
         testedRepository.setAfk(user1, "User 1");
         Map<UserStatus, Collection<UserDetails>> result = testedRepository.getUsers();
+        testedRepository.decrementUserActivity(user1);
 
         // then
         Assertions.assertFalse(result.isEmpty());
@@ -238,10 +250,12 @@ class UserRepositoryTest {
         when(keycloakRepository.getUsers()).thenReturn(users);
 
         // when
+        testedRepository.incrementUserActivity(user1);
         testedRepository.setActive(user1, "User 1");
         testedRepository.setAfk(user1, "User 1");
         testedRepository.setOffline(user1, "User 1");
         Map<UserStatus, Collection<UserDetails>> result = testedRepository.getUsers();
+        testedRepository.decrementUserActivity(user1);
 
         // then
         Assertions.assertFalse(result.isEmpty());

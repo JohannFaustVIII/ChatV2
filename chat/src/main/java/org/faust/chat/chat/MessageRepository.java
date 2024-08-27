@@ -30,6 +30,7 @@ public class MessageRepository {
                 .execute();
     }
 
+    // TODO: how to test the code below?
     public Collection<Message> getAllMessages(UUID channel, UUID before, UUID after, int limit) {
         List<Condition> conditions = new ArrayList<>();
         conditions.add(DSL.field("\"channelId\"", UUID.class).eq(channel));

@@ -33,7 +33,7 @@ public class MessageRepository {
     // TODO: how to test the code below?
     // So, the whole app would require setting up: keycloak and a database, then using liquibase
     // Testing just repository, would require a database, but liquibase might be harder
-    // To think more
+    // To think more https://stackoverflow.com/questions/43523971/how-to-set-up-liquibase-in-spring-for-multiple-data-sources
     public Collection<Message> getAllMessages(UUID channel, UUID before, UUID after, int limit) {
         List<Condition> conditions = new ArrayList<>();
         conditions.add(DSL.field("\"channelId\"", UUID.class).eq(channel));

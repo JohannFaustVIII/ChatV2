@@ -6,6 +6,8 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import org.faust.chat.channel.Channel;
+import org.faust.chat.channel.ChannelRepository;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -17,7 +19,10 @@ import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,6 +50,80 @@ class MessageRepositoryTest {
 
         // then
         Assertions.assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void whenGetExistingMessagesThenReturnAll() {
+        // given
+        UUID sender = UUID.randomUUID();
+        LocalDateTime time = LocalDateTime.now();
+        ChannelRepository channelRepository = new ChannelRepository(context);
+        MessageRepository testedRepository = new MessageRepository(context);
+
+        channelRepository.addChannel(new Channel(null, "Test channel"));
+        Collection<Channel> channels = channelRepository.getAllChannels();
+        UUID channel = channels.iterator().next().id();
+        testedRepository.addMessage(new Message(
+                null,
+                channel,
+                "Sender",
+                "Hello 1",
+                time,
+                null,
+                sender
+        ));
+
+        // when
+        Collection<Message> result = testedRepository.getAllMessages(channel, null, null, 10);
+
+        // then
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals(1, result.size());
+        Iterator<Message> it = result.iterator();
+        Message rMessage1 = it.next();
+        Assertions.assertEquals(sender, rMessage1.senderId());
+        Assertions.assertEquals(channel, rMessage1.channelId());
+        Assertions.assertEquals("Sender", rMessage1.sender());
+        Assertions.assertEquals("Hello 1", rMessage1.message());
+        Assertions.assertEquals(time.truncatedTo(ChronoUnit.SECONDS), rMessage1.serverTime().truncatedTo(ChronoUnit.SECONDS));
+        Assertions.assertNull(rMessage1.editTime());
+    }
+
+    // TODO: next tests requires handling id AND cleaning the db, think how to handle nicely
+
+    @Test
+    public void whenGetMessagesBeforeGivenAndLimitedButNotEnoughThenReturnAllMessagesBeforeGiven() {
+
+    }
+
+    @Test
+    public void whenGetMessagesAfterGivenAndLimitedThenReturnLimitedMessagesAfterGiven() {
+
+    }
+
+    @Test
+    public void whenGetMessagesAfterGivenAndLimitedButNotEnoughThenReturnAllMessagesAfterGiven() {
+
+    }
+
+    @Test
+    public void whenGetMessagesBetweenGivenAndLimitedThenReturnLimitedMessagesBeforeGiven() {
+
+    }
+
+    @Test
+    public void whenGetMessagesBetweenGivenAndLimitedButNotEnoughThenReturnAllMessagesBetweenGiven() {
+
+    }
+
+    @Test
+    public void whenGetMessagesBetweenIsEmptyThenEmptyCollection() {
+
+    }
+
+    @Test
+    public void whenGetMessagesBetweenInIncorrectOrderButThenException() {
+
     }
 
     @AfterAll

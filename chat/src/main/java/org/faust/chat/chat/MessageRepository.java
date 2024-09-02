@@ -27,6 +27,7 @@ public class MessageRepository {
                 .set(DSL.field(DSL.name("channelId")), message.channelId())
                 .set(DSL.field(DSL.name("sender")), message.sender())
                 .set(DSL.field(DSL.name("serverTime")), message.serverTime())
+                .set(DSL.field(DSL.name("senderId")), message.senderId())
                 .execute();
     }
 

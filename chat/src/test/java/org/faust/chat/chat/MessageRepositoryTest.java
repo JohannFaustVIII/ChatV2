@@ -11,10 +11,7 @@ import org.faust.chat.channel.ChannelRepository;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -39,6 +36,12 @@ class MessageRepositoryTest {
         context = setUpContext(databaseContainer);
     }
 
+    @BeforeEach
+    public void clearDb() {
+        context.deleteFrom(DSL.table(DSL.name("messageTable"))).execute();
+        context.deleteFrom(DSL.table(DSL.name("channelTable"))).execute();
+    }
+
     @Test
     public void whenGetMessagesThenReturnEmptyCollection() {
         // given
@@ -60,19 +63,16 @@ class MessageRepositoryTest {
         ChannelRepository channelRepository = new ChannelRepository(context);
         MessageRepository testedRepository = new MessageRepository(context);
 
-        channelRepository.addChannel(new Channel(null, "Test channel"));
+        addChannels(channelRepository,
+                new Channel(null, "Test channel")
+        );
+
         Collection<Channel> channels = channelRepository.getAllChannels();
         UUID channel = channels.iterator().next().id();
-        testedRepository.addMessage(new Message(
-                null,
-                channel,
-                "Sender",
-                "Hello 1",
-                time,
-                null,
-                sender
-        ));
 
+        addMessages(testedRepository,
+                new Message(null, channel, "Sender", "Hello 1", time, null, sender)
+        );
         // when
         Collection<Message> result = testedRepository.getAllMessages(channel, null, null, 10);
 
@@ -124,6 +124,18 @@ class MessageRepositoryTest {
     @Test
     public void whenGetMessagesBetweenInIncorrectOrderButThenException() {
 
+    }
+
+    private void addChannels(ChannelRepository channelRepository, Channel... channels) {
+        for (Channel c : channels) {
+            channelRepository.addChannel(c);
+        }
+    }
+
+    private void addMessages(MessageRepository messageRepository, Message... messages) {
+        for (Message m : messages) {
+            messageRepository.addMessage(m);
+        }
     }
 
     @AfterAll

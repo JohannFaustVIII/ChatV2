@@ -78,15 +78,9 @@ class MessageRepositoryTest {
 
         // then
         Assertions.assertFalse(result.isEmpty());
-        Assertions.assertEquals(1, result.size());
-        Iterator<Message> it = result.iterator();
-        Message rMessage1 = it.next();
-        Assertions.assertEquals(sender, rMessage1.senderId());
-        Assertions.assertEquals(channel, rMessage1.channelId());
-        Assertions.assertEquals("Sender", rMessage1.sender());
-        Assertions.assertEquals("Hello 1", rMessage1.message());
-        Assertions.assertEquals(time.truncatedTo(ChronoUnit.SECONDS), rMessage1.serverTime().truncatedTo(ChronoUnit.SECONDS));
-        Assertions.assertNull(rMessage1.editTime());
+        assertMessages(result,
+                new Message(null, channel, "Sender", "Hello 1", time, null, sender)
+        );
     }
 
     // TODO: next tests requires handling id AND cleaning the db, think how to handle nicely
@@ -135,6 +129,34 @@ class MessageRepositoryTest {
     private void addMessages(MessageRepository messageRepository, Message... messages) {
         for (Message m : messages) {
             messageRepository.addMessage(m);
+        }
+    }
+
+    private Message findMessage(MessageRepository messageRepository, UUID channel, String messageText) {
+        return messageRepository
+                .getAllMessages(channel, null, null, Integer.MAX_VALUE)
+                .stream()
+                .filter(m -> m.message().equals(messageText))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private void assertMessages(Collection<Message> resultMessages, Message... expectedMessages) {
+        assertEquals(expectedMessages.length, resultMessages.size());
+        Iterator<Message> resultIterator = resultMessages.iterator();
+        for (int i = 0; i != resultMessages.size(); i++) {
+            Message result = resultIterator.next();
+            Message expected = expectedMessages[i];
+            assertEquals(expected.message(), result.message());
+            assertEquals(expected.channelId(), result.channelId());
+            assertEquals(expected.senderId(), result.senderId());
+            assertEquals(expected.sender(), result.sender());
+            assertEquals(expected.serverTime().truncatedTo(ChronoUnit.SECONDS), result.serverTime().truncatedTo(ChronoUnit.SECONDS));
+            if (expected.editTime() == null) {
+                assertNull(result.editTime());
+            } else {
+                assertEquals(expected.editTime().truncatedTo(ChronoUnit.SECONDS), result.editTime().truncatedTo(ChronoUnit.SECONDS));
+            }
         }
     }
 

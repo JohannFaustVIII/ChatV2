@@ -2,6 +2,8 @@ package org.faust.chat.chat;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.OrderField;
+import org.jooq.SortField;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
@@ -38,6 +40,7 @@ public class MessageRepository {
     public Collection<Message> getAllMessages(UUID channel, UUID before, UUID after, int limit) {
         List<Condition> conditions = new ArrayList<>();
         conditions.add(DSL.field("\"channelId\"", UUID.class).eq(channel));
+
         if (before != null) {
             conditions.add(
                     DSL.field("\"serverTime\"").lessThan(context
@@ -57,13 +60,22 @@ public class MessageRepository {
                             .asField())
             );
         }
-        return context
+
+        SortField<Object> order = (before != null || after == null) ? DSL.field("\"serverTime\"").desc() : DSL.field("\"serverTime\"").asc();
+
+        List<Message> result = context
                 .selectFrom(DSL.table(SELECT_MESSAGE_TABLE))
                 .where(conditions)
-                .orderBy(DSL.field("\"serverTime\"").desc())
+                .orderBy(order)
                 .limit(limit)
                 .fetch()
                 .map(Message::mapToMessage);
+
+        if (before == null && after != null) {
+            Collections.reverse(result);
+        }
+
+        return result;
     }
 
     public void editMessage(UUID messageId, String newMessage) {

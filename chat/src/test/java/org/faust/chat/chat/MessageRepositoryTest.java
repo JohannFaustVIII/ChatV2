@@ -8,6 +8,7 @@ import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.faust.chat.channel.Channel;
 import org.faust.chat.channel.ChannelRepository;
+import org.faust.chat.exception.WrongOrderException;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -165,32 +166,240 @@ class MessageRepositoryTest {
 
     @Test
     public void whenGetMessagesAfterGivenAndLimitedThenReturnLimitedMessagesAfterGiven() {
+        // given
+        UUID sender = UUID.randomUUID();
+        LocalDateTime time = LocalDateTime.now();
+        ChannelRepository channelRepository = new ChannelRepository(context);
+        MessageRepository testedRepository = new MessageRepository(context);
 
+        addChannels(channelRepository,
+                new Channel(null, "Test channel")
+        );
+
+        Collection<Channel> channels = channelRepository.getAllChannels();
+        UUID channel = channels.iterator().next().id();
+
+        time = time.minusSeconds(10);
+        List<Message> messages = new ArrayList<>(10);
+        for (int i = 10; i !=0; i--) {
+            messages.add(new Message(null, channel, "Sender", "Hello " + i, time, null, sender));
+            time = time.plusSeconds(1);
+        }
+
+        addMessages(testedRepository,
+                messages.toArray(Message[]::new)
+        );
+
+        Message afterMessage = findMessage(testedRepository, channel, "Hello 8");
+        List<Message> expectedMessages = new ArrayList<>(messages.stream().skip(3).limit(3).toList());
+        Collections.reverse(expectedMessages);
+
+        // when
+        Collection<Message> result = testedRepository.getAllMessages(channel, null, afterMessage.id(),3);
+
+        // then
+        Assertions.assertFalse(result.isEmpty());
+        assertMessages(result,
+                expectedMessages.toArray(Message[]::new)
+        );
     }
 
     @Test
     public void whenGetMessagesAfterGivenAndLimitedButNotEnoughThenReturnAllMessagesAfterGiven() {
+        // given
+        UUID sender = UUID.randomUUID();
+        LocalDateTime time = LocalDateTime.now();
+        ChannelRepository channelRepository = new ChannelRepository(context);
+        MessageRepository testedRepository = new MessageRepository(context);
 
+        addChannels(channelRepository,
+                new Channel(null, "Test channel")
+        );
+
+        Collection<Channel> channels = channelRepository.getAllChannels();
+        UUID channel = channels.iterator().next().id();
+
+        time = time.minusSeconds(10);
+        List<Message> messages = new ArrayList<>(10);
+        for (int i = 10; i !=0; i--) {
+            messages.add(new Message(null, channel, "Sender", "Hello " + i, time, null, sender));
+            time = time.plusSeconds(1);
+        }
+
+        addMessages(testedRepository,
+                messages.toArray(Message[]::new)
+        );
+
+        Message afterMessage = findMessage(testedRepository, channel, "Hello 8");
+        List<Message> expectedMessages = new ArrayList<>(messages.stream().skip(3).limit(7).toList());
+        Collections.reverse(expectedMessages);
+
+        // when
+        Collection<Message> result = testedRepository.getAllMessages(channel, null, afterMessage.id(),10);
+
+        // then
+        Assertions.assertFalse(result.isEmpty());
+        assertMessages(result,
+                expectedMessages.toArray(Message[]::new)
+        );
     }
 
     @Test
     public void whenGetMessagesBetweenGivenAndLimitedThenReturnLimitedMessagesBeforeGiven() {
+        // given
+        UUID sender = UUID.randomUUID();
+        LocalDateTime time = LocalDateTime.now();
+        ChannelRepository channelRepository = new ChannelRepository(context);
+        MessageRepository testedRepository = new MessageRepository(context);
 
+        addChannels(channelRepository,
+                new Channel(null, "Test channel")
+        );
+
+        Collection<Channel> channels = channelRepository.getAllChannels();
+        UUID channel = channels.iterator().next().id();
+
+        time = time.minusSeconds(10);
+        List<Message> messages = new ArrayList<>(10);
+        for (int i = 10; i !=0; i--) {
+            messages.add(new Message(null, channel, "Sender", "Hello " + i, time, null, sender));
+            time = time.plusSeconds(1);
+        }
+
+        addMessages(testedRepository,
+                messages.toArray(Message[]::new)
+        );
+
+        Message beforeMessage = findMessage(testedRepository, channel, "Hello 3");
+        Message afterMessage = findMessage(testedRepository, channel, "Hello 8");
+        List<Message> expectedMessages = new ArrayList<>(messages.stream().skip(5).limit(2).toList());
+        Collections.reverse(expectedMessages);
+
+        // when
+        Collection<Message> result = testedRepository.getAllMessages(channel, beforeMessage.id(), afterMessage.id(),2);
+
+        // then
+        Assertions.assertFalse(result.isEmpty());
+        assertMessages(result,
+                expectedMessages.toArray(Message[]::new)
+        );
     }
 
     @Test
     public void whenGetMessagesBetweenGivenAndLimitedButNotEnoughThenReturnAllMessagesBetweenGiven() {
+        // given
+        UUID sender = UUID.randomUUID();
+        LocalDateTime time = LocalDateTime.now();
+        ChannelRepository channelRepository = new ChannelRepository(context);
+        MessageRepository testedRepository = new MessageRepository(context);
 
+        addChannels(channelRepository,
+                new Channel(null, "Test channel")
+        );
+
+        Collection<Channel> channels = channelRepository.getAllChannels();
+        UUID channel = channels.iterator().next().id();
+
+        time = time.minusSeconds(10);
+        List<Message> messages = new ArrayList<>(10);
+        for (int i = 10; i !=0; i--) {
+            messages.add(new Message(null, channel, "Sender", "Hello " + i, time, null, sender));
+            time = time.plusSeconds(1);
+        }
+
+        addMessages(testedRepository,
+                messages.toArray(Message[]::new)
+        );
+
+        Message beforeMessage = findMessage(testedRepository, channel, "Hello 3");
+        Message afterMessage = findMessage(testedRepository, channel, "Hello 8");
+        List<Message> expectedMessages = new ArrayList<>(messages.stream().skip(3).limit(4).toList());
+        Collections.reverse(expectedMessages);
+
+        // when
+        Collection<Message> result = testedRepository.getAllMessages(channel, beforeMessage.id(), afterMessage.id(),10);
+
+        // then
+        Assertions.assertFalse(result.isEmpty());
+        assertMessages(result,
+                expectedMessages.toArray(Message[]::new)
+        );
     }
 
     @Test
     public void whenGetMessagesBetweenIsEmptyThenEmptyCollection() {
+        // given
+        UUID sender = UUID.randomUUID();
+        LocalDateTime time = LocalDateTime.now();
+        ChannelRepository channelRepository = new ChannelRepository(context);
+        MessageRepository testedRepository = new MessageRepository(context);
 
+        addChannels(channelRepository,
+                new Channel(null, "Test channel")
+        );
+
+        Collection<Channel> channels = channelRepository.getAllChannels();
+        UUID channel = channels.iterator().next().id();
+
+        time = time.minusSeconds(10);
+        List<Message> messages = new ArrayList<>(10);
+        for (int i = 10; i !=0; i--) {
+            messages.add(new Message(null, channel, "Sender", "Hello " + i, time, null, sender));
+            time = time.plusSeconds(1);
+        }
+
+        addMessages(testedRepository,
+                messages.toArray(Message[]::new)
+        );
+
+        Message beforeMessage = findMessage(testedRepository, channel, "Hello 7");
+        Message afterMessage = findMessage(testedRepository, channel, "Hello 8");
+        List<Message> expectedMessages = Collections.emptyList();
+        Collections.reverse(expectedMessages);
+
+        // when
+        Collection<Message> result = testedRepository.getAllMessages(channel, beforeMessage.id(), afterMessage.id(),10);
+
+        // then
+        Assertions.assertTrue(result.isEmpty());
+        assertMessages(result,
+                expectedMessages.toArray(Message[]::new)
+        );
     }
 
     @Test
     public void whenGetMessagesBetweenInIncorrectOrderButThenException() {
+// given
+        UUID sender = UUID.randomUUID();
+        LocalDateTime time = LocalDateTime.now();
+        ChannelRepository channelRepository = new ChannelRepository(context);
+        MessageRepository testedRepository = new MessageRepository(context);
 
+        addChannels(channelRepository,
+                new Channel(null, "Test channel")
+        );
+
+        Collection<Channel> channels = channelRepository.getAllChannels();
+        UUID channel = channels.iterator().next().id();
+
+        time = time.minusSeconds(10);
+        List<Message> messages = new ArrayList<>(10);
+        for (int i = 10; i !=0; i--) {
+            messages.add(new Message(null, channel, "Sender", "Hello " + i, time, null, sender));
+            time = time.plusSeconds(1);
+        }
+
+        addMessages(testedRepository,
+                messages.toArray(Message[]::new)
+        );
+
+        Message beforeMessage = findMessage(testedRepository, channel, "Hello 10");
+        Message afterMessage = findMessage(testedRepository, channel, "Hello 1");
+        List<Message> expectedMessages = Collections.emptyList();
+        Collections.reverse(expectedMessages);
+
+        // when-then
+        Assertions.assertThrows(WrongOrderException.class, () -> testedRepository.getAllMessages(channel, beforeMessage.id(), afterMessage.id(),10));
     }
 
     private void addChannels(ChannelRepository channelRepository, Channel... channels) {

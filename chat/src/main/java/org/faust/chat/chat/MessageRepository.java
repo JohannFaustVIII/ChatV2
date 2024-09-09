@@ -1,5 +1,6 @@
 package org.faust.chat.chat;
 
+import org.faust.chat.exception.WrongOrderException;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.OrderField;
@@ -70,6 +71,14 @@ public class MessageRepository {
                 .limit(limit)
                 .fetch()
                 .map(Message::mapToMessage);
+
+        if (before != null && after != null && result.isEmpty()) {
+            Message beforeMessage = getMessage(before);
+            Message afterMessage = getMessage(after);
+            if (beforeMessage.serverTime().isBefore(afterMessage.serverTime())) {
+                throw new WrongOrderException();
+            }
+        }
 
         if (before == null && after != null) {
             Collections.reverse(result);

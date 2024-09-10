@@ -82,8 +82,6 @@ class MessageRepositoryTest {
         );
     }
 
-    // TODO: next tests requires handling id AND cleaning the db, think how to handle nicely
-
     @Test
     public void whenGetMessagesBeforeGivenAndLimitedButNotEnoughThenReturnAllMessagesBeforeGiven() {
         // given

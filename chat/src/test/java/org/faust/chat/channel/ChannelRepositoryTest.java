@@ -12,6 +12,7 @@ import org.jooq.impl.DSL;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -19,7 +20,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class ChannelRepositoryTest {
 
@@ -35,6 +35,46 @@ class ChannelRepositoryTest {
     @BeforeEach
     public void clearDb() {
         context.deleteFrom(DSL.table(DSL.name("channelTable"))).execute();
+    }
+
+    @Test
+    public void whenAddingChannelThenReturnedWithTheRest() {
+
+    }
+
+    @Test
+    public void whenAddingChannelThenExists() {
+
+    }
+
+    @Test
+    public void whenExistsChannelWithGivenNameThenReturnTrue() {
+
+    }
+
+    @Test
+    public void whenNotExistsChannelWithGivenNameThenReturnFalse() {
+
+    }
+
+    @Test
+    public void whenExistsChannelWithGivenIdThenReturnTrue() {
+
+    }
+
+    @Test
+    public void whenNotExistsChannelWithGivenIdThenReturnFalse() {
+
+    }
+
+    @Test
+    public void whenNoChannelsExistThenNoChannelsReturned() {
+
+    }
+
+    @Test
+    public void whenChannelsExistThenAllCanBeReturned() {
+
     }
 
     @AfterAll

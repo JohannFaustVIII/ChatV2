@@ -9,16 +9,15 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
 
 
 class ChannelRepositoryTest {
@@ -69,12 +68,31 @@ class ChannelRepositoryTest {
 
     @Test
     public void whenNoChannelsExistThenNoChannelsReturned() {
+        // given
+        ChannelRepository channelRepository = new ChannelRepository(context);
+        // when
+        Collection<Channel> result = channelRepository.getAllChannels();
+        // then
+        Assertions.assertTrue(result.isEmpty());
 
     }
 
     @Test
     public void whenChannelsExistThenAllCanBeReturned() {
+        // given
+        ChannelRepository channelRepository = new ChannelRepository(context);
 
+        channelRepository.addChannel(new Channel(null, "C1"));
+        channelRepository.addChannel(new Channel(null, "Channel Second"));
+        channelRepository.addChannel(new Channel(null, "Third Random Channel"));
+        // when
+        Collection<Channel> result = channelRepository.getAllChannels();
+        // then
+        Assertions.assertFalse(result.isEmpty());
+        Iterator<Channel> it = result.iterator();
+        Assertions.assertEquals("C1", it.next().name());
+        Assertions.assertEquals("Channel Second", it.next().name());
+        Assertions.assertEquals("Third Random Channel", it.next().name());
     }
 
     @AfterAll

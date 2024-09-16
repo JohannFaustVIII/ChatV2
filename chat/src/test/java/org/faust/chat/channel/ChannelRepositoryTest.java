@@ -18,6 +18,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.UUID;
 
 
 class ChannelRepositoryTest {
@@ -48,22 +49,49 @@ class ChannelRepositoryTest {
 
     @Test
     public void whenExistsChannelWithGivenNameThenReturnTrue() {
+        // given
+        ChannelRepository channelRepository = new ChannelRepository(context);
 
+        channelRepository.addChannel(new Channel(null, "C1"));
+        // when
+        boolean result = channelRepository.existsChannelWithName("C1");
+        // then
+        Assertions.assertTrue(result);
     }
 
     @Test
     public void whenNotExistsChannelWithGivenNameThenReturnFalse() {
-
+        // given
+        ChannelRepository channelRepository = new ChannelRepository(context);
+        // when
+        boolean result = channelRepository.existsChannelWithName("Not Existing Channel");
+        // then
+        Assertions.assertFalse(result);
     }
 
     @Test
     public void whenExistsChannelWithGivenIdThenReturnTrue() {
+        // given
+        ChannelRepository channelRepository = new ChannelRepository(context);
 
+        channelRepository.addChannel(new Channel(null, "C1"));
+        UUID idToFind = channelRepository.getAllChannels().iterator().next().id();
+        // when
+        boolean result = channelRepository.existsChannelWithId(idToFind);
+        // then
+        Assertions.assertTrue(result);
     }
 
     @Test
     public void whenNotExistsChannelWithGivenIdThenReturnFalse() {
+        // given
+        ChannelRepository channelRepository = new ChannelRepository(context);
 
+        UUID idToFind = UUID.randomUUID();
+        // when
+        boolean result = channelRepository.existsChannelWithId(idToFind);
+        // then
+        Assertions.assertFalse(result);
     }
 
     @Test
@@ -74,7 +102,6 @@ class ChannelRepositoryTest {
         Collection<Channel> result = channelRepository.getAllChannels();
         // then
         Assertions.assertTrue(result.isEmpty());
-
     }
 
     @Test

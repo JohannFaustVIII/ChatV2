@@ -39,12 +39,37 @@ class ChannelRepositoryTest {
 
     @Test
     public void whenAddingChannelThenReturnedWithTheRest() {
+        // given
+        ChannelRepository channelRepository = new ChannelRepository(context);
 
+        channelRepository.addChannel(new Channel(null, "C1"));
+        channelRepository.addChannel(new Channel(null, "Channel Second"));
+        channelRepository.addChannel(new Channel(null, "Third Random Channel"));
+        // when
+        channelRepository.addChannel(new Channel(null, "Tested Channel"));
+        Collection<Channel> result = channelRepository.getAllChannels();
+        // then
+        Assertions.assertFalse(result.isEmpty());
+        Iterator<Channel> it = result.iterator();
+        Assertions.assertEquals("C1", it.next().name());
+        Assertions.assertEquals("Channel Second", it.next().name());
+        Assertions.assertEquals("Third Random Channel", it.next().name());
+        Assertions.assertEquals("Tested Channel", it.next().name());
     }
 
     @Test
     public void whenAddingChannelThenExists() {
+        // given
+        ChannelRepository channelRepository = new ChannelRepository(context);
 
+        channelRepository.addChannel(new Channel(null, "C1"));
+        channelRepository.addChannel(new Channel(null, "Channel Second"));
+        channelRepository.addChannel(new Channel(null, "Third Random Channel"));
+        // when
+        channelRepository.addChannel(new Channel(null, "Tested Channel"));
+        boolean result = channelRepository.existsChannelWithName("Tested Channel");
+        // then
+        Assertions.assertTrue(result);
     }
 
     @Test

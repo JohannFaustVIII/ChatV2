@@ -22,6 +22,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
+    testImplementation("io.projectreactor:reactor-test:3.6.8")
     testImplementation("org.mockito:mockito-core:5.12.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

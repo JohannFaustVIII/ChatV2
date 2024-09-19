@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class SSEServiceTest {
 
     @Test
@@ -15,11 +13,15 @@ class SSEServiceTest {
         String eventString = "Random text supposed to be Event";
         // when
         Flux<String> sse = testedService.getEvents();
-        testedService.emitEvents(eventString);
+//        testedService.emitEvents(eventString);
+
         // then
         StepVerifier
                 .create(sse)
-                .expectNext(eventString + "X"); //FIXME: that shows that it doesn't work
+                .then(() -> testedService.emitEvents(eventString))
+                .expectNext(eventString)
+                .thenCancel()
+                .verify();
     }
 
 }

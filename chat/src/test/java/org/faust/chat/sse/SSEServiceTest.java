@@ -11,11 +11,8 @@ class SSEServiceTest {
         // given
         SSEService testedService = new SSEService();
         String eventString = "Random text supposed to be Event";
-        // when
+        // when-then
         Flux<String> sse = testedService.getEvents();
-//        testedService.emitEvents(eventString);
-
-        // then
         StepVerifier
                 .create(sse)
                 .then(() -> testedService.emitEvents(eventString))
@@ -23,5 +20,50 @@ class SSEServiceTest {
                 .thenCancel()
                 .verify();
     }
+
+    @Test
+    public void whenEmittingMultipleEventsThenAllReceived() {
+        // given
+        SSEService testedService = new SSEService();
+        String eventString = "Random text supposed to be Event";
+        String eventString2 = "Update Event";
+        String eventString3 = "Third Emergency Event";
+        // when-then
+        Flux<String> sse = testedService.getEvents();
+        StepVerifier
+                .create(sse)
+                .then(() -> {
+                    testedService.emitEvents(eventString);
+                    testedService.emitEvents(eventString2);
+                    testedService.emitEvents(eventString3);
+                })
+                .expectNext(eventString)
+                .expectNext(eventString2)
+                .expectNext(eventString3)
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
+    public void whenEmittingMultipleSeparateEventsThenAllReceived() {
+        // given
+        SSEService testedService = new SSEService();
+        String eventString = "Random text supposed to be Event";
+        String eventString2 = "Update Event";
+        String eventString3 = "Third Emergency Event";
+        // when-then
+        Flux<String> sse = testedService.getEvents();
+        StepVerifier
+                .create(sse)
+                .then(() -> testedService.emitEvents(eventString))
+                .expectNext(eventString)
+                .then(() -> testedService.emitEvents(eventString2))
+                .expectNext(eventString2)
+                .then(() -> testedService.emitEvents(eventString3))
+                .expectNext(eventString3)
+                .thenCancel()
+                .verify();
+    }
+
 
 }

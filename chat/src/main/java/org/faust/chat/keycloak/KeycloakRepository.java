@@ -17,11 +17,11 @@ public class KeycloakRepository {
 
     private final Keycloak keycloak;
 
-    @Value("${keycloak.realm}")
     private String realm;
 
-    public KeycloakRepository(Keycloak keycloak) {
+    public KeycloakRepository(Keycloak keycloak, String keycloakRealm) {
         this.keycloak = keycloak;
+        this.realm = keycloakRealm;
     }
 
     public Collection<UserDetails> getUsers() {

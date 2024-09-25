@@ -28,4 +28,9 @@ public class KeycloakConfig {
                 .clientSecret(clientSecret)
                 .build();
     }
+
+    @Bean
+    public String keycloakRealm() {
+        return realm;
+    }
 }

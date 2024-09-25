@@ -30,11 +30,14 @@ class KeycloakRepositoryTest {
 
     private static GenericContainer<?> keycloakContainer;
     private static Keycloak keycloak;
+    private static String realm;
 
     @BeforeAll
     public static void setUp() {
         keycloakContainer = setUpKeycloakContainer();
+        realm = "test-realm";
         keycloak = setUpKeycloak();
+
     }
 
     private static GenericContainer<?> setUpKeycloakContainer() {
@@ -42,7 +45,7 @@ class KeycloakRepositoryTest {
                 .withExposedPorts(8080)
                 .withEnv("KEYCLOAK_ADMIN", "admin")
                 .withEnv("KEYCLOAK_ADMIN_PASSWORD", "admin")
-                .waitingFor(Wait.forHttp("/realms/master").forStatusCode(200).withStartupTimeout(Duration.ofMinutes(5)))
+                .waitingFor(Wait.forHttp("/").forStatusCode(200).withStartupTimeout(Duration.ofMinutes(5)))
                 .withCommand("start-dev");
 
         container.start();
@@ -52,7 +55,7 @@ class KeycloakRepositoryTest {
 
     private static Keycloak setUpKeycloak() {
         Keycloak k = KeycloakBuilder.builder()
-                .serverUrl("http://" + keycloakContainer.getHost() + ":" + keycloakContainer.getFirstMappedPort() + "/auth")
+                .serverUrl("http://" + keycloakContainer.getHost() + ":" + keycloakContainer.getFirstMappedPort())
                 .realm("master")
                 .clientId("admin-cli")
                 .username("admin")
@@ -60,27 +63,19 @@ class KeycloakRepositoryTest {
                 .build();
 
         RealmRepresentation newRealm = new RealmRepresentation();
-        newRealm.setRealm("test-realm");
+        newRealm.setRealm(realm);
         newRealm.setEnabled(true);
 
         k.realms().create(newRealm);
 
-        Keycloak result = KeycloakBuilder.builder()
-                .serverUrl("http://" + keycloakContainer.getHost() + ":" + keycloakContainer.getFirstMappedPort() + "/auth")
-                .realm("test-realm")
-                .clientId("admin-cli")
-                .username("admin")
-                .password("admin")
-                .build();
+        addUserToRealm(k, "user1");
 
-        addUserToRealm(k, "User1");
-
-        return result;
+        return k;
     }
 
     private static void addUserToRealm(Keycloak keycloak, String username) {
         UserRepresentation user = new UserRepresentation();
-        user.setUsername("username");
+        user.setUsername(username);
         user.setFirstName("New");
         user.setLastName("User");
         user.setEmail(username + "@example.com");
@@ -93,7 +88,7 @@ class KeycloakRepositoryTest {
 
         user.setCredentials(Collections.singletonList(password));
 
-        Response response = keycloak.realm("test-realm")
+        Response response = keycloak.realm(realm)
                 .users()
                 .create(user);
 
@@ -108,12 +103,12 @@ class KeycloakRepositoryTest {
     @Test
     public void whenUsersExistThenAllReturned() {
         // given
-        KeycloakRepository testedRepository = new KeycloakRepository(keycloak);
+        KeycloakRepository testedRepository = new KeycloakRepository(keycloak, realm);
         // when
         Collection<UserDetails> result = testedRepository.getUsers();
         // then
         Assertions.assertFalse(result.isEmpty());
-        Assertions.assertEquals("User1", result.iterator().next().name());
+        Assertions.assertEquals("user1", result.iterator().next().name());
     }
 
     @Test

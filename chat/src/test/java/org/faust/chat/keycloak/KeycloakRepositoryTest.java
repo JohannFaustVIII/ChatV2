@@ -18,24 +18,20 @@ import org.testcontainers.utility.DockerImageName;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.UUID;
 
 class KeycloakRepositoryTest {
-
-    // TODO: what does it require?
-    // repository is read only, so requires a testcontainer with set up users
-    // the best would be to set up empty container
-    // and put realms and users
 
     private static GenericContainer<?> keycloakContainer;
     private static Keycloak keycloak;
     private static String realm;
+    private static String emptyRealm;
 
     @BeforeAll
     public static void setUp() {
         keycloakContainer = setUpKeycloakContainer();
-        realm = "test-realm";
+        realm = "testRealm";
+        emptyRealm = "emptyRealm";
         keycloak = setUpKeycloak();
 
     }
@@ -62,15 +58,20 @@ class KeycloakRepositoryTest {
                 .password("admin")
                 .build();
 
+        createRealm(realm, k);
+        createRealm(emptyRealm, k);
+
+        addUserToRealm(k, "user1");
+
+        return k;
+    }
+
+    private static void createRealm(String realm, Keycloak k) {
         RealmRepresentation newRealm = new RealmRepresentation();
         newRealm.setRealm(realm);
         newRealm.setEnabled(true);
 
         k.realms().create(newRealm);
-
-        addUserToRealm(k, "user1");
-
-        return k;
     }
 
     private static void addUserToRealm(Keycloak keycloak, String username) {
@@ -97,7 +98,12 @@ class KeycloakRepositoryTest {
 
     @Test
     public void whenNoUsersThenEmptyCollectionReturned() {
-
+        // given
+        KeycloakRepository testedRepository = new KeycloakRepository(keycloak, emptyRealm);
+        // when
+        Collection<UserDetails> result = testedRepository.getUsers();
+        // then
+        Assertions.assertTrue(result.isEmpty());
     }
 
     @Test
@@ -113,22 +119,45 @@ class KeycloakRepositoryTest {
 
     @Test
     public void whenUserExistsThenDetailsReturned() {
-
+        // given
+        KeycloakRepository testedRepository = new KeycloakRepository(keycloak, realm);
+        UUID userId = testedRepository.getUsers().iterator().next().id();
+        // when
+        UserDetails result = testedRepository.getUserInfo(userId);
+        // then
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("user1", result.name());
     }
 
     @Test
     public void whenUserNotExistsThenNull() {
-
+        // given
+        KeycloakRepository testedRepository = new KeycloakRepository(keycloak, realm);
+        // when
+        UserDetails result = testedRepository.getUserInfo(UUID.randomUUID());
+        // then
+        Assertions.assertNull(result);
     }
 
     @Test
     public void whenUserExistsThenTrue() {
-
+        // given
+        KeycloakRepository testedRepository = new KeycloakRepository(keycloak, realm);
+        UUID userId = testedRepository.getUsers().iterator().next().id();
+        // when
+        boolean result = testedRepository.existsUser(userId);
+        // then
+        Assertions.assertTrue(result);
     }
 
     @Test
     public void whenUserNotExistsThenFalse() {
-
+        // given
+        KeycloakRepository testedRepository = new KeycloakRepository(keycloak, realm);
+        // when
+        boolean result = testedRepository.existsUser(UUID.randomUUID());
+        // then
+        Assertions.assertFalse(result);
     }
 
     @AfterAll

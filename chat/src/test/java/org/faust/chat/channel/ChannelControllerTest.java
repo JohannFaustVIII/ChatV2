@@ -16,6 +16,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -64,18 +65,46 @@ class ChannelControllerTest extends E2ETestBase {
                 .bodyValue("Channel 2")
                 .exchange()
                 .expectStatus().isOk();
-        // when-then
-        webTestClient.get()
+        // when
+        List<Channel> result = webTestClient.get()
                 .uri("/channels")
                 .header("Authorization", getAuthorizationToken())
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class).consumeWith(
-                        result -> {
-                            Assertions.assertTrue(result.getResponseBody().contains("Channel 1"));
-                            Assertions.assertTrue(result.getResponseBody().contains("Channel 2"));
-                        }
-                );
+                .returnResult(Channel.class)
+                .getResponseBody()
+                .collectList()
+                .block();
+
+        // then
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertEquals("Channel 1", result.get(0).name());
+        Assertions.assertEquals("Channel 2", result.get(1).name());
+    }
+
+    @Test
+    public void whenChannelAddedThenReturned() {
+        // when
+        webTestClient.post()
+                .uri("/channels")
+                .header("Authorization", getAuthorizationToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue("Test Channel")
+                .exchange()
+                .expectStatus().isOk();
+        // then
+        List<Channel> result = webTestClient.get()
+                .uri("/channels")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(Channel.class)
+                .getResponseBody()
+                .collectList()
+                .block();
+
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("Test Channel", result.get(0).name());
     }
 
     // TODO: more tests and remove existing channels before each test? - would require direct access to db for now

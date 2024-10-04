@@ -142,7 +142,7 @@ public abstract class E2ETestBase {
                 .users()
                 .create(user).getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");;
 
-        RoleRepresentation role = k.realm(KEYCLOAK_REALM).roles().get(KEYCLOAK_ACCESS_ROLE).toRepresentation(); // Replace with your role name
+        RoleRepresentation role = k.realm(KEYCLOAK_REALM).roles().get(KEYCLOAK_ACCESS_ROLE).toRepresentation();
         k.realm(KEYCLOAK_REALM).users().get(userId).roles().realmLevel().add(Collections.singletonList(role));
     }
 

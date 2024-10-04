@@ -106,6 +106,4 @@ class ChannelControllerTest extends E2ETestBase {
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals("Test Channel", result.get(0).name());
     }
-
-    // TODO: more tests and remove existing channels before each test? - would require direct access to db for now
 }

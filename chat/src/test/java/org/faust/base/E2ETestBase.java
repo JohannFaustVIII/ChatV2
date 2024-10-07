@@ -1,6 +1,5 @@
 package org.faust.base;
 
-import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.OAuth2Constants;
@@ -16,6 +15,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
 
 @TestPropertySource(
         properties = {
@@ -114,6 +114,23 @@ public abstract class E2ETestBase {
         client.setRedirectUris(Collections.singletonList("*"));
 
         k.realm(KEYCLOAK_REALM).clients().create(client).close();
+
+        ClientScopeRepresentation clientScope = new ClientScopeRepresentation();
+        clientScope.setName("management");
+        clientScope.setProtocol("openid-connect");
+
+        k.realm(KEYCLOAK_REALM).clientScopes().create(clientScope).close();
+
+        String scopeId = k.realm(KEYCLOAK_REALM).clientScopes().findAll().stream().filter(c -> c.getName().equals("management")).findFirst().get().getId();
+
+        k.realm(KEYCLOAK_REALM).clientScopes().get(scopeId).getScopeMappings().realmLevel().add(
+                List.of(
+                        k.realm(KEYCLOAK_REALM).roles().get("view-users").toRepresentation() // IT HAS TO BE REALM ROLE
+                )
+        );
+
+        // Assign the role to the client
+        k.realm(KEYCLOAK_REALM).clients().get(KEYCLOAK_ID).addDefaultClientScope(scopeId);
     }
 
     private static void createAccessRole(Keycloak k) {

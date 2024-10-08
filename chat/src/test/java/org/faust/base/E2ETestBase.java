@@ -16,6 +16,7 @@ import org.testcontainers.utility.DockerImageName;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @TestPropertySource(
         properties = {
@@ -121,16 +122,30 @@ public abstract class E2ETestBase {
 
         k.realm(KEYCLOAK_REALM).clientScopes().create(clientScope).close();
 
-        String scopeId = k.realm(KEYCLOAK_REALM).clientScopes().findAll().stream().filter(c -> c.getName().equals("management")).findFirst().get().getId();
+        String realmManagementClientId = k.realm(KEYCLOAK_REALM)
+                .clients()
+                .findByClientId("realm-management")
+                .get(0)
+                .getId();
+        List<RoleRepresentation> roles = k.realm(KEYCLOAK_REALM)
+                .clients()
+                .get(realmManagementClientId)
+                .roles()
+                .list()
+                .stream()
+                .filter(
+                        r -> r.getName().equals("view-users")
+                                || r.getName().equals("manage-users")
+                                || r.getName().equals("view-clients")
+                                || r.getName().equals("view-realm")
+                ).collect(Collectors.toList());
 
+        String scopeId = k.realm(KEYCLOAK_REALM).clientScopes().findAll().stream().filter(c -> c.getName().equals("management")).findFirst().get().getId();
         k.realm(KEYCLOAK_REALM).clientScopes().get(scopeId).getScopeMappings().realmLevel().add(
-                List.of(
-                        k.realm(KEYCLOAK_REALM).roles().get("view-users").toRepresentation() // IT HAS TO BE REALM ROLE
-                )
+               roles
         );
 
-        // Assign the role to the client
-        k.realm(KEYCLOAK_REALM).clients().get(KEYCLOAK_ID).addDefaultClientScope(scopeId);
+        k.realm(KEYCLOAK_REALM).clients().get(k.realm(KEYCLOAK_REALM).clients().findByClientId(KEYCLOAK_ID).get(0).getId()).addDefaultClientScope(scopeId);
     }
 
     private static void createAccessRole(Keycloak k) {

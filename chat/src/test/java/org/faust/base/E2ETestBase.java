@@ -5,7 +5,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.representations.idm.*;
+import org.keycloak.representations.idm.authorization.ResourceServerRepresentation;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.JdbcDatabaseContainer;
@@ -111,6 +113,10 @@ public abstract class E2ETestBase {
         client.setClientId(KEYCLOAK_ID);
         client.setEnabled(true);
         client.setSecret(KEYCLOAK_SECRET);
+        client.setPublicClient(false);
+        client.setDirectAccessGrantsEnabled(true);
+        client.setServiceAccountsEnabled(true);
+        client.setAuthorizationServicesEnabled(true);
         client.setProtocol("openid-connect");
         client.setRedirectUris(Collections.singletonList("*"));
 

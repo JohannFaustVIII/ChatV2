@@ -128,14 +128,14 @@ class ChatControllerTest extends E2ETestBase {
     public void whenGettingMessagesThenReturnedOnlyFromGivenChannel() {
         // given
         webTestClient.post()
-                .uri("/chat/" + secondChannelUUID)
+                .uri("/chat/" + mainChannelUUID)
                 .header("Authorization", getAuthorizationToken())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue("Test Message")
                 .exchange()
                 .expectStatus().isOk();
         webTestClient.post()
-                .uri("/chat/" + mainChannelUUID)
+                .uri("/chat/" + secondChannelUUID)
                 .header("Authorization", getAuthorizationToken())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue("Other Message")

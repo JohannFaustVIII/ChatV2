@@ -122,6 +122,8 @@ public abstract class E2ETestBase {
 
         k.realm(KEYCLOAK_REALM).clients().create(client).close();
 
+        String clientId = k.realm(KEYCLOAK_REALM).clients().findByClientId(KEYCLOAK_ID).get(0).getId();
+
         ClientScopeRepresentation clientScope = new ClientScopeRepresentation();
         clientScope.setName("management");
         clientScope.setProtocol("openid-connect");
@@ -151,7 +153,9 @@ public abstract class E2ETestBase {
                roles
         );
 
-        k.realm(KEYCLOAK_REALM).clients().get(k.realm(KEYCLOAK_REALM).clients().findByClientId(KEYCLOAK_ID).get(0).getId()).addDefaultClientScope(scopeId);
+        k.realm(KEYCLOAK_REALM).clients().get(clientId).addDefaultClientScope(scopeId);
+        String serviceUserId = k.realm(KEYCLOAK_REALM).clients().get(clientId).getServiceAccountUser().getId();
+        k.realm(KEYCLOAK_REALM).users().get(serviceUserId).roles().clientLevel(realmManagementClientId).add(roles);
     }
 
     private static void createAccessRole(Keycloak k) {

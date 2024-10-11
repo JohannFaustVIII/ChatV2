@@ -1,13 +1,12 @@
 package org.faust.base;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.representations.idm.*;
-import org.keycloak.representations.idm.authorization.ResourceServerRepresentation;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.JdbcDatabaseContainer;
@@ -86,7 +85,7 @@ public abstract class E2ETestBase {
                 .build()) {
 
             createRealm(k);
-            createClient(k);
+            setUpClient(k);
             createAccessRole(k);
             createUser(k);
         }
@@ -108,6 +107,22 @@ public abstract class E2ETestBase {
         k.realms().create(newRealm);
     }
 
+    private static void setUpClient(Keycloak k) {
+        createClient(k);
+
+        String clientId = k.realm(KEYCLOAK_REALM).clients().findByClientId(KEYCLOAK_ID).get(0).getId();
+
+        String scopeId = createClientScope(k);
+
+        String realmManagementClientId = getRealmManagementClientId(k);
+        List<RoleRepresentation> roles = getManagementRoles(k, realmManagementClientId);
+
+        addRolesToClientScope(k, scopeId, roles);
+
+        addClientScopeToClient(k, clientId, scopeId);
+        addRolesToClientServiceAccount(k, clientId, realmManagementClientId, roles);
+    }
+
     private static void createClient(Keycloak k) {
         ClientRepresentation client = new ClientRepresentation();
         client.setClientId(KEYCLOAK_ID);
@@ -121,20 +136,30 @@ public abstract class E2ETestBase {
         client.setRedirectUris(Collections.singletonList("*"));
 
         k.realm(KEYCLOAK_REALM).clients().create(client).close();
+    }
 
-        String clientId = k.realm(KEYCLOAK_REALM).clients().findByClientId(KEYCLOAK_ID).get(0).getId();
-
+    private static String createClientScope(Keycloak k) {
         ClientScopeRepresentation clientScope = new ClientScopeRepresentation();
         clientScope.setName("management");
         clientScope.setProtocol("openid-connect");
 
         k.realm(KEYCLOAK_REALM).clientScopes().create(clientScope).close();
 
+        String scopeId = k.realm(KEYCLOAK_REALM).clientScopes().findAll().stream().filter(c -> c.getName().equals("management")).findFirst().get().getId();
+        return scopeId;
+    }
+
+    private static String getRealmManagementClientId(Keycloak k) {
         String realmManagementClientId = k.realm(KEYCLOAK_REALM)
                 .clients()
                 .findByClientId("realm-management")
                 .get(0)
                 .getId();
+        return realmManagementClientId;
+    }
+
+    @NotNull
+    private static List<RoleRepresentation> getManagementRoles(Keycloak k, String realmManagementClientId) {
         List<RoleRepresentation> roles = k.realm(KEYCLOAK_REALM)
                 .clients()
                 .get(realmManagementClientId)
@@ -147,13 +172,20 @@ public abstract class E2ETestBase {
                                 || r.getName().equals("view-clients")
                                 || r.getName().equals("view-realm")
                 ).collect(Collectors.toList());
+        return roles;
+    }
 
-        String scopeId = k.realm(KEYCLOAK_REALM).clientScopes().findAll().stream().filter(c -> c.getName().equals("management")).findFirst().get().getId();
+    private static void addRolesToClientScope(Keycloak k, String scopeId, List<RoleRepresentation> roles) {
         k.realm(KEYCLOAK_REALM).clientScopes().get(scopeId).getScopeMappings().realmLevel().add(
-               roles
+                roles
         );
+    }
 
+    private static void addClientScopeToClient(Keycloak k, String clientId, String scopeId) {
         k.realm(KEYCLOAK_REALM).clients().get(clientId).addDefaultClientScope(scopeId);
+    }
+
+    private static void addRolesToClientServiceAccount(Keycloak k, String clientId, String realmManagementClientId, List<RoleRepresentation> roles) {
         String serviceUserId = k.realm(KEYCLOAK_REALM).clients().get(clientId).getServiceAccountUser().getId();
         k.realm(KEYCLOAK_REALM).users().get(serviceUserId).roles().clientLevel(realmManagementClientId).add(roles);
     }

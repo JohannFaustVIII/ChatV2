@@ -1,11 +1,14 @@
 package org.faust.chat.chat;
 
 import org.faust.base.E2ETestBase;
+import org.faust.base.E2ETestExtension;
 import org.faust.chat.Main;
 import org.faust.chat.channel.Channel;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -21,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RunWith(SpringRunner.class)
+@ExtendWith(E2ETestExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
         classes = Main.class
@@ -36,11 +40,7 @@ class ChatControllerTest extends E2ETestBase {
 
     @BeforeEach
     public void setUpSingleEmptyChannel() throws SQLException {
-        try (Connection connection = databaseContainer.createConnection("")) {
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate("DELETE FROM \"messageTable\"");
-            stmt.executeUpdate("DELETE FROM \"channelTable\"");
-        }
+        cleanDb();
         webTestClient.post()
                 .uri("/channels")
                 .header("Authorization", getAuthorizationToken())
@@ -81,6 +81,15 @@ class ChatControllerTest extends E2ETestBase {
                 .findFirst()
                 .get()
                 .id();
+    }
+
+    @AfterEach
+    public static void cleanDb() throws SQLException {
+        try (Connection connection = databaseContainer.createConnection("")) {
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate("DELETE FROM \"messageTable\"");
+            stmt.executeUpdate("DELETE FROM \"channelTable\"");
+        }
     }
 
     @Test

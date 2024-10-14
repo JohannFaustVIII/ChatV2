@@ -1,7 +1,6 @@
 package org.faust.base;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
@@ -42,26 +41,37 @@ public abstract class E2ETestBase {
     protected static String KEYCLOAK_SECRET = "test-id-secret";
     protected static String KEYCLOAK_USER = "testUser";
     protected static String KEYCLOAK_ACCESS_ROLE = "chat_access";
-    @BeforeAll
+
     public static void setUp() {
         databaseContainer = setUpDatabase();
         keycloakContainer = setUpKeycloak();
     }
 
-    @AfterAll
     public static void tearDown() {
         if (databaseContainer != null) {
             databaseContainer.close();
         }
     }
 
+    @BeforeAll
+    public static void setUpProperties() {
+        if (databaseContainer != null) {
+            System.setProperty("TEST_PG_URL", databaseContainer.getJdbcUrl());
+            System.setProperty("TEST_PG_USERNAME", databaseContainer.getUsername());
+            System.setProperty("TEST_PG_PASSWORD", databaseContainer.getPassword());
+        }
+        if (keycloakContainer != null) {
+            System.setProperty("KEYCLOAK_URL", "http://" + keycloakContainer.getHost() + ":" + keycloakContainer.getFirstMappedPort());
+            System.setProperty("KEYCLOAK_REALM", KEYCLOAK_REALM);
+            System.setProperty("KEYCLOAK_CLIENT_ID", KEYCLOAK_ID);
+            System.setProperty("KEYCLOAK_CLIENT_SECRET", KEYCLOAK_SECRET);
+            System.setProperty("JWT_PROVIDER_URI", "http://" + keycloakContainer.getHost() + ":" + keycloakContainer.getFirstMappedPort() + "/realms/" + KEYCLOAK_REALM + "/protocol/openid-connect/certs");
+        }
+    }
+
     private static JdbcDatabaseContainer setUpDatabase() {
         JdbcDatabaseContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
         postgreSQLContainer.start();
-
-        System.setProperty("TEST_PG_URL", postgreSQLContainer.getJdbcUrl());
-        System.setProperty("TEST_PG_USERNAME", postgreSQLContainer.getUsername());
-        System.setProperty("TEST_PG_PASSWORD", postgreSQLContainer.getPassword());
 
         return postgreSQLContainer;
     }
@@ -89,12 +99,6 @@ public abstract class E2ETestBase {
             createAccessRole(k);
             createUser(k);
         }
-
-        System.setProperty("KEYCLOAK_URL", "http://" + container.getHost() + ":" + container.getFirstMappedPort());
-        System.setProperty("KEYCLOAK_REALM", KEYCLOAK_REALM);
-        System.setProperty("KEYCLOAK_CLIENT_ID", KEYCLOAK_ID);
-        System.setProperty("KEYCLOAK_CLIENT_SECRET", KEYCLOAK_SECRET);
-        System.setProperty("JWT_PROVIDER_URI", "http://" + container.getHost() + ":" + container.getFirstMappedPort() + "/realms/" + KEYCLOAK_REALM + "/protocol/openid-connect/certs");
 
         return container;
     }

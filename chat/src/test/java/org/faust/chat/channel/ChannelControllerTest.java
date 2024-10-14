@@ -1,10 +1,13 @@
 package org.faust.chat.channel;
 
 import org.faust.base.E2ETestBase;
+import org.faust.base.E2ETestExtension;
 import org.faust.chat.Main;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -19,6 +22,7 @@ import java.sql.Statement;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
+@ExtendWith(E2ETestExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
         classes = Main.class
@@ -30,6 +34,7 @@ class ChannelControllerTest extends E2ETestBase {
     private WebTestClient webTestClient;
 
     @BeforeEach
+    @AfterEach
     public void cleanDb() throws SQLException {
         try (Connection connection = databaseContainer.createConnection("")) {
             Statement stmt = connection.createStatement();

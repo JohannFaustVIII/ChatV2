@@ -16,6 +16,7 @@ import org.testcontainers.utility.DockerImageName;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @TestPropertySource(
@@ -40,6 +41,7 @@ public abstract class E2ETestBase {
     protected static String KEYCLOAK_ID = "test-id";
     protected static String KEYCLOAK_SECRET = "test-id-secret";
     protected static String KEYCLOAK_USER = "testUser";
+    protected static UUID KEYCLOAK_USER_ID = null;
     protected static String KEYCLOAK_ACCESS_ROLE = "chat_access";
 
     public static void setUp() {
@@ -219,6 +221,8 @@ public abstract class E2ETestBase {
         String userId = k.realm(KEYCLOAK_REALM)
                 .users()
                 .create(user).getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");;
+
+        KEYCLOAK_USER_ID = UUID.fromString(userId);
 
         RoleRepresentation role = k.realm(KEYCLOAK_REALM).roles().get(KEYCLOAK_ACCESS_ROLE).toRepresentation();
         k.realm(KEYCLOAK_REALM).users().get(userId).roles().realmLevel().add(Collections.singletonList(role));

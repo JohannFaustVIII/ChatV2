@@ -2,6 +2,7 @@ package org.faust.chat.user;
 
 import org.faust.chat.config.AuthUser;
 import org.faust.chat.keycloak.KeycloakService;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping("/hook")
-    public Flux<Void> setActiveHook(@AuthenticationPrincipal AuthUser user) {
+    public Flux<Object> setActiveHook(@AuthenticationPrincipal AuthUser user) {
         return service.setActivityHook(user.getId());
     }
 

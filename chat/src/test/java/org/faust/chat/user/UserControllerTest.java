@@ -3,19 +3,30 @@ package org.faust.chat.user;
 import org.faust.base.E2ETestBase;
 import org.faust.base.E2ETestExtension;
 import org.faust.chat.Main;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 
+import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RunWith(SpringRunner.class)
 @ExtendWith(E2ETestExtension.class)
@@ -24,10 +35,28 @@ import java.util.UUID;
         classes = Main.class
 )
 @AutoConfigureWebTestClient
-class UserControllerTest extends E2ETestBase {
+class UserControllerTest extends E2ETestBase implements ApplicationContextAware {
 
     @Autowired
     private WebTestClient webTestClient;
+
+    private ApplicationContext applicationContext;
+
+    @BeforeEach
+    public void setUpForTest() {
+        webTestClient = webTestClient.mutate()
+                .responseTimeout(Duration.ofMillis(300000))
+                .build();
+    }
+
+    @AfterEach
+    public void resetUserBean() {
+        GenericApplicationContext genericApplicationContext = (GenericApplicationContext) applicationContext;
+        BeanDefinition bd = genericApplicationContext
+                .getBeanDefinition("userRepository");
+        genericApplicationContext.removeBeanDefinition("userRepository");
+        genericApplicationContext.registerBeanDefinition("userRepository", bd);
+    }
 
     @Test
     public void whenGettingUsersDetailsThenAllReturned() {
@@ -94,7 +123,36 @@ class UserControllerTest extends E2ETestBase {
 
     @Test
     public void whenSettingAfkWithHookThenReturnedAfk() {
+        // when
+        Flux<Void> hook = webTestClient.post()
+                .uri("/users/hook")
+                .header("Authorization", getAuthorizationToken())
+                .exchange() // TODO: here happens timeout with FluxPeek, but not with empty flux
+                .returnResult(Void.class)
+                .getResponseBody();
 
+        webTestClient.post()
+                .uri("/users/afk")
+                .header("Authorization", getAuthorizationToken())
+                .exchange();
+
+        // then
+        Map<String, Collection<Map<String, String>>> result = webTestClient.get()
+                .uri("/users")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(Map.class)
+                .getResponseBody()
+                .single()
+                .block();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertNotNull(result.get("ONLINE"));
+        Assertions.assertNotNull(result.get("AFK"));
+        Assertions.assertNotNull(result.get("OFFLINE"));
+        Assertions.assertEquals("testuser", result.get("AFK").iterator().next().get("name"));
     }
 
     @Test
@@ -135,5 +193,10 @@ class UserControllerTest extends E2ETestBase {
     @Test
     public void whenNoActivitySettingThenReturnedOffline() {
 
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

@@ -32,9 +32,9 @@ public class UserService {
         repository.setOffline(id, username);
     }
 
-    public Flux<Object> setActivityHook(UUID userId) {
+    public Flux<Void> setActivityHook(UUID userId) {
         repository.incrementUserActivity(userId);
-        return Flux.empty().doOnCancel(() -> { // TODO: think about it? solves problem of timeout during test but does it work?
+        return this.hookSink.asFlux().doOnCancel(() -> { // TODO: think about it? solves problem of timeout during test but does it work?
             repository.decrementUserActivity(userId);
         });
     }

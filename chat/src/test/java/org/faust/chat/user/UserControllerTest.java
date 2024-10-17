@@ -19,15 +19,14 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
+//FIXME: tests fail when ran together
 @RunWith(SpringRunner.class)
 @ExtendWith(E2ETestExtension.class)
 @SpringBootTest(
@@ -47,6 +46,7 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
         webTestClient = webTestClient.mutate()
                 .responseTimeout(Duration.ofMillis(300000))
                 .build();
+        resetUserBean();
     }
 
     @AfterEach
@@ -56,6 +56,10 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
                 .getBeanDefinition("userRepository");
         genericApplicationContext.removeBeanDefinition("userRepository");
         genericApplicationContext.registerBeanDefinition("userRepository", bd);
+        bd = genericApplicationContext
+                .getBeanDefinition("userService");
+        genericApplicationContext.removeBeanDefinition("userService");
+        genericApplicationContext.registerBeanDefinition("userService", bd);
     }
 
     @Test
@@ -122,15 +126,16 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
     // offline/afk/online depends on activity hook, and are implemented to keep the state, so may affect other tests, TODO: think
 
     @Test
-    public void whenSettingAfkWithHookThenReturnedAfk() {
+    public void whenSettingAfkWithHookThenReturnedAfk() throws InterruptedException {
         // when
-        Flux<Void> hook = webTestClient.post()
+        Thread hookThread = new Thread( () -> webTestClient.post()
                 .uri("/users/hook")
                 .header("Authorization", getAuthorizationToken())
-                .exchange() // TODO: here happens timeout with FluxPeek, but not with empty flux
-                .returnResult(Void.class)
-                .getResponseBody();
+                .exchange()); // hook is infinite flux
 
+        hookThread.start();
+
+        Thread.sleep(1000); // ugly way to be sure that hook set up
         webTestClient.post()
                 .uri("/users/afk")
                 .header("Authorization", getAuthorizationToken())
@@ -153,46 +158,265 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
         Assertions.assertNotNull(result.get("AFK"));
         Assertions.assertNotNull(result.get("OFFLINE"));
         Assertions.assertEquals("testuser", result.get("AFK").iterator().next().get("name"));
+
+        hookThread.interrupt();
+        hookThread.join();
     }
 
     @Test
     public void whenSettingAfkWithoutHookThenReturnedOffline() {
+        // when
+        webTestClient.post()
+                .uri("/users/afk")
+                .header("Authorization", getAuthorizationToken())
+                .exchange();
 
+        // then
+        Map<String, Collection<Map<String, String>>> result = webTestClient.get()
+                .uri("/users")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(Map.class)
+                .getResponseBody()
+                .single()
+                .block();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertNotNull(result.get("ONLINE"));
+        Assertions.assertNotNull(result.get("AFK"));
+        Assertions.assertNotNull(result.get("OFFLINE"));
+        Assertions.assertEquals("testuser", result.get("OFFLINE").iterator().next().get("name"));
     }
 
     @Test
-    public void whenSettingOnlineWithHookThenReturnedOnline() {
+    public void whenSettingOnlineWithHookThenReturnedOnline() throws InterruptedException {
+        // when
+        Thread hookThread = new Thread( () -> webTestClient.post()
+                .uri("/users/hook")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()); // hook is infinite flux
 
+        hookThread.start();
+
+        Thread.sleep(1000); // ugly way to be sure that hook set up
+        webTestClient.post()
+                .uri("/users/online")
+                .header("Authorization", getAuthorizationToken())
+                .exchange();
+
+        // then
+        Map<String, Collection<Map<String, String>>> result = webTestClient.get()
+                .uri("/users")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(Map.class)
+                .getResponseBody()
+                .single()
+                .block();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertNotNull(result.get("ONLINE"));
+        Assertions.assertNotNull(result.get("AFK"));
+        Assertions.assertNotNull(result.get("OFFLINE"));
+        Assertions.assertEquals("testuser", result.get("ONLINE").iterator().next().get("name"));
+
+        hookThread.interrupt();
+        hookThread.join();
     }
 
     @Test
     public void whenSettingOnlineWithoutHookThenReturnedOffline() {
+        // when
+        webTestClient.post()
+                .uri("/users/offline")
+                .header("Authorization", getAuthorizationToken())
+                .exchange();
 
+        // then
+        Map<String, Collection<Map<String, String>>> result = webTestClient.get()
+                .uri("/users")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(Map.class)
+                .getResponseBody()
+                .single()
+                .block();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertNotNull(result.get("ONLINE"));
+        Assertions.assertNotNull(result.get("AFK"));
+        Assertions.assertNotNull(result.get("OFFLINE"));
+        Assertions.assertEquals("testuser", result.get("OFFLINE").iterator().next().get("name"));
     }
 
     @Test
-    public void whenSettingAfkAndOnlineWithHookThenReturnedOnline() {
+    public void whenSettingAfkAndOnlineWithHookThenReturnedOnline() throws InterruptedException {
+        // when
+        Thread hookThread = new Thread( () -> webTestClient.post()
+                .uri("/users/hook")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()); // hook is infinite flux
 
+        hookThread.start();
+
+        Thread.sleep(1000); // ugly way to be sure that hook set up
+        webTestClient.post()
+                .uri("/users/afk")
+                .header("Authorization", getAuthorizationToken())
+                .exchange();
+        webTestClient.post()
+                .uri("/users/online")
+                .header("Authorization", getAuthorizationToken())
+                .exchange();
+
+
+        // then
+        Map<String, Collection<Map<String, String>>> result = webTestClient.get()
+                .uri("/users")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(Map.class)
+                .getResponseBody()
+                .single()
+                .block();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertNotNull(result.get("ONLINE"));
+        Assertions.assertNotNull(result.get("AFK"));
+        Assertions.assertNotNull(result.get("OFFLINE"));
+        Assertions.assertEquals("testuser", result.get("ONLINE").iterator().next().get("name"));
+
+        hookThread.interrupt();
+        hookThread.join();
     }
 
     @Test
     public void whenSettingAfkAndOnlineWithoutHookThenReturnedOffline() {
+        // when
+        webTestClient.post()
+                .uri("/users/afk")
+                .header("Authorization", getAuthorizationToken())
+                .exchange();
+        webTestClient.post()
+                .uri("/users/online")
+                .header("Authorization", getAuthorizationToken())
+                .exchange();
 
+
+        // then
+        Map<String, Collection<Map<String, String>>> result = webTestClient.get()
+                .uri("/users")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(Map.class)
+                .getResponseBody()
+                .single()
+                .block();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertNotNull(result.get("ONLINE"));
+        Assertions.assertNotNull(result.get("AFK"));
+        Assertions.assertNotNull(result.get("OFFLINE"));
+        Assertions.assertEquals("testuser", result.get("OFFLINE").iterator().next().get("name"));
     }
 
     @Test
-    public void whenSettingOfflineWithHookThenReturnedOffline() {
+    public void whenSettingOfflineWithHookThenReturnedOffline() throws InterruptedException {
+        // when
+        Thread hookThread = new Thread( () -> webTestClient.post()
+                .uri("/users/hook")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()); // hook is infinite flux
 
+        hookThread.start();
+
+        Thread.sleep(1000); // ugly way to be sure that hook set up
+        webTestClient.post()
+                .uri("/users/offline")
+                .header("Authorization", getAuthorizationToken())
+                .exchange();
+
+        // then
+        Map<String, Collection<Map<String, String>>> result = webTestClient.get()
+                .uri("/users")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(Map.class)
+                .getResponseBody()
+                .single()
+                .block();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertNotNull(result.get("ONLINE"));
+        Assertions.assertNotNull(result.get("AFK"));
+        Assertions.assertNotNull(result.get("OFFLINE"));
+        Assertions.assertEquals("testuser", result.get("OFFLINE").iterator().next().get("name"));
+
+        hookThread.interrupt();
+        hookThread.join();
     }
 
     @Test
     public void whenSettingOfflineWithoutHookThenReturnedOffline() {
+        // when
+        webTestClient.post()
+                .uri("/users/offline")
+                .header("Authorization", getAuthorizationToken())
+                .exchange();
 
+        // then
+        Map<String, Collection<Map<String, String>>> result = webTestClient.get()
+                .uri("/users")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(Map.class)
+                .getResponseBody()
+                .single()
+                .block();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertNotNull(result.get("ONLINE"));
+        Assertions.assertNotNull(result.get("AFK"));
+        Assertions.assertNotNull(result.get("OFFLINE"));
+        Assertions.assertEquals("testuser", result.get("OFFLINE").iterator().next().get("name"));
     }
 
     @Test
     public void whenNoActivitySettingThenReturnedOffline() {
+        // when
+        // nothing
 
+        // then
+        Map<String, Collection<Map<String, String>>> result = webTestClient.get()
+                .uri("/users")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()
+                .expectStatus().isOk()
+                .returnResult(Map.class)
+                .getResponseBody()
+                .single()
+                .block();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertNotNull(result.get("ONLINE"));
+        Assertions.assertNotNull(result.get("AFK"));
+        Assertions.assertNotNull(result.get("OFFLINE"));
+        Assertions.assertEquals("testuser", result.get("OFFLINE").iterator().next().get("name"));
     }
 
     @Override

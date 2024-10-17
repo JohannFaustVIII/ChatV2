@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping("/hook")
-    public Flux<Object> setActiveHook(@AuthenticationPrincipal AuthUser user) {
+    public Flux<Void> setActiveHook(@AuthenticationPrincipal AuthUser user) {
         return service.setActivityHook(user.getId());
     }
 

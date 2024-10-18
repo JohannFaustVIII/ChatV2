@@ -3,10 +3,8 @@ package org.faust.chat.user;
 import org.faust.base.E2ETestBase;
 import org.faust.base.E2ETestExtension;
 import org.faust.chat.Main;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.BeansException;
@@ -26,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-//FIXME: tests fail when ran together
 @RunWith(SpringRunner.class)
 @ExtendWith(E2ETestExtension.class)
 @SpringBootTest(
@@ -39,18 +36,18 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
     @Autowired
     private WebTestClient webTestClient;
 
-    private ApplicationContext applicationContext;
+    private static ApplicationContext applicationContext;
 
     @BeforeEach
     public void setUpForTest() {
         webTestClient = webTestClient.mutate()
                 .responseTimeout(Duration.ofMillis(300000))
                 .build();
-        resetUserBean();
+        resetUserBeans();
     }
 
-    @AfterEach
-    public void resetUserBean() {
+    @AfterAll
+    public static void resetUserBeans() {
         GenericApplicationContext genericApplicationContext = (GenericApplicationContext) applicationContext;
         BeanDefinition bd = genericApplicationContext
                 .getBeanDefinition("userRepository");
@@ -60,6 +57,10 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
                 .getBeanDefinition("userService");
         genericApplicationContext.removeBeanDefinition("userService");
         genericApplicationContext.registerBeanDefinition("userService", bd);
+        bd = genericApplicationContext
+                .getBeanDefinition("userController");
+        genericApplicationContext.removeBeanDefinition("userController");
+        genericApplicationContext.registerBeanDefinition("userController", bd);
     }
 
     @Test
@@ -123,19 +124,11 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
         Assertions.assertEquals("Requested user not found.", result.get("message"));
     }
 
-    // offline/afk/online depends on activity hook, and are implemented to keep the state, so may affect other tests, TODO: think
-
     @Test
     public void whenSettingAfkWithHookThenReturnedAfk() throws InterruptedException {
         // when
-        Thread hookThread = new Thread( () -> webTestClient.post()
-                .uri("/users/hook")
-                .header("Authorization", getAuthorizationToken())
-                .exchange()); // hook is infinite flux
+        Thread hookThread = startHook();
 
-        hookThread.start();
-
-        Thread.sleep(1000); // ugly way to be sure that hook set up
         webTestClient.post()
                 .uri("/users/afk")
                 .header("Authorization", getAuthorizationToken())
@@ -159,8 +152,7 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
         Assertions.assertNotNull(result.get("OFFLINE"));
         Assertions.assertEquals("testuser", result.get("AFK").iterator().next().get("name"));
 
-        hookThread.interrupt();
-        hookThread.join();
+        stopHook(hookThread);
     }
 
     @Test
@@ -193,14 +185,8 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
     @Test
     public void whenSettingOnlineWithHookThenReturnedOnline() throws InterruptedException {
         // when
-        Thread hookThread = new Thread( () -> webTestClient.post()
-                .uri("/users/hook")
-                .header("Authorization", getAuthorizationToken())
-                .exchange()); // hook is infinite flux
+        Thread hookThread = startHook();
 
-        hookThread.start();
-
-        Thread.sleep(1000); // ugly way to be sure that hook set up
         webTestClient.post()
                 .uri("/users/online")
                 .header("Authorization", getAuthorizationToken())
@@ -224,8 +210,7 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
         Assertions.assertNotNull(result.get("OFFLINE"));
         Assertions.assertEquals("testuser", result.get("ONLINE").iterator().next().get("name"));
 
-        hookThread.interrupt();
-        hookThread.join();
+        stopHook(hookThread);
     }
 
     @Test
@@ -258,14 +243,8 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
     @Test
     public void whenSettingAfkAndOnlineWithHookThenReturnedOnline() throws InterruptedException {
         // when
-        Thread hookThread = new Thread( () -> webTestClient.post()
-                .uri("/users/hook")
-                .header("Authorization", getAuthorizationToken())
-                .exchange()); // hook is infinite flux
+        Thread hookThread = startHook();
 
-        hookThread.start();
-
-        Thread.sleep(1000); // ugly way to be sure that hook set up
         webTestClient.post()
                 .uri("/users/afk")
                 .header("Authorization", getAuthorizationToken())
@@ -294,8 +273,7 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
         Assertions.assertNotNull(result.get("OFFLINE"));
         Assertions.assertEquals("testuser", result.get("ONLINE").iterator().next().get("name"));
 
-        hookThread.interrupt();
-        hookThread.join();
+        stopHook(hookThread);
     }
 
     @Test
@@ -333,14 +311,8 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
     @Test
     public void whenSettingOfflineWithHookThenReturnedOffline() throws InterruptedException {
         // when
-        Thread hookThread = new Thread( () -> webTestClient.post()
-                .uri("/users/hook")
-                .header("Authorization", getAuthorizationToken())
-                .exchange()); // hook is infinite flux
+        Thread hookThread = startHook();
 
-        hookThread.start();
-
-        Thread.sleep(1000); // ugly way to be sure that hook set up
         webTestClient.post()
                 .uri("/users/offline")
                 .header("Authorization", getAuthorizationToken())
@@ -364,8 +336,7 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
         Assertions.assertNotNull(result.get("OFFLINE"));
         Assertions.assertEquals("testuser", result.get("OFFLINE").iterator().next().get("name"));
 
-        hookThread.interrupt();
-        hookThread.join();
+        stopHook(hookThread);
     }
 
     @Test
@@ -417,6 +388,24 @@ class UserControllerTest extends E2ETestBase implements ApplicationContextAware 
         Assertions.assertNotNull(result.get("AFK"));
         Assertions.assertNotNull(result.get("OFFLINE"));
         Assertions.assertEquals("testuser", result.get("OFFLINE").iterator().next().get("name"));
+    }
+
+    @NotNull
+    private Thread startHook() throws InterruptedException {
+        Thread hookThread = new Thread( () -> webTestClient.post()
+                .uri("/users/hook")
+                .header("Authorization", getAuthorizationToken())
+                .exchange()); // hook is infinite flux
+
+        hookThread.start();
+
+        Thread.sleep(1000); // ugly way to be sure that hook set up
+        return hookThread;
+    }
+
+    private static void stopHook(Thread hookThread) throws InterruptedException {
+        hookThread.interrupt();
+        hookThread.join();
     }
 
     @Override

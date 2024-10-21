@@ -84,6 +84,10 @@ class ChatControllerTest extends E2ETestBase {
     }
 
     @AfterEach
+    public void afterTestCleanUp() throws SQLException {
+        cleanDb();
+    }
+
     public static void cleanDb() throws SQLException {
         try (Connection connection = databaseContainer.createConnection("")) {
             Statement stmt = connection.createStatement();

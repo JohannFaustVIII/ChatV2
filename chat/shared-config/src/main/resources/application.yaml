@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:./shared.yaml
+    bus:
+      enabled: true
+  kafka:
+    bootstrapServers: ${KAFKA_HOSTNAME:localhost}:${KAFKA_PORT:29092}
+  profiles:
+    active: native

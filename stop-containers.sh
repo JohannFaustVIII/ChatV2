@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dicts=("keycloak" "postgres")
+dicts=("keycloak" "postgres" "kafka")
 
 for d in ${dicts[*]};
 do

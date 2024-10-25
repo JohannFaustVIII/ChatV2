@@ -5,10 +5,13 @@ spring:
     config:
       server:
         native:
-          search-locations: file:./shared.yaml
+          search-locations: classpath:config
     bus:
       enabled: true
   kafka:
     bootstrapServers: ${KAFKA_HOSTNAME:localhost}:${KAFKA_PORT:29092}
   profiles:
     active: native
+
+server:
+  port: ${PORT:8092}

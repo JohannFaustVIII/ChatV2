@@ -1,0 +1,16 @@
+server:
+  port: ${PORT:8012}
+
+spring:
+  application:
+    name: channel-controller
+  config:
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:8092}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8091/eureka/}
+  instance:
+    instanceId: ${random.value}
+    preferIpAddress: true

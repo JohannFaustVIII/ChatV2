@@ -1,0 +1,6 @@
+spring:
+  kafka:
+    bootstrapServers: ${KAFKA_HOSTNAME:localhost}:$3{KAFKA_PORT:29092}
+
+test:
+  property: Existing

@@ -1,0 +1,14 @@
+server:
+  port: ${PORT:8021}
+
+spring:
+  application:
+    name: chat-repository
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8091/eureka/}
+  instance:
+    instanceId: ${random.value}
+    preferIpAddress: true

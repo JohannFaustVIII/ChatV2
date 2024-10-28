@@ -14,6 +14,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.cloud:spring-cloud-config-server")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 }
 
 dependencyManagement {

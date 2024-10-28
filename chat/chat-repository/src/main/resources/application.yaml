@@ -4,6 +4,13 @@ server:
 spring:
   application:
     name: chat-repository
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: CONFIG-SERVER
+  config:
+    import: optional:configserver:RANDOMVALUE?
 
 eureka:
   client:

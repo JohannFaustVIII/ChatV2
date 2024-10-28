@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/channels")
 public class Controller {
 
-    @Value("${test.property}")
+    @Value("${spring.kafka.bootstrapServers}")
     private String testProperty;
 
     @GetMapping

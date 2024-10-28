@@ -4,8 +4,13 @@ server:
 spring:
   application:
     name: channel-controller
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: CONFIG-SERVER
   config:
-    import: configserver:${CONFIG_SERVER_URL:http://localhost:8092}
+    import: optional:configserver:RANDOMVALUE?
 
 eureka:
   client:

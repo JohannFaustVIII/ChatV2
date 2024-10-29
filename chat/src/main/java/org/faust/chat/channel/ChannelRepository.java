@@ -1,6 +1,7 @@
 package org.faust.chat.channel;
 
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
@@ -31,7 +32,7 @@ public class ChannelRepository {
     public Collection<Channel> getAllChannels() {
         return context.select().from(DSL.table(SELECT_CHANNEL_TABLE))
                 .fetch()
-                .map(Channel::mapToChannel);
+                .map(ChannelRepository::mapToChannel);
     }
 
     public boolean existsChannelWithId(UUID channel) {
@@ -49,6 +50,13 @@ public class ChannelRepository {
                         .selectOne()
                         .from(DSL.table(DSL.name(INSERT_CHANNEL_TABLE)))
                         .where(DSL.field("name", String.class).eq(name))
+        );
+    }
+
+    private static Channel mapToChannel(Record record) {
+        return new Channel(
+                record.get("id", UUID.class),
+                record.get("name", String.class)
         );
     }
 }

@@ -1,4 +1,4 @@
-package org.faust.chat.chat;
+package org.faust.chat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -10,5 +10,6 @@ import java.util.UUID;
 public record Message(UUID id, UUID channelId, String sender, String message, @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 @JsonFormat(pattern="dd/MM/yyyy HH:mm") LocalDateTime serverTime, @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 @JsonFormat(pattern="dd/MM/yyyy HH:mm") LocalDateTime editTime, UUID senderId) {
+
 
 }

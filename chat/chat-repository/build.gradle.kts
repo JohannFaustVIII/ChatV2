@@ -12,6 +12,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":chat-common"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.cloud:spring-cloud-starter-config")

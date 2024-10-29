@@ -1,4 +1,4 @@
-package org.faust.chat.channel;
+package org.faust.channel;
 
 import java.util.UUID;
 

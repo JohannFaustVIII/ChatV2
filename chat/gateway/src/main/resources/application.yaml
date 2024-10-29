@@ -1,0 +1,28 @@
+server:
+  port: ${PORT:8001}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8091/eureka/}
+  instance:
+    instanceId: ${random.value}
+    preferIpAddress: true
+
+spring:
+  application:
+    name: gateway
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          jwk-set-uri: ${JWT_PROVIDER_URI:http://localhost:8180/realms/ChatV2Realm/protocol/openid-connect/certs}
+  cloud:
+    gateway:
+      routes:
+        - id: eureka
+          uri: ${EUREKA_ROUTE_URL:http://localhost:8091}
+          predicates:
+            - Path=/eureka/**
+          filters:
+            - RewritePath=/discovery(?<remaining>/?.*), /$\{remaining}

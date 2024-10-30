@@ -1,3 +1,6 @@
+front:
+  origin: ${FRONT_URL:http://localhost:4200}
+
 server:
   port: ${PORT:8001}
 
@@ -24,5 +27,6 @@ spring:
           uri: ${EUREKA_ROUTE_URL:http://localhost:8091}
           predicates:
             - Path=/eureka/**
+            - Method=GET
           filters:
-            - RewritePath=/discovery(?<remaining>/?.*), /$\{remaining}
+            - RewritePath=/eureka(?<remaining>/?.*), /$\{remaining}

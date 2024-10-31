@@ -11,6 +11,11 @@ spring:
         serviceId: CONFIG-SERVER
   config:
     import: optional:configserver:RANDOMVALUE?
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          jwk-set-uri: ${JWT_PROVIDER_URI:http://localhost:8180/realms/ChatV2Realm/protocol/openid-connect/certs}
 
 eureka:
   client:

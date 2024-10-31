@@ -13,9 +13,11 @@ repositories {
 
 dependencies {
     implementation(project(":channel-common"))
+    implementation(project(":common-controller"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.cloud:spring-cloud-starter-config")
+    implementation("org.springframework.security:spring-security-core:6.3.4")
 }
 
 tasks.test {

@@ -30,3 +30,8 @@ spring:
             - Method=GET
           filters:
             - RewritePath=/eureka(?<remaining>/?.*), /$\{remaining}
+        - id: eureka
+          uri: lb://channel-controller
+          predicates:
+            - Path=/channels/**
+            - Method=GET

@@ -1,8 +1,11 @@
 package org.faust.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Configuration
+@EnableWebFluxSecurity
+@EnableReactiveMethodSecurity
 @Component
 public class AuthenticationFilter implements WebFilter {
 

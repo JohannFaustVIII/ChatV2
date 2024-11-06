@@ -20,6 +20,6 @@ public class Controller {
     @GetMapping
     @RequestMapping("/get")
     public String getChannel(@AuthenticationPrincipal AuthUser user, @RequestHeader Map<String, String> headers) {
-        return testProperty + " " + user.getName(); //TODO: so, it doesn't work, but headers are passed to it, looks like requires @EnableWebFluxSecurity and others "turn on"s, think how to solve that gracefully
+        return testProperty + " " + user.getName();
     }
 }

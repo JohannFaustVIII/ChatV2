@@ -41,17 +41,15 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
         final String jwtToken = header.substring(7);
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            Jwt jwt = jwtDecoder().decode(jwtToken);
-            Map<String, Object> claims = jwt.getClaims();
-            Converter<Jwt, Collection<GrantedAuthority>> authoritiesExtractor = new GrantedAuthoritiesExtractor();
-            AuthUser user = new AuthUser(
-                    (String) claims.get("preferred_username"),
-                    UUID.fromString((String) claims.get("sub")),
-                    authoritiesExtractor.convert(jwt)
-            );
-            SecurityContextHolder.getContext().setAuthentication(user);
-        }
-        filterChain.doFilter(request, response);;
+        Jwt jwt = jwtDecoder().decode(jwtToken);
+        Map<String, Object> claims = jwt.getClaims();
+        Converter<Jwt, Collection<GrantedAuthority>> authoritiesExtractor = new GrantedAuthoritiesExtractor();
+        AuthUser user = new AuthUser(
+                (String) claims.get("preferred_username"),
+                UUID.fromString((String) claims.get("sub")),
+                authoritiesExtractor.convert(jwt)
+        );
+        SecurityContextHolder.getContext().setAuthentication(user);
+        filterChain.doFilter(request, response);
     }
 }

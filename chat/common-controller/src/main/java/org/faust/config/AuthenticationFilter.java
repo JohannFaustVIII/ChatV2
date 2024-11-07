@@ -33,7 +33,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String header = request.getHeader(HttpHeaders.AUTHORIZATION); // TODO: what if move it to gateway, extract name and id there, and send it in headers to services behind gateway?
         if (header == null || header.isEmpty()) {
             filterChain.doFilter(request, response);
         }

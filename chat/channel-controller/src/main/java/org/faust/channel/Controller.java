@@ -3,11 +3,9 @@ package org.faust.channel;
 import org.faust.config.AuthUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.Map;
 
 @RestController
@@ -21,5 +19,16 @@ public class Controller {
     @RequestMapping("/get")
     public String getChannel(@AuthenticationPrincipal AuthUser user, @RequestHeader Map<String, String> headers) {
         return testProperty + " " + user.getName();
+    }
+
+    @PostMapping
+    public void addChannel(@RequestBody String name) {
+//        channelService.addChannel(name);
+    }
+
+    @GetMapping
+    public Collection<Channel> getChannels() {
+        // TODO: it feels like CQRS should get implemented, and one controller should be for commands, and another for queries. or repository should handle queries?
+//        return channelService.getAllChannels();
     }
 }

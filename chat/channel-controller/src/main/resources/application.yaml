@@ -16,6 +16,11 @@ spring:
       resource-server:
         jwt:
           jwk-set-uri: ${JWT_PROVIDER_URI:http://localhost:8180/realms/ChatV2Realm/protocol/openid-connect/certs}
+  kafka:
+    producer:
+      clientId: ${spring.application.name}
+      keySerializer: org.apache.kafka.common.serialization.StringSerializer
+      valueSerializer: org.faust.channel.ChannelSerializer
 
 eureka:
   client:

@@ -34,4 +34,4 @@ spring:
           uri: lb://channel-controller
           predicates:
             - Path=/channels/**
-            - Method=GET
+            - Method=GET, POST

@@ -14,6 +14,7 @@ repositories {
 dependencies {
     implementation(project(":channel-common"))
     implementation("org.liquibase:liquibase-core")
+    implementation("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-jooq:3.3.5")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")

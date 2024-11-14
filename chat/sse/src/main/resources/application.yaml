@@ -15,8 +15,8 @@ spring:
     consumer:
       clientId: ${spring.application.name}
       groupId: ${spring.application.name}-group
-      keyDeserializer: org.apache.kafka.common.serialization.StringSerializer
-      valueDeserializer: org.apache.kafka.common.serialization.StringSerializer
+      keyDeserializer: org.apache.kafka.common.serialization.StringDeserializer
+      valueDeserializer: org.apache.kafka.common.serialization.StringDeserializer
       auto-offset-reset: earliest
 
 eureka:

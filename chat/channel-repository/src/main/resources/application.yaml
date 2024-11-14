@@ -18,6 +18,10 @@ spring:
       keyDeserializer: org.apache.kafka.common.serialization.StringDeserializer
       valueDeserializer: org.faust.channel.ChannelDeserializer
       auto-offset-reset: earliest
+    producer:
+      clientId: ${spring.application.name}
+      keySerializer: org.apache.kafka.common.serialization.StringSerializer
+      valueSerializer: org.apache.kafka.common.serialization.StringSerializer
   datasource:
     driver-class-name: org.postgresql.Driver
     username: ${POSTGRES_USER:postgres}

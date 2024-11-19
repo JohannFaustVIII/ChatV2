@@ -20,7 +20,7 @@ spring:
     producer:
       clientId: ${spring.application.name}
       keySerializer: org.apache.kafka.common.serialization.StringSerializer
-      valueSerializer: ?
+      valueSerializer: org.faust.chat.command.CommandSerializer
 
 eureka:
   client:

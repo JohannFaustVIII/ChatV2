@@ -1,5 +1,8 @@
 package org.faust.chat;
 
+import org.faust.chat.command.AddMessage;
+import org.faust.chat.command.DeleteMessage;
+import org.faust.chat.command.EditMessage;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -9,11 +12,11 @@ import java.util.UUID;
 
 @Component
 public class ChatService {
-    private static final String ADD_MESSAGE_TOPIC_NAME = "ADD_MESSAGE";
+    private static final String DML_CHAT_TOPIC_NAME = "DML_CHAT";
 
-    private final KafkaTemplate<String, ?> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public ChatService(KafkaTemplate<String, ?> kafkaTemplate) {
+    public ChatService(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -30,73 +33,16 @@ public class ChatService {
         return null; //TODO: move to repository?
     }
 
-    public String addMessage(UUID channel, String sender, UUID senderId, String message) {
-//        if (!keycloakService.existsUser(senderId)) {
-//            throw new UserUnknownException();
-//        }
-//
-//        if (!channelService.existsChannel(channel)) {
-//            throw new ChannelUnknownException();
-//        }
-//        messageRepository.addMessage(new Message(
-//                UUID.randomUUID(),
-//                channel,
-//                sender,
-//                message,
-//                LocalDateTime.now(),
-//                null,
-//                senderId
-//        ));
-//        return channel.toString();
-        return null; //TODO: maybe, group these checks and move to different streams?
+    public void addMessage(UUID channel, String sender, UUID senderId, String message) {
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, new AddMessage(channel, sender, senderId, message));
     }
 
     public void editMessage(UUID channel, UUID messageId, UUID userId, String newMessage) {
-//        if (!channelService.existsChannel(channel)) {
-//            throw new ChannelUnknownException();
-//        }
-//
-//        if (!keycloakService.existsUser(userId)) {
-//            throw new UserUnknownException();
-//        }
-//
-//        Message oldMessage = messageRepository.getMessage(messageId);
-//        if (oldMessage == null) {
-//            throw new MessageUnknownException();
-//        }
-//        if (!oldMessage.channelId().equals(channel)) {
-//            throw new MessageUnknownException();
-//        }
-//        if (!oldMessage.senderId().equals(userId)) {
-//            throw new InvalidPermissionsException();
-//        }
-//
-//        messageRepository.editMessage(messageId, newMessage);
-        //TODO: maybe, group these checks and move to different streams?
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, new EditMessage(channel, messageId, userId, newMessage));
     }
 
     public void deleteMessage(UUID channel, UUID messageId,UUID userId) {
-//        if (!channelService.existsChannel(channel)) {
-//            throw new ChannelUnknownException();
-//        }
-//
-//        if (!keycloakService.existsUser(userId)) {
-//            throw new UserUnknownException();
-//        }
-//
-//        Message oldMessage = messageRepository.getMessage(messageId);
-//        if (oldMessage == null) {
-//            throw new MessageUnknownException();
-//        }
-//        if (!oldMessage.channelId().equals(channel)) {
-//            throw new MessageUnknownException();
-//        }
-//        if (!oldMessage.senderId().equals(userId)) {
-//            throw new InvalidPermissionsException();
-//        }
-//
-//        messageRepository.deleteMessage(messageId);
-         //TODO: maybe, group these checks and move to different streams?
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, new DeleteMessage(channel, messageId, userId));
     }
 
 }

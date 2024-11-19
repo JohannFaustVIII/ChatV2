@@ -13,9 +13,14 @@ repositories {
 
 dependencies {
     implementation(project(":chat-common"))
+    implementation("org.liquibase:liquibase-core")
+    implementation("org.postgresql:postgresql")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-starter-jooq:3.3.5")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.cloud:spring-cloud-starter-config")
+    implementation("org.springframework.kafka:spring-kafka:3.2.4")
 }
 
 tasks.test {

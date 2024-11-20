@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Component
 public class ChatService {
-    private static final String DML_CHAT_TOPIC_NAME = "DML_CHAT";
+    private static final String DML_CHAT_TOPIC_NAME = "CHAT_REQUEST";
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -34,15 +34,15 @@ public class ChatService {
     }
 
     public void addMessage(UUID channel, String sender, UUID senderId, String message) {
-        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, new AddMessage(channel, sender, senderId, message));
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new AddMessage(channel, sender, senderId, message));
     }
 
     public void editMessage(UUID channel, UUID messageId, UUID userId, String newMessage) {
-        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, new EditMessage(channel, messageId, userId, newMessage));
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new EditMessage(channel, messageId, userId, newMessage));
     }
 
     public void deleteMessage(UUID channel, UUID messageId,UUID userId) {
-        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, new DeleteMessage(channel, messageId, userId));
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new DeleteMessage(channel, messageId, userId));
     }
 
 }

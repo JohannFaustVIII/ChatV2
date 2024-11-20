@@ -8,7 +8,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@KafkaListener(topics = "DML_CHAT")
+@KafkaListener(topics = "CHAT_COMMAND")
 public class MessageConsumer {
 
     @KafkaHandler

@@ -1,0 +1,31 @@
+server:
+  port: ${PORT:8031}
+
+spring:
+  application:
+    name: chat-request-filter
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: CONFIG-SERVER
+  config:
+    import: optional:configserver:RANDOMVALUE?
+  kafka:
+    streams:
+      clientId: ${spring.application.name}-stream
+      properties:
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: org.faust.chat.command.CommandSerde
+    producer:
+      clientId: ${spring.application.name}
+      keySerializer: org.apache.kafka.common.serialization.StringSerializer
+      valueSerializer: org.apache.kafka.common.serialization.StringSerializer
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8091/eureka/}
+  instance:
+    instanceId: ${random.value}
+    preferIpAddress: true

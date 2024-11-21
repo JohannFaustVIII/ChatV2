@@ -34,11 +34,11 @@ public class ChatService {
     }
 
     public void addMessage(UUID channel, String sender, UUID senderId, String message) {
-        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new AddMessage(channel, sender, senderId, message));
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new AddMessage(channel, sender, senderId, message, LocalDateTime.now()));
     }
 
     public void editMessage(UUID channel, UUID messageId, UUID userId, String newMessage) {
-        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new EditMessage(channel, messageId, userId, newMessage));
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new EditMessage(channel, messageId, userId, newMessage, LocalDateTime.now()));
     }
 
     public void deleteMessage(UUID channel, UUID messageId,UUID userId) {

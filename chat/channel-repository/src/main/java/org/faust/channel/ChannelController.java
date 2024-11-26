@@ -11,9 +11,15 @@ import java.util.UUID;
 @RequestMapping("/channel")
 public class ChannelController {
 
+    private final ChannelRepository repository;
+
+    public ChannelController(ChannelRepository repository) {
+        this.repository = repository;
+    }
+
     @GetMapping("/exists/{id}")
     public boolean existsChannel(@PathVariable("id") UUID channelId) {
-        return false; // TODO: to implement
+        return repository.existsChannelWithId(channelId);
     }
 }
 

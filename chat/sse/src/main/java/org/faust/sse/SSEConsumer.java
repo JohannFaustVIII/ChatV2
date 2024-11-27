@@ -14,7 +14,7 @@ public class SSEConsumer {
     }
 
     @KafkaListener(topics = SSE_EVENTS)
-    public void getEvent(String event) {
+    public void getEvent(Message event) {
         sseService.emitEvents(event);
     }
 }

@@ -1,6 +1,8 @@
 package org.faust.sse;
 
+import org.faust.config.AuthUser;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +19,7 @@ public class SSEController {
     }
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> eventStream() {
-        return service.getEvents();
+    public Flux<String> eventStream(@AuthenticationPrincipal AuthUser user) { // TODO: as it is flux, it requires another way, think about gateway again
+        return service.getEvents(user.getId());
     }
 }

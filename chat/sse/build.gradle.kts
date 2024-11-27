@@ -12,7 +12,10 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":sse-common"))
+    implementation(project(":common-controller"))
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation("org.springframework.kafka:spring-kafka:3.2.4")

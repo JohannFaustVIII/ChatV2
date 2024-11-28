@@ -1,8 +1,6 @@
 package org.faust.channel;
 
-import org.faust.config.AuthUser;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -23,8 +21,8 @@ public class Controller {
 
     @GetMapping
     @RequestMapping("/get")
-    public String getChannel(@AuthenticationPrincipal AuthUser user, @RequestHeader Map<String, String> headers) {
-        return testProperty + " " + user.getName();
+    public String getChannel(@RequestHeader Map<String, String> headers) {
+        return null;
     }
 
     @PostMapping

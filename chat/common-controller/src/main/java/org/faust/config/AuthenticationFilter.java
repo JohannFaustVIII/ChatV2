@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-@Component
+//@Component
 public class AuthenticationFilter extends OncePerRequestFilter {
 
     @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")

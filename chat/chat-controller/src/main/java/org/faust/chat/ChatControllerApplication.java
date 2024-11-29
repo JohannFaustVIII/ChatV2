@@ -10,8 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @EnableDiscoveryClient
-@Import({org.faust.config.AuthenticationFilter.class, WebConfig.class})
-@EnableWebSecurity
 public class ChatControllerApplication {
 
     public static void main(String[] args) {

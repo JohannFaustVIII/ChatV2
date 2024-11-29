@@ -13,7 +13,6 @@ repositories {
 
 dependencies {
     implementation(project(":chat-common"))
-    implementation(project(":common-controller"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")

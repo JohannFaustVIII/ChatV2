@@ -1,7 +1,5 @@
 package org.faust.chat;
 
-import org.faust.config.AuthUser;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -23,17 +21,17 @@ public class Controller {
     }
 
     @PostMapping
-    public void addMessage(@PathVariable("channel") UUID channel, @RequestBody String message, @AuthenticationPrincipal AuthUser user) {
-        chatService.addMessage(channel, user.getName(), user.getId(), message);
+    public void addMessage(@PathVariable("channel") UUID channel, @RequestBody String message, @RequestHeader("GW_USER") String username, @RequestHeader("GW_USER_ID") UUID userId) {
+        chatService.addMessage(channel, username, userId, message);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @AuthenticationPrincipal AuthUser user) {
-        chatService.deleteMessage(channel, messageId, user.getId());
+    public void deleteMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @RequestHeader("GW_USER_ID") UUID userId) {
+        chatService.deleteMessage(channel, messageId, userId);
     }
 
     @PutMapping("/{id}")
-    public void editMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @RequestBody String newMessage, @AuthenticationPrincipal AuthUser user) {
-        chatService.editMessage(channel, messageId, user.getId(), newMessage);
+    public void editMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @RequestBody String newMessage, @RequestHeader("GW_USER_ID") UUID userId) {
+        chatService.editMessage(channel, messageId, userId, newMessage);
     }
 }

@@ -7,21 +7,16 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/chat")
-public class MessageController {
+public class ChatRepositoryProxyController {
 
-    private final MessageRepository repository;
+    private final ChatRepositoryProxyService chatRepositoryProxyService;
 
-    public MessageController(MessageRepository repository) {
-        this.repository = repository;
-    }
-
-    @GetMapping("/message/{id}")
-    public Message getMessage(@PathVariable("id") UUID messageId) {
-        return repository.getMessage(messageId);
+    public ChatRepositoryProxyController(ChatRepositoryProxyService chatRepositoryProxyService) {
+        this.chatRepositoryProxyService = chatRepositoryProxyService;
     }
 
     @GetMapping("/{channel}")
     public Collection<Message> getMessages(@PathVariable("channel") UUID channel, @RequestParam(required = false) UUID before, @RequestParam(required = false) UUID after, @RequestParam(defaultValue = "10") int limit) {
-        return repository.getAllMessages(channel, before, after, limit);
+        return chatRepositoryProxyService.getAllMessages(channel, before, after, limit);
     }
 }

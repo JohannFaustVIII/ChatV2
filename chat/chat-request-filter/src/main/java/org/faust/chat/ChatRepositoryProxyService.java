@@ -1,5 +1,6 @@
 package org.faust.chat;
 
+import org.faust.chat.exception.ChannelUnknownException;
 import org.faust.chat.external.ChannelService;
 import org.faust.chat.external.ChatService;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class ChatRepositoryProxyService {
 
     public Collection<Message> getAllMessages(UUID channel, UUID before, UUID after, int limit) {
         if (!channelService.existsChannel(channel)) {
-            // TODO: send error to... sse? OR just exception
+            throw new ChannelUnknownException();
         }
         return chatService.getMessages(channel, before, after, limit);
     }

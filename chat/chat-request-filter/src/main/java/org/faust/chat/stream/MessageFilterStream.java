@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Configuration
@@ -18,15 +19,18 @@ import org.springframework.stereotype.Component;
 public class MessageFilterStream {
     public final static String INPUT_TOPIC = "CHAT_REQUEST";
     public final static String OUTPUT_TOPIC = "CHAT_COMMAND";
+    public final static String SSE_TOPIC = "SSE_EVENTS";
 
     private final ChannelService channelService;
     private final ChatService chatService;
     private final KeycloakService keycloakService;
+    private final KafkaTemplate<String, org.faust.sse.Message> kafkaTemplate;
 
-    public MessageFilterStream(ChannelService channelService, ChatService chatService, KeycloakService keycloakService) {
+    public MessageFilterStream(ChannelService channelService, ChatService chatService, KeycloakService keycloakService, KafkaTemplate<String, org.faust.sse.Message> kafkaTemplate) {
         this.channelService = channelService;
         this.chatService = chatService;
         this.keycloakService = keycloakService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Bean
@@ -47,12 +51,16 @@ public class MessageFilterStream {
 
     public boolean filter(AddMessage command) {
         if (!keycloakService.existsUser(command.senderId())) {
-            // TODO: USER UNKNOWN EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Requested user not found.")
+            );
             return false;
         }
 
         if (!channelService.existsChannel(command.channel())) {
-            // TODO: CHANNEL UNKNOWN EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Requested channel not found.")
+            );
             return false;
         }
 
@@ -61,26 +69,36 @@ public class MessageFilterStream {
 
     public boolean filter(DeleteMessage command) {
         if (!channelService.existsChannel(command.channel())) {
-            // TODO: CHANNEL UNKNOWN EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Requested channel not found.")
+            );
             return false;
         }
 
         if (!keycloakService.existsUser(command.userId())) {
-            // TODO: USER UNKNOWN EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Requested user not found.")
+            );
             return false;
         }
 
         Message oldMessage = chatService.getMessage(command.messageId());
         if (oldMessage == null) {
-            // TODO: MESSAGE UNKNOWN EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Requested message not found.")
+            );
             return false;
         }
         if (!oldMessage.channelId().equals(command.messageId())) {
-            // TODO: MESSAGE UNKNOWN EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Requested message not found.")
+            );
             return false;
         }
         if (!oldMessage.senderId().equals(command.messageId())) {
-            // TODO: INVALID PERMISSION EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Invalid permissions to perform requested action.")
+            );
             return false;
         }
 
@@ -89,26 +107,36 @@ public class MessageFilterStream {
 
     public boolean filter(EditMessage command) {
         if (!channelService.existsChannel(command.channel())) {
-            // TODO: CHANNEL UNKNOWN EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Requested channel not found.")
+            );
             return false;
         }
 
         if (!keycloakService.existsUser(command.userId())) {
-            // TODO: USER UNKNOWN EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Requested user not found.")
+            );
             return false;
         }
 
         Message oldMessage = chatService.getMessage(command.messageId());
         if (oldMessage == null) {
-            // TODO: MESSAGE UNKNOWN EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Requested message not found.")
+            );
             return false;
         }
         if (!oldMessage.channelId().equals(command.channel())) {
-            // TODO: MESSAGE UNKNOWN EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Requested message not found.")
+            );
             return false;
         }
         if (!oldMessage.senderId().equals(command.userId())) {
-            // TODO: INVALID PERMISSION EXCEPTION to...
+            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
+                    org.faust.sse.Message.error(command.requesterId(), "Invalid permissions to perform requested action.")
+            );
             return false;
         }
 

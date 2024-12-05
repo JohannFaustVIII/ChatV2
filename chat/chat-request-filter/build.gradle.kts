@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation(project(":chat-common"))
+    implementation(project(":sse-common"))
     implementation("org.apache.kafka:kafka-streams:3.9.0")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.cloud:spring-cloud-openfeign-core:4.1.3")

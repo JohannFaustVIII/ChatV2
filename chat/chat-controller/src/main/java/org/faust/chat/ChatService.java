@@ -25,24 +25,16 @@ public class ChatService {
         return getMessages(channel, null, null, 10);
     }
 
-    public Collection<Message> getMessages(UUID channel, UUID before, UUID after, int limit) {
-//        if (!channelService.existsChannel(channel)) {
-//            throw new ChannelUnknownException();
-//        }
-//        return messageRepository.getAllMessages(channel, before, after, limit);
-        return null; //TODO: move to repository?
-    }
-
     public void addMessage(UUID channel, String sender, UUID senderId, String message) {
-        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new AddMessage(channel, sender, senderId, message, LocalDateTime.now()));
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new AddMessage(senderId, channel, sender, senderId, message, LocalDateTime.now()));
     }
 
     public void editMessage(UUID channel, UUID messageId, UUID userId, String newMessage) {
-        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new EditMessage(channel, messageId, userId, newMessage, LocalDateTime.now()));
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new EditMessage(userId, channel, messageId, userId, newMessage, LocalDateTime.now()));
     }
 
     public void deleteMessage(UUID channel, UUID messageId,UUID userId) {
-        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new DeleteMessage(channel, messageId, userId));
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new DeleteMessage(userId, channel, messageId, userId));
     }
 
 }

@@ -18,9 +18,9 @@ spring:
         default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
         default.value.serde: org.faust.chat.command.CommandSerde
     producer:
-      clientId: ${spring.application.name}
+      clientId: ${spring.application.name}-stream
       keySerializer: org.apache.kafka.common.serialization.StringSerializer
-      valueSerializer: org.apache.kafka.common.serialization.StringSerializer
+      valueSerializer: org.faust.sse.MessageSerializer
 
 eureka:
   client:

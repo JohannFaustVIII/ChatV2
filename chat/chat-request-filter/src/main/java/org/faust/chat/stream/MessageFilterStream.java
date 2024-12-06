@@ -41,7 +41,7 @@ public class MessageFilterStream {
                         case AddMessage add -> filter(add);
                         case DeleteMessage delete -> filter(delete);
                         case EditMessage edit -> filter(edit);
-                        default -> false; //TODO: implement
+                        default -> false; //TODO: would be nice to store somewhere info about this case, as requester Id is not reachable, should be sent to a log store? need a log store
                     }
                 );
 

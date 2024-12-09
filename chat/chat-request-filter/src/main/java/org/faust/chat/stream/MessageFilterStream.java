@@ -41,7 +41,7 @@ public class MessageFilterStream {
                         case AddMessage add -> filter(add);
                         case DeleteMessage delete -> filter(delete);
                         case EditMessage edit -> filter(edit);
-                        default -> false; //TODO: would be nice to store somewhere info about this case, as requester Id is not reachable, should be sent to a log store? need a log store
+                        default -> false; //TODO: each service has to have log stream, to be captured and stored, to capture - LogStash, to store - to think
                     }
                 );
 

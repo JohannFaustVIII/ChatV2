@@ -7,6 +7,8 @@ import org.faust.chat.command.EditMessage;
 import org.faust.chat.external.ChannelService;
 import org.faust.chat.external.ChatService;
 import org.faust.chat.external.KeycloakService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Component;
 @Configuration
 @Component
 public class MessageFilterStream {
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageFilterStream.class);
     public final static String INPUT_TOPIC = "CHAT_REQUEST";
     public final static String OUTPUT_TOPIC = "CHAT_COMMAND";
     public final static String SSE_TOPIC = "SSE_EVENTS";
@@ -38,10 +42,10 @@ public class MessageFilterStream {
         KStream<String, Object> input = streamsBuilder.stream(INPUT_TOPIC);
         KStream<String, Object> output = input
                 .filter((key, value) -> switch(value) {
-                        case AddMessage add -> filter(add);
-                        case DeleteMessage delete -> filter(delete);
-                        case EditMessage edit -> filter(edit);
-                        default -> false; //TODO: each service has to have log stream, to be captured and stored, to capture - LogStash, to store - to think
+                    case AddMessage add -> filter(add);
+                    case DeleteMessage delete -> filter(delete);
+                    case EditMessage edit -> filter(edit);
+                    default -> handleError(value);
                     }
                 );
 
@@ -143,5 +147,8 @@ public class MessageFilterStream {
         return true;
     }
 
-
+    public boolean handleError(Object value) {
+        logger.error("Found unknown command: Class:" + value.getClass() + "; value:" + value);
+        return false;
+    }
 }

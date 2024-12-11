@@ -29,3 +29,7 @@ eureka:
   instance:
     instanceId: ${random.value}
     preferIpAddress: true
+
+logging:
+  file:
+    name: chatrequestfilter.log

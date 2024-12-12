@@ -20,9 +20,9 @@ public class SSEService {
         this.processor.tryEmitNext(event);
     }
 
-    public Flux<String> getEvents(UUID user) {
+    public Flux<String> getEvents(UUID user, UUID tokenId) {
         return processor.asFlux()
-                .filter(event -> Target.ALL.equals(event.target()) || user.equals(event.targetInfo()))
+                .filter(event -> Target.ALL.equals(event.target()) || tokenId.equals(event.tokenId()))
                 .map(event -> event.message());
     }
 }

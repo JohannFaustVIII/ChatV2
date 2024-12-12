@@ -15,17 +15,17 @@ public class Controller {
     }
 
     @PostMapping
-    public void addMessage(@PathVariable("channel") UUID channel, @RequestBody String message, @RequestHeader("GW_USER") String username, @RequestHeader("GW_USER_ID") UUID userId) {
-        chatService.addMessage(channel, username, userId, message);
+    public void addMessage(@PathVariable("channel") UUID channel, @RequestBody String message, @RequestHeader("GW_USER") String username, @RequestHeader("GW_USER_ID") UUID userId, @RequestHeader("GW_TOKEN_ID") UUID tokenId) {
+        chatService.addMessage(channel, username, userId, tokenId, message);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @RequestHeader("GW_USER_ID") UUID userId) {
-        chatService.deleteMessage(channel, messageId, userId);
+    public void deleteMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @RequestHeader("GW_USER_ID") UUID userId, @RequestHeader("GW_TOKEN_ID") UUID tokenId) {
+        chatService.deleteMessage(channel, messageId, tokenId, userId);
     }
 
     @PutMapping("/{id}")
-    public void editMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @RequestBody String newMessage, @RequestHeader("GW_USER_ID") UUID userId) {
-        chatService.editMessage(channel, messageId, userId, newMessage);
+    public void editMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @RequestBody String newMessage, @RequestHeader("GW_USER_ID") UUID userId, @RequestHeader("GW_TOKEN_ID") UUID tokenId) {
+        chatService.editMessage(channel, messageId, userId, tokenId, newMessage);
     }
 }

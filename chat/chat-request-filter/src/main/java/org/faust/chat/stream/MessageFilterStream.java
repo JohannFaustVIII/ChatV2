@@ -55,15 +55,15 @@ public class MessageFilterStream {
 
     public boolean filter(AddMessage command) {
         if (!keycloakService.existsUser(command.senderId())) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Requested user not found.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested user not found.")
             );
             return false;
         }
 
         if (!channelService.existsChannel(command.channel())) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Requested channel not found.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested channel not found.")
             );
             return false;
         }
@@ -73,35 +73,35 @@ public class MessageFilterStream {
 
     public boolean filter(DeleteMessage command) {
         if (!channelService.existsChannel(command.channel())) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Requested channel not found.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested channel not found.")
             );
             return false;
         }
 
         if (!keycloakService.existsUser(command.userId())) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Requested user not found.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested user not found.")
             );
             return false;
         }
 
         Message oldMessage = chatService.getMessage(command.messageId());
         if (oldMessage == null) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Requested message not found.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested message not found.")
             );
             return false;
         }
         if (!oldMessage.channelId().equals(command.messageId())) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Requested message not found.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested message not found.")
             );
             return false;
         }
         if (!oldMessage.senderId().equals(command.messageId())) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Invalid permissions to perform requested action.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Invalid permissions to perform requested action.")
             );
             return false;
         }
@@ -111,35 +111,35 @@ public class MessageFilterStream {
 
     public boolean filter(EditMessage command) {
         if (!channelService.existsChannel(command.channel())) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Requested channel not found.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested channel not found.")
             );
             return false;
         }
 
         if (!keycloakService.existsUser(command.userId())) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Requested user not found.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested user not found.")
             );
             return false;
         }
 
         Message oldMessage = chatService.getMessage(command.messageId());
         if (oldMessage == null) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Requested message not found.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested message not found.")
             );
             return false;
         }
         if (!oldMessage.channelId().equals(command.channel())) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Requested message not found.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested message not found.")
             );
             return false;
         }
         if (!oldMessage.senderId().equals(command.userId())) {
-            kafkaTemplate.send(SSE_TOPIC, command.requesterId().toString(),
-                    org.faust.sse.Message.error(command.requesterId(), "Invalid permissions to perform requested action.")
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Invalid permissions to perform requested action.")
             );
             return false;
         }

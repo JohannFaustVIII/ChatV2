@@ -20,7 +20,7 @@ public class SSEController {
     }
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> eventStream(@RequestHeader("GW_USER_ID") UUID userId) {
-        return service.getEvents(userId);
+    public Flux<String> eventStream(@RequestHeader("GW_USER_ID") UUID userId, @RequestHeader("GW_TOKEN_ID") UUID tokenId) {
+        return service.getEvents(userId, tokenId);
     }
 }

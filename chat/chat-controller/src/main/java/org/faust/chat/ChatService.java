@@ -7,7 +7,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.UUID;
 
 @Component
@@ -20,21 +19,16 @@ public class ChatService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-
-    public Collection<Message> getMessages(UUID channel) {
-        return getMessages(channel, null, null, 10);
+    public void addMessage(UUID channel, String sender, UUID senderId, UUID tokenId, String message) {
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new AddMessage(tokenId, channel, sender, senderId, message, LocalDateTime.now()));
     }
 
-    public void addMessage(UUID channel, String sender, UUID senderId, String message) {
-        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new AddMessage(senderId, channel, sender, senderId, message, LocalDateTime.now()));
+    public void editMessage(UUID channel, UUID messageId, UUID userId, UUID tokenId, String newMessage) {
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new EditMessage(tokenId, channel, messageId, userId, newMessage, LocalDateTime.now()));
     }
 
-    public void editMessage(UUID channel, UUID messageId, UUID userId, String newMessage) {
-        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new EditMessage(userId, channel, messageId, userId, newMessage, LocalDateTime.now()));
-    }
-
-    public void deleteMessage(UUID channel, UUID messageId,UUID userId) {
-        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new DeleteMessage(userId, channel, messageId, userId));
+    public void deleteMessage(UUID channel, UUID messageId,UUID userId, UUID tokenId) {
+        kafkaTemplate.send(DML_CHAT_TOPIC_NAME, channel.toString(), new DeleteMessage(tokenId, channel, messageId, userId));
     }
 
 }

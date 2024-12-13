@@ -17,5 +17,5 @@ public interface ChatService {
     Message getMessage(@PathVariable("id") UUID messageId);
 
     @GetMapping("/chat/{channel}")
-    public Collection<Message> getMessages(@PathVariable("channel") UUID channel, @RequestParam(required = false) UUID before, @RequestParam(required = false) UUID after, @RequestParam(defaultValue = "10") int limit);
+    Collection<Message> getMessages(@PathVariable("channel") UUID channel, @RequestParam(required = false) UUID before, @RequestParam(required = false) UUID after, @RequestParam(defaultValue = "10") int limit);
 }

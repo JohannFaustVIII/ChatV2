@@ -3,8 +3,6 @@ package org.faust.channel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/channels")
 public class Controller {
@@ -16,12 +14,6 @@ public class Controller {
 
     public Controller(ChannelService channelService) {
         this.channelService = channelService;
-    }
-
-    @GetMapping
-    @RequestMapping("/get")
-    public String getChannel(@RequestHeader Map<String, String> headers) {
-        return null;
     }
 
     @PostMapping

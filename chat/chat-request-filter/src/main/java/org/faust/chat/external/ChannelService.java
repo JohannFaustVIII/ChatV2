@@ -8,6 +8,6 @@ import java.util.UUID;
 
 @FeignClient(name = "channel-repository")
 public interface ChannelService {
-    @GetMapping("/channel/exists/{id}")
+    @GetMapping("/channels/exists/{id}")
     boolean existsChannel(@PathVariable("id") UUID channelId);
 }

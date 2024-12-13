@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/channel")
+@RequestMapping("/channels")
 public class ChannelController {
 
     private final ChannelRepository repository;

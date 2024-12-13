@@ -34,7 +34,22 @@ spring:
           uri: lb://channel-controller
           predicates:
             - Path=/channels/**
-            - Method=GET, POST
+            - Method= POST
+        - id: channel-repository
+          uri: lb://channel-repository
+          predicates:
+            - Path=/channels/**
+            - Method=GET
+        - id: chat-controller
+          uri: lb://chat-controller
+          predicates:
+            - Path=/chat/**
+            - Method=POST, PUT, DELETE
+        - id: chat-repository
+          uri: lb://chat-repository
+          predicates:
+            - Path=/chat/**
+            - Method=GET
         - id: sse-events
           uri: lb://sse
           predicates:

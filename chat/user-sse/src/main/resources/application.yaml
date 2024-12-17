@@ -1,9 +1,9 @@
 server:
-  port: ${PORT:8012}
+  port: ${PORT:8013}
 
 spring:
   application:
-    name: channel-controller
+    name: user-sse
   cloud:
     config:
       discovery:
@@ -15,8 +15,7 @@ spring:
     producer:
       clientId: ${spring.application.name}
       keySerializer: org.apache.kafka.common.serialization.StringSerializer
-      valueSerializer: org.faust.channel.ChannelSerializer
-
+      valueSerializer: org.faust.user.ActivitySerializer # TODO: IMPLEMENT
 eureka:
   client:
     serviceUrl:

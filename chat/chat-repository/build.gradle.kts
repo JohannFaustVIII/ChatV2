@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation(project(":chat-common"))
+    implementation(project(":sse-common"))
     implementation("org.liquibase:liquibase-core")
     implementation("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-aop")

@@ -55,3 +55,8 @@ spring:
           predicates:
             - Path=/events/**
             - Method=GET
+        - id: keycloak-repository
+          uri: lb://keycloak-repository
+          predicates:
+            - Path=/keycloak/details/**
+            - Method=GET

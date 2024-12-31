@@ -60,3 +60,13 @@ spring:
           predicates:
             - Path=/keycloak/details/**
             - Method=GET
+        - id: user-sse
+          uri: lb://user-sse
+          predicates:
+            - Path=/users**
+            - Method=POST
+        - id: user-repository
+          uri: lb://user-sse
+          predicates:
+            - Path=/users**
+            - Method=GET

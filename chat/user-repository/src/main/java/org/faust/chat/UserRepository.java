@@ -3,6 +3,7 @@ package org.faust.chat;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Scheduler;
+import org.faust.chat.external.KeycloakRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -17,40 +18,40 @@ public class UserRepository {
     private final Map<UUID, AtomicInteger> activityCounters = new ConcurrentHashMap<>();
     private final Collection<Runnable> listeners = new LinkedList<>();
 
-//    private final KeycloakRepository keycloakRepository;
+    private final KeycloakRepository keycloakRepository;
 
-    public UserRepository() {
-//        this.keycloakRepository = keycloakRepository;
+    public UserRepository(KeycloakRepository keycloakRepository) {
+        this.keycloakRepository = keycloakRepository;
     }
 
-//    public Map<UserStatus, Collection<UserDetails>> getUsers() {
-//        Map<UserStatus, Collection<UserDetails>> result = initStatusMap();
-//
-//        keycloakRepository
-//                .getUsers()
-//                .stream()
-//                .map(this::mapUserDetailsToEntry)
-//                .forEach(entry -> result.get(entry.getValue()).add(entry.getKey()));
-//        return result;
-//    }
+    public Map<UserStatus, Collection<UserDetails>> getUsers() {
+        Map<UserStatus, Collection<UserDetails>> result = initStatusMap();
 
-//    private static Map<UserStatus, Collection<UserDetails>> initStatusMap() {
-//        UserStatus[] statuses = UserStatus.values();
-//        Map<UserStatus, Collection<UserDetails>> result = new HashMap<>(statuses.length);
-//        Arrays.stream(statuses).forEach(status -> result.put(status, new LinkedList<>()));
-//        return result;
-//    }
+        keycloakRepository
+                .getUsers()
+                .stream()
+                .map(this::mapUserDetailsToEntry)
+                .forEach(entry -> result.get(entry.getValue()).add(entry.getKey()));
+        return result;
+    }
 
-//    private AbstractMap.SimpleEntry<UserDetails, UserStatus> mapUserDetailsToEntry(UserDetails details) {
-//        Cache<UserStatus, UserStatus> cache = users.get(details.id());
-//        UserStatus status;
-//        if (cache == null) {
-//            status = UserStatus.OFFLINE;
-//        } else {
-//            status = mapEntryToUserInfo(details.id(), cache);
-//        }
-//        return new AbstractMap.SimpleEntry<UserDetails, UserStatus>(details, status);
-//    }
+    private static Map<UserStatus, Collection<UserDetails>> initStatusMap() {
+        UserStatus[] statuses = UserStatus.values();
+        Map<UserStatus, Collection<UserDetails>> result = new HashMap<>(statuses.length);
+        Arrays.stream(statuses).forEach(status -> result.put(status, new LinkedList<>()));
+        return result;
+    }
+
+    private AbstractMap.SimpleEntry<UserDetails, UserStatus> mapUserDetailsToEntry(UserDetails details) {
+        Cache<UserStatus, UserStatus> cache = users.get(details.id());
+        UserStatus status;
+        if (cache == null) {
+            status = UserStatus.OFFLINE;
+        } else {
+            status = mapEntryToUserInfo(details.id(), cache);
+        }
+        return new AbstractMap.SimpleEntry<UserDetails, UserStatus>(details, status);
+    }
 
     public void setActive(UUID id, String username) {
         setStatus(id, username, UserStatus.ONLINE);

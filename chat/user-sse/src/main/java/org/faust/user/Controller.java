@@ -10,7 +10,6 @@ import java.util.UUID;
 public class Controller {
     private final UserService service;
 
-//    private final KeycloakService keycloakService;
     public Controller(UserService service) {
         this.service = service;
     }
@@ -34,21 +33,4 @@ public class Controller {
     public Flux<Void> setActiveHook(@RequestHeader("GW_USER") String username, @RequestHeader("GW_USER_ID") UUID userId) {
         return service.setActivityHook(userId);
     }
-
-    // TODO: below to user-repository
-
-//    @GetMapping
-//    public Map<UserStatus, Collection<UserDetails>> getUsers() {
-//        return this.service.getUsers();
-//    }
-//
-//    @GetMapping("/details")
-//    public Collection<UserDetails> getUserDetails() {
-//        return keycloakService.getUsers();
-//    }
-//
-//    @GetMapping("/details/{id}")
-//    public UserDetails getUser(@PathVariable UUID id) {
-//        return keycloakService.getUserInfo(id);
-//    }
 }

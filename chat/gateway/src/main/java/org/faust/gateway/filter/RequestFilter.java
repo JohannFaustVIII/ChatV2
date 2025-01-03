@@ -57,7 +57,7 @@ public class RequestFilter implements GlobalFilter, Ordered {
                 ServerHttpRequest newRequest = request.mutate()
                         .header("GW_USER", username)
                         .header("GW_USER_ID", userId.toString())
-                        .header("GW_TOKEN_ID", tokenId.toString()) // TODO: add it to commands
+                        .header("GW_TOKEN_ID", tokenId.toString())
                         .header(HttpHeaders.AUTHORIZATION, "")
                         .build();
                 chain.filter(exchange.mutate().request(newRequest).build());

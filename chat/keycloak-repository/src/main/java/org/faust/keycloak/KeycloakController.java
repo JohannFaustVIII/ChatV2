@@ -23,8 +23,6 @@ public class KeycloakController {
         return keycloakService.existsUser(userId);
     }
 
-    // TODO: add to gateway
-
     @GetMapping("/details")
     public Collection<UserDetails> getUserDetails() {
         return keycloakService.getUsers();

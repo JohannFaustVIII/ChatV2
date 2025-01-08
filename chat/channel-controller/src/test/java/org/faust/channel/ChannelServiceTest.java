@@ -1,11 +1,14 @@
 package org.faust.channel;
 
-//import org.faust.chat.exception.ChannelExistsException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.*;
 
@@ -16,6 +19,31 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ChannelServiceTest {
+
+    @Mock
+    KafkaTemplate kafkaTemplate;
+
+    @InjectMocks
+    ChannelService channelService;
+
+    @Captor
+    ArgumentCaptor<Channel> argumentCaptor;
+
+    @Test
+    public void whenAddingChannelThenCommandSendToKafka() {
+        // given
+        String channelToAdd = "Random name";
+
+        // when
+        channelService.addChannel(channelToAdd);
+
+        //then
+        verify(kafkaTemplate).send(any(String.class), any(String.class), argumentCaptor.capture());
+        Channel channelSentToAdd = argumentCaptor.getValue();
+        Assertions.assertEquals(channelToAdd, channelSentToAdd.name());
+    }
+
+    // TODO: move rest to repository? refactor
 //
 //    @Mock
 //    ChannelRepository channelRepository;

@@ -19,9 +19,9 @@ spring:
       valueDeserializer: org.faust.channel.ChannelDeserializer
       auto-offset-reset: earliest
     producer:
-      clientId: ${spring.application.name}
+      clientId: ${spring.application.name}-stream
       keySerializer: org.apache.kafka.common.serialization.StringSerializer
-      valueSerializer: org.apache.kafka.common.serialization.StringSerializer
+      valueSerializer: org.faust.sse.MessageSerializer
   datasource:
     driver-class-name: org.postgresql.Driver
     username: ${POSTGRES_USER:postgres}

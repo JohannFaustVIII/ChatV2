@@ -1,5 +1,6 @@
 package org.faust.channel;
 
+import org.faust.channel.command.AddChannel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,24 +11,22 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import java.util.*;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
-// TODO: Instead adding to repository, check sending to Kafka
 
 @ExtendWith(MockitoExtension.class)
 class ChannelServiceTest {
 
     @Mock
-    KafkaTemplate<String, Channel>  kafkaTemplate;
+    KafkaTemplate<String, AddChannel>  kafkaTemplate;
 
     @InjectMocks
     ChannelService channelService;
 
     @Captor
-    ArgumentCaptor<Channel> argumentCaptor;
+    ArgumentCaptor<AddChannel> argumentCaptor;
 
     @Test
     public void whenAddingChannelThenCommandSendToKafka() {
@@ -35,11 +34,11 @@ class ChannelServiceTest {
         String channelToAdd = "Random name";
 
         // when
-        channelService.addChannel(channelToAdd);
+        channelService.addChannel(UUID.randomUUID(), channelToAdd);
 
         //then
         verify(kafkaTemplate).send(eq("ADD_CHANNEL"), any(String.class), argumentCaptor.capture());
-        Channel channelSentToAdd = argumentCaptor.getValue();
+        Channel channelSentToAdd = argumentCaptor.getValue().channel();
         Assertions.assertEquals(channelToAdd, channelSentToAdd.name());
     }
 }

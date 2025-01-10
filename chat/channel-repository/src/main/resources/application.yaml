@@ -16,7 +16,7 @@ spring:
       clientId: ${spring.application.name}
       groupId: ${spring.application.name}-group
       keyDeserializer: org.apache.kafka.common.serialization.StringDeserializer
-      valueDeserializer: org.faust.channel.ChannelDeserializer
+      valueDeserializer: org.faust.channel.command.CommandDeserializer
       auto-offset-reset: earliest
     producer:
       clientId: ${spring.application.name}-stream

@@ -1,5 +1,6 @@
 package org.faust.channel;
 
+import org.faust.channel.command.AddChannel;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -18,16 +19,14 @@ public class ChannelConsumer {
     }
 
     @KafkaListener(topics = ADD_CHANNEL_TOPIC_NAME)
-    public void addChannel(Channel channel) {
-        if (channelRepository.existsChannelWithName(channel.name())) {
-            // exception
-            // TODO: IMPLEMENT TOKEN ID TO ADD CHANNEL COMMAND, REFACTOR TO COMMAND THEN
-//            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
-//                    org.faust.sse.Message.error(command.tokenId(), "Requested user not found.")
-//            );
+    public void addChannel(AddChannel command) {
+        if (channelRepository.existsChannelWithName(command.channel().name())) {
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Exists channel with given name.")
+            );
             return;
         }
-        channelRepository.addChannel(channel);
+        channelRepository.addChannel(command.channel());
     }
 
 }

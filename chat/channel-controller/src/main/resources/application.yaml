@@ -15,7 +15,7 @@ spring:
     producer:
       clientId: ${spring.application.name}
       keySerializer: org.apache.kafka.common.serialization.StringSerializer
-      valueSerializer: org.faust.channel.ChannelSerializer
+      valueSerializer: org.faust.channel.command.CommandSerializer
 
 eureka:
   client:

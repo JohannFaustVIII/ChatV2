@@ -3,6 +3,8 @@ package org.faust.channel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/channels")
 public class Controller {
@@ -17,7 +19,7 @@ public class Controller {
     }
 
     @PostMapping
-    public void addChannel(@RequestBody String name) {
-        channelService.addChannel(name);
+    public void addChannel(@RequestHeader("GW_TOKEN_ID") UUID tokenId, @RequestBody String name) {
+        channelService.addChannel(tokenId, name);
     }
 }

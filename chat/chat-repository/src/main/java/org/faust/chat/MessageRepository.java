@@ -83,9 +83,9 @@ public class MessageRepository {
         return result;
     }
 
-    public void editMessage(UUID messageId, String newMessage) {
+    public void editMessage(UUID messageId, String newMessage, LocalDateTime editTime) {
         context.update(DSL.table(SELECT_MESSAGE_TABLE))
-                .set(DSL.row(DSL.field("\"message\""), DSL.field("\"editTime\"")), DSL.row(newMessage, LocalDateTime.now()))
+                .set(DSL.row(DSL.field("\"message\""), DSL.field("\"editTime\"")), DSL.row(newMessage, editTime))
                 .where(
                         DSL.field("\"id\"").eq(messageId)
                 ).execute();

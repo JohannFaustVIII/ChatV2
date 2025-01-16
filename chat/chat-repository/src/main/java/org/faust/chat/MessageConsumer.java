@@ -31,7 +31,7 @@ public class MessageConsumer {
                 command.channel(),
                 command.sender(),
                 command.message(),
-                LocalDateTime.now(),
+                command.sendTime(),
                 null,
                 command.senderId()
         ));
@@ -39,7 +39,26 @@ public class MessageConsumer {
 
     @KafkaHandler
     public void editMessage(EditMessage command) {
-        messageRepository.editMessage(command.messageId(), command.newMessage());
+        Message oldMessage = messageRepository.getMessage(command.messageId());
+        if (oldMessage == null) {
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested message to edit is unknown.")
+            );
+            return;
+        }
+        if (!oldMessage.channelId().equals(command.channel())) {
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Requested message to edit is unknown.")
+            );
+            return;
+        }
+        if (!oldMessage.senderId().equals(command.userId())) {
+            kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
+                    org.faust.sse.Message.error(command.tokenId(), "Invalid permissions to edit the message.")
+            );
+            return;
+        }
+        messageRepository.editMessage(command.messageId(), command.newMessage(), command.editTime());
     }
 
     @KafkaHandler

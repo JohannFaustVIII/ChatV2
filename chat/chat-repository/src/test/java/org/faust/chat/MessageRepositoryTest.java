@@ -21,7 +21,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// TODO: soo... here may be a problem, as previous version was using a shared database, thid one would require setting up channel repository or access to db to put proper channels, maybe remove foreign keys?
+// TODO: add tests for adding/editing/deleting messages
 
 class MessageRepositoryTest {
 

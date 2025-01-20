@@ -55,7 +55,7 @@ class MessageFilterStreamTest {
         props.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, CommandSerde.class.getName());
 
-        // TODO: something is wrong here
+        // TODO: something is wrong here, NoSuchMethodError, find what library is missing, or what property, or add testcontainer with kafka
         TopologyTestDriver testDriver = new TopologyTestDriver(streamsBuilder.build(), props);
 
         TestInputTopic<String, Object> inputTopic = testDriver.createInputTopic("CHAT_REQUEST", new StringSerializer(), new CommandSerializer());

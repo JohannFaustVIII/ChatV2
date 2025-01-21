@@ -52,7 +52,7 @@ class MessageFilterStreamTest {
 
         testedStream.requestFilter(streamsBuilder);
         Properties props = new Properties();
-        props.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        props.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
         props.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, CommandSerde.class.getName());
 
         // TODO: something is wrong here, NoSuchMethodError, find what library is missing, or what property, or add testcontainer with kafka

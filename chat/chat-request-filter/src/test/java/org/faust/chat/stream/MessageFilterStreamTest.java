@@ -4,10 +4,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.*;
-import org.faust.chat.command.AddMessage;
-import org.faust.chat.command.CommandDeserializer;
-import org.faust.chat.command.CommandSerde;
-import org.faust.chat.command.CommandSerializer;
+import org.faust.chat.command.*;
 import org.faust.chat.external.ChannelService;
 import org.faust.chat.external.ChatService;
 import org.faust.chat.external.KeycloakService;
@@ -128,6 +125,182 @@ class MessageFilterStreamTest {
         verify(kafkaTemplate).send(eq("SSE_EVENTS"), eq(tokenId.toString()), argumentCaptor.capture());
         Message errorMessage = argumentCaptor.getValue();
         assertErrorMessage("Requested channel not found.", tokenId, errorMessage);
+    }
+
+    @Test
+    public void whenDeleteCorrectMessageThenSendForward() {
+        // given
+        TopologyTestDriver testDriver = prepareTopology();
+
+        TestInputTopic<String, Object> inputTopic = testDriver.createInputTopic("CHAT_REQUEST", new StringSerializer(), new CommandSerializer());
+        TestOutputTopic<String, Object> outputTopic = testDriver.createOutputTopic("CHAT_COMMAND", new StringDeserializer(), new CommandDeserializer());
+
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "RandomSender";
+        String message = "Random message";
+        LocalDateTime time = LocalDateTime.now();
+
+        Mockito.when(keycloakService.existsUser(senderId)).thenReturn(true);
+        Mockito.when(channelService.existsChannel(channelId)).thenReturn(true);
+        Mockito.when(chatService.getMessage(messageId)).thenReturn(new org.faust.chat.Message(messageId, channelId, senderName, message, time, null, senderId));
+
+        // when
+        DeleteMessage deleteMessage = new DeleteMessage(tokenId, channelId, messageId, senderId);
+        inputTopic.pipeInput(deleteMessage);
+
+        // then
+        assertEquals(deleteMessage, outputTopic.readRecord().getValue());
+    }
+
+    @Test
+    public void whenDeleteMessageFromNotExistingChannelThenException() {
+        // given
+        TopologyTestDriver testDriver = prepareTopology();
+
+        TestInputTopic<String, Object> inputTopic = testDriver.createInputTopic("CHAT_REQUEST", new StringSerializer(), new CommandSerializer());
+        TestOutputTopic<String, Object> outputTopic = testDriver.createOutputTopic("CHAT_COMMAND", new StringDeserializer(), new CommandDeserializer());
+
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+
+        Mockito.when(channelService.existsChannel(channelId)).thenReturn(false);
+
+        // when
+        DeleteMessage deleteMessage = new DeleteMessage(tokenId, channelId, messageId, senderId);
+        inputTopic.pipeInput(deleteMessage);
+
+        // then
+        assertEquals(0, outputTopic.getQueueSize());
+        verify(kafkaTemplate).send(eq("SSE_EVENTS"), eq(tokenId.toString()), argumentCaptor.capture());
+        Message errorMessage = argumentCaptor.getValue();
+        assertErrorMessage("Requested channel not found.", tokenId, errorMessage);
+    }
+
+    @Test
+    public void whenDeleteMessageByNotExistingUserThenException() {
+        // given
+        TopologyTestDriver testDriver = prepareTopology();
+
+        TestInputTopic<String, Object> inputTopic = testDriver.createInputTopic("CHAT_REQUEST", new StringSerializer(), new CommandSerializer());
+        TestOutputTopic<String, Object> outputTopic = testDriver.createOutputTopic("CHAT_COMMAND", new StringDeserializer(), new CommandDeserializer());
+
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+
+        Mockito.when(keycloakService.existsUser(senderId)).thenReturn(false);
+        Mockito.when(channelService.existsChannel(channelId)).thenReturn(true);
+
+        // when
+        DeleteMessage deleteMessage = new DeleteMessage(tokenId, channelId, messageId, senderId);
+        inputTopic.pipeInput(deleteMessage);
+
+        // then
+        assertEquals(0, outputTopic.getQueueSize());
+        verify(kafkaTemplate).send(eq("SSE_EVENTS"), eq(tokenId.toString()), argumentCaptor.capture());
+        Message errorMessage = argumentCaptor.getValue();
+        assertErrorMessage("Requested user not found.", tokenId, errorMessage);
+    }
+
+
+    @Test
+    public void whenDeleteMessageNotExistingThenException() {
+        // given
+        TopologyTestDriver testDriver = prepareTopology();
+
+        TestInputTopic<String, Object> inputTopic = testDriver.createInputTopic("CHAT_REQUEST", new StringSerializer(), new CommandSerializer());
+        TestOutputTopic<String, Object> outputTopic = testDriver.createOutputTopic("CHAT_COMMAND", new StringDeserializer(), new CommandDeserializer());
+
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+
+        Mockito.when(keycloakService.existsUser(senderId)).thenReturn(true);
+        Mockito.when(channelService.existsChannel(channelId)).thenReturn(true);
+        Mockito.when(chatService.getMessage(messageId)).thenReturn(null);
+
+        // when
+        DeleteMessage deleteMessage = new DeleteMessage(tokenId, channelId, messageId, senderId);
+        inputTopic.pipeInput(deleteMessage);
+
+        // then
+        assertEquals(0, outputTopic.getQueueSize());
+        verify(kafkaTemplate).send(eq("SSE_EVENTS"), eq(tokenId.toString()), argumentCaptor.capture());
+        Message errorMessage = argumentCaptor.getValue();
+        assertErrorMessage("Requested message not found.", tokenId, errorMessage);
+    }
+
+    @Test
+    public void whenDeleteMessageFromWrongChannelThenException() {
+        // given
+        TopologyTestDriver testDriver = prepareTopology();
+
+        TestInputTopic<String, Object> inputTopic = testDriver.createInputTopic("CHAT_REQUEST", new StringSerializer(), new CommandSerializer());
+        TestOutputTopic<String, Object> outputTopic = testDriver.createOutputTopic("CHAT_COMMAND", new StringDeserializer(), new CommandDeserializer());
+
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "RandomSender";
+        String message = "Random message";
+        LocalDateTime time = LocalDateTime.now();
+
+        UUID otherChannel = UUID.randomUUID();
+
+        Mockito.when(keycloakService.existsUser(senderId)).thenReturn(true);
+        Mockito.when(channelService.existsChannel(channelId)).thenReturn(true);
+        Mockito.when(chatService.getMessage(messageId)).thenReturn(new org.faust.chat.Message(messageId, otherChannel, senderName, message, time, null, senderId));
+
+        // when
+        DeleteMessage deleteMessage = new DeleteMessage(tokenId, channelId, messageId, senderId);
+        inputTopic.pipeInput(deleteMessage);
+
+        // then
+        assertEquals(0, outputTopic.getQueueSize());
+        verify(kafkaTemplate).send(eq("SSE_EVENTS"), eq(tokenId.toString()), argumentCaptor.capture());
+        Message errorMessage = argumentCaptor.getValue();
+        assertErrorMessage("Requested message not found.", tokenId, errorMessage);
+    }
+
+    @Test
+    public void whenDeleteMessageByWrongUserThenException() {
+        // given
+        TopologyTestDriver testDriver = prepareTopology();
+
+        TestInputTopic<String, Object> inputTopic = testDriver.createInputTopic("CHAT_REQUEST", new StringSerializer(), new CommandSerializer());
+        TestOutputTopic<String, Object> outputTopic = testDriver.createOutputTopic("CHAT_COMMAND", new StringDeserializer(), new CommandDeserializer());
+
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID messageId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "RandomSender";
+        String message = "Random message";
+        LocalDateTime time = LocalDateTime.now();
+
+        UUID otherUser = UUID.randomUUID();
+
+        Mockito.when(keycloakService.existsUser(senderId)).thenReturn(true);
+        Mockito.when(channelService.existsChannel(channelId)).thenReturn(true);
+        Mockito.when(chatService.getMessage(messageId)).thenReturn(new org.faust.chat.Message(messageId, channelId, senderName, message, time, null, otherUser));
+
+        // when
+        DeleteMessage deleteMessage = new DeleteMessage(tokenId, channelId, messageId, senderId);
+        inputTopic.pipeInput(deleteMessage);
+
+        // then
+        assertEquals(0, outputTopic.getQueueSize());
+        verify(kafkaTemplate).send(eq("SSE_EVENTS"), eq(tokenId.toString()), argumentCaptor.capture());
+        Message errorMessage = argumentCaptor.getValue();
+        assertErrorMessage("Invalid permissions to perform requested action.", tokenId, errorMessage);
     }
 
     private static void assertErrorMessage(String expectedMessage, UUID tokenId, Message resultMessage) {

@@ -93,13 +93,13 @@ public class MessageFilterStream {
             );
             return false;
         }
-        if (!oldMessage.channelId().equals(command.messageId())) {
+        if (!oldMessage.channelId().equals(command.channel())) {
             kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
                     org.faust.sse.Message.error(command.tokenId(), "Requested message not found.")
             );
             return false;
         }
-        if (!oldMessage.senderId().equals(command.messageId())) {
+        if (!oldMessage.senderId().equals(command.userId())) {
             kafkaTemplate.send(SSE_TOPIC, command.tokenId().toString(),
                     org.faust.sse.Message.error(command.tokenId(), "Invalid permissions to perform requested action.")
             );

@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.UUID;
 
+// TODO: E2E test? or some integration to skip kafka, to think later
+
 @RestController
 @RequestMapping("/chat")
 public class ChatRepositoryProxyController {

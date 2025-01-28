@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.UUID;
 
+// TODO: E2E test, to think later, needs kafka
+
 @RestController
 @RequestMapping("/chat")
 public class MessageController {

@@ -32,13 +32,15 @@ class ChannelServiceTest {
     public void whenAddingChannelThenCommandSendToKafka() {
         // given
         String channelToAdd = "Random name";
+        UUID tokenId = UUID.randomUUID();
 
         // when
-        channelService.addChannel(UUID.randomUUID(), channelToAdd);
+        channelService.addChannel(tokenId, channelToAdd);
 
         //then
         verify(kafkaTemplate).send(eq("ADD_CHANNEL"), any(String.class), argumentCaptor.capture());
-        Channel channelSentToAdd = argumentCaptor.getValue().channel();
-        Assertions.assertEquals(channelToAdd, channelSentToAdd.name());
+        AddChannel channelSentToAdd = argumentCaptor.getValue();
+        Assertions.assertEquals(channelToAdd, channelSentToAdd.channel().name());
+        Assertions.assertEquals(tokenId, channelSentToAdd.tokenId());
     }
 }

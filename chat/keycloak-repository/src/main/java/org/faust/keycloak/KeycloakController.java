@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 import java.util.UUID;
 
+// TODO: for E2E testing?
+
 @RestController
 @RequestMapping("/keycloak")
 public class KeycloakController {

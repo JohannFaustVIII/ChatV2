@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 import java.util.Map;
 
+// TODO: test in E2E?
+
 @RestController
 @RequestMapping("/users")
 public class UserController {

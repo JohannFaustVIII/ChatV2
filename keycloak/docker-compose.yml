@@ -1,5 +1,5 @@
 services:
-  postgres:
+  postgreskey:
     container_name: c2_key_db
     image: postgres
     environment:
@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: keycloak
       POSTGRES_DB: keycloak
     volumes:
-      - 'pgsql_data:/var/lib/postgresql/data'
+      - 'pgsql_data_key:/var/lib/postgresql/data'
 
   keycloak:
     container_name: c2_keycloak
@@ -33,12 +33,12 @@ services:
     ports:
       - "8180:8080"
     depends_on:
-      - postgres
+      - postgreskey
     volumes:
       - type: bind
         source: ./realms
         target: /opt/keycloak/data/import
 
 volumes:
-  pgsql_data:
+  pgsql_data_key:
     driver: local

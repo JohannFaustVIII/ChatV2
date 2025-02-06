@@ -48,22 +48,27 @@ spring:
         - id: chat-repository
           uri: lb://chat-repository
           predicates:
+            - Path=/chat/message/**
+            - Method=GET
+        - id: chat-request-filter
+          uri: lb://chat-request-filter
+          predicates:
             - Path=/chat/**
+            - Method=GET
+        - id: keycloak-repository
+          uri: lb://keycloak-repository
+          predicates:
+            - Path=/keycloak/**
             - Method=GET
         - id: sse-events
           uri: lb://sse
           predicates:
             - Path=/events/**
             - Method=GET
-        - id: keycloak-repository
-          uri: lb://keycloak-repository
-          predicates:
-            - Path=/keycloak/details/**
-            - Method=GET
         - id: user-sse
           uri: lb://user-sse
           predicates:
-            - Path=/users**
+            - Path=/users/**
             - Method=POST
         - id: user-repository
           uri: lb://user-sse

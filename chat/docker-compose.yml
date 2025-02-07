@@ -16,6 +16,12 @@ services:
       EUREKA_URL: http://discovery:8091/eureka/
     expose:
       - 8092
+    healthcheck:
+      test: curl --head -fsS http://localhost:8092
+      interval: 60s
+      retries: 1000
+      start_period: 20s
+      timeout: 10s
     depends_on:
       discovery:
         condition: service_healthy
@@ -30,7 +36,7 @@ services:
       discovery:
         condition: service_healthy
       configuration-server:
-        condition: service_started
+        condition: service_healthy
 
   channel-repository:
     image: channel-repository-local:latest
@@ -42,7 +48,7 @@ services:
       discovery:
         condition: service_healthy
       configuration-server:
-        condition: service_started
+        condition: service_healthy
 
   chat-controller:
     image: chat-controller-local:latest
@@ -54,7 +60,7 @@ services:
       discovery:
         condition: service_healthy
       configuration-server:
-        condition: service_started
+        condition: service_healthy
 
   chat-repository:
     image: chat-repository-local:latest
@@ -66,7 +72,7 @@ services:
       discovery:
         condition: service_healthy
       configuration-server:
-        condition: service_started
+        condition: service_healthy
 
   chat-request-filter:
     image: chat-request-filter-local:latest
@@ -78,7 +84,7 @@ services:
       discovery:
         condition: service_healthy
       configuration-server:
-        condition: service_started
+        condition: service_healthy
 
   keycloak-repository:
     image: keycloak-repository-local:latest
@@ -90,7 +96,7 @@ services:
       discovery:
         condition: service_healthy
       configuration-server:
-        condition: service_started
+        condition: service_healthy
 
   sse:
     image: sse-local:latest
@@ -102,7 +108,7 @@ services:
       discovery:
         condition: service_healthy
       configuration-server:
-        condition: service_started
+        condition: service_healthy
 
   user-repository:
     image: user-repository-local:latest
@@ -114,7 +120,7 @@ services:
       discovery:
         condition: service_healthy
       configuration-server:
-        condition: service_started
+        condition: service_healthy
 
   user-sse:
     image: user-sse-local:latest
@@ -126,7 +132,7 @@ services:
       discovery:
         condition: service_healthy
       configuration-server:
-        condition: service_started
+        condition: service_healthy
 
   gateway:
     image: gateway-local:latest

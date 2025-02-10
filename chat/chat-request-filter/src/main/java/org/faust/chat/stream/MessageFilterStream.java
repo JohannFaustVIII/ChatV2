@@ -9,6 +9,7 @@ import org.faust.chat.external.ChatService;
 import org.faust.chat.external.KeycloakService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -38,7 +39,7 @@ public class MessageFilterStream {
     }
 
     @Bean
-    public KStream<String, Object> requestFilter(StreamsBuilder streamsBuilder) {
+    public KStream<String, Object> requestFilter(@Autowired StreamsBuilder streamsBuilder) {
         KStream<String, Object> input = streamsBuilder.stream(INPUT_TOPIC);
         KStream<String, Object> output = input
                 .filter((key, value) -> switch(value) {

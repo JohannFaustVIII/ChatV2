@@ -17,7 +17,7 @@ dependencies {
     implementation("org.apache.kafka:kafka-streams:3.9.0")
     implementation("org.apache.kafka:kafka-clients:3.9.0")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.cloud:spring-cloud-openfeign-core:4.1.3")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation("org.springframework.kafka:spring-kafka:3.2.4")

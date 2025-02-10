@@ -6,6 +6,10 @@ spring:
       server:
         native:
           search-locations: classpath:config
+        overrides:
+          spring:
+            kafka:
+              bootstrapServers: ${KAFKA_HOSTNAME:localhost}:${KAFKA_PORT:29092}
   profiles:
     active: native
 

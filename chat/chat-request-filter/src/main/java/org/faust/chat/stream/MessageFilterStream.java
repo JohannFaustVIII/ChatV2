@@ -14,11 +14,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
+import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Configuration
 @Component
+@EnableKafkaStreams
 public class MessageFilterStream {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageFilterStream.class);
@@ -39,7 +41,7 @@ public class MessageFilterStream {
     }
 
     @Bean
-    public KStream<String, Object> requestFilter(@Autowired StreamsBuilder streamsBuilder) {
+    public KStream<String, Object> requestFilter(StreamsBuilder streamsBuilder) {
         KStream<String, Object> input = streamsBuilder.stream(INPUT_TOPIC);
         KStream<String, Object> output = input
                 .filter((key, value) -> switch(value) {

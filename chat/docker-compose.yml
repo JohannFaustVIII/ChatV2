@@ -139,7 +139,6 @@ services:
     environment:
       EUREKA_URL: http://discovery:8091/eureka/
       EUREKA_ROUTE_URL: http://discovery:8091
-      JWT_PROVIDER_URI:
     expose:
       - 8001
     ports:

@@ -31,17 +31,6 @@ public class WebConfig implements WebFluxConfigurer {
     @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
     String jwkSetUri;
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins(frontDomain)
-                .allowedMethods(HttpMethod.GET.name(),
-                        HttpMethod.POST.name(),
-                        HttpMethod.DELETE.name(),
-                        HttpMethod.OPTIONS.name())
-                .allowedHeaders(HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION);
-    }
-
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http

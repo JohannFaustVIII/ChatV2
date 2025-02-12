@@ -23,6 +23,7 @@ services:
   gateway:
     environment:
       JWT_PROVIDER_URI: http://keycloak:8080/realms/ChatV2Realm/protocol/openid-connect/certs
+      FRONT_URL: "http://localhost:4200"
 
   keycloak-repository:
     environment:

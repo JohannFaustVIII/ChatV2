@@ -25,22 +25,20 @@ spring:
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       globalcors:
+        add-to-simple-url-handler-mapping: true
         corsConfigurations:
           '[/**]':
-            allowedOrigins: ${FRONT_URL:http://localhost:4200}
+            allowedOriginPatterns: "*"
+#            allowedOrigins: "*"
+            allowedMethods: "*"
             allowedHeaders: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - DELETE
-              - PUT
-              - OPTIONS
+            exposedHeaders: "*"
       routes:
         - id: eureka
           uri: ${EUREKA_ROUTE_URL:http://localhost:8091}
           predicates:
             - Path=/eureka/**
-            - Method=GET
+            - Method=GET, OPTIONS
           filters:
             - RewritePath=/eureka(?<remaining>/?.*), /$\{remaining}
         - id: channel-controller
@@ -52,7 +50,7 @@ spring:
           uri: lb://channel-repository
           predicates:
             - Path=/channels/**
-            - Method=GET
+            - Method=GET, OPTIONS
         - id: chat-controller
           uri: lb://chat-controller
           predicates:
@@ -62,29 +60,29 @@ spring:
           uri: lb://chat-repository
           predicates:
             - Path=/chat/message/**
-            - Method=GET
+            - Method=GET, OPTIONS
         - id: chat-request-filter
           uri: lb://chat-request-filter
           predicates:
             - Path=/chat/**
-            - Method=GET
+            - Method=GET, OPTIONS
         - id: keycloak-repository
           uri: lb://keycloak-repository
           predicates:
             - Path=/keycloak/**
-            - Method=GET
+            - Method=GET, OPTIONS
         - id: sse-events
           uri: lb://sse
           predicates:
             - Path=/events/**
-            - Method=GET
+            - Method=GET, OPTIONS
         - id: user-sse
           uri: lb://user-sse
           predicates:
             - Path=/users/**
             - Method=POST
         - id: user-repository
-          uri: lb://user-sse
+          uri: lb://user-repository
           predicates:
             - Path=/users**
-            - Method=GET
+            - Method=GET, OPTIONS

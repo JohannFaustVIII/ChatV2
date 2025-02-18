@@ -12,8 +12,9 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+//    implementation("org.springframework.security:spring-security-config:6.4.2")
+    implementation("org.springframework.security:spring-security-oauth2-resource-server:6.4.2")
+    implementation("org.springframework.security:spring-security-oauth2-jose:6.4.2")
     implementation("org.springframework.cloud:spring-cloud-starter-gateway")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 }

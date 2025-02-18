@@ -52,7 +52,6 @@ public class RequestFilter implements GlobalFilter, Ordered {
                 UUID userId = UUID.fromString((String) claims.get("sub"));
                 String username = (String) claims.get("preferred_username");
                 UUID tokenId = UUID.fromString((String) claims.get("jti"));
-                System.out.println("ID = " + userId + "; name = " + username);
 
                 ServerHttpRequest newRequest = request.mutate()
                         .header("GW_USER", username)

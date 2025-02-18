@@ -29,7 +29,6 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOriginPatterns: "*"
-#            allowedOrigins: "*"
             allowedMethods: "*"
             allowedHeaders: "*"
             exposedHeaders: "*"
@@ -74,7 +73,7 @@ spring:
         - id: sse-events
           uri: lb://sse
           predicates:
-            - Path=/events/**
+            - Path=/events
             - Method=GET, OPTIONS
         - id: user-sse
           uri: lb://user-sse

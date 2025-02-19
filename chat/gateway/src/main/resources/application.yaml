@@ -22,16 +22,6 @@ spring:
           jwk-set-uri: ${JWT_PROVIDER_URI:http://localhost:8180/realms/ChatV2Realm/protocol/openid-connect/certs}
   cloud:
     gateway:
-      default-filters:
-        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
-      globalcors:
-        add-to-simple-url-handler-mapping: true
-        corsConfigurations:
-          '[/**]':
-            allowedOriginPatterns: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
-            exposedHeaders: "*"
       routes:
         - id: eureka
           uri: ${EUREKA_ROUTE_URL:http://localhost:8091}

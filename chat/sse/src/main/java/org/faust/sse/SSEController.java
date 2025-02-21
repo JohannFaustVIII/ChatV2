@@ -19,8 +19,9 @@ public class SSEController {
         this.service = service;
     }
 
+    //TODO: fix below as there is missing header for this SSE
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> eventStream(@RequestHeader("GW_USER_ID") UUID userId, @RequestHeader("GW_TOKEN_ID") UUID tokenId) {
+    public Flux<String> eventStream(@RequestHeader(value = "GW_USER_ID", required = false) UUID userId, @RequestHeader(value = "GW_TOKEN_ID", required = false) UUID tokenId) {
         return service.getEvents(userId, tokenId);
     }
 }

@@ -24,6 +24,8 @@ public class MessageConsumer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    // TODO: ADD AOP TO UPDATE MESSAGES FROM CHANNEL
+
     @KafkaHandler
     public void addMessage(AddMessage command) {
         messageRepository.addMessage(new Message(

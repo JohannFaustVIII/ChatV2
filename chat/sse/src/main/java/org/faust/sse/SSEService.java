@@ -22,7 +22,7 @@ public class SSEService {
 
     public Flux<String> getEvents(UUID user, UUID tokenId) {
         return processor.asFlux()
-                .filter(event -> Target.ALL.equals(event.target()) || tokenId.equals(event.tokenId()))
+                .filter(event -> Target.ALL.equals(event.target()) || tokenId == null || tokenId.equals(event.tokenId()))
                 .map(event -> event.message());
     }
 }

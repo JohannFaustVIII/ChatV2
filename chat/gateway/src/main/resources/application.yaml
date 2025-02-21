@@ -65,11 +65,15 @@ spring:
           predicates:
             - Path=/events
             - Method=GET, OPTIONS
+          metadata:
+            response-timeout: -1
         - id: user-sse
           uri: lb://user-sse
           predicates:
             - Path=/users/**
             - Method=POST
+          metadata:
+            response-timeout: -1
         - id: user-repository
           uri: lb://user-repository
           predicates:

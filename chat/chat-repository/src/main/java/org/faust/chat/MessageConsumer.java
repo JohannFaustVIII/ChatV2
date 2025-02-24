@@ -24,8 +24,6 @@ public class MessageConsumer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    // TODO: ADD AOP TO UPDATE MESSAGES FROM CHANNEL
-
     @KafkaHandler
     public void addMessage(AddMessage command) {
         messageRepository.addMessage(new Message(
@@ -37,6 +35,7 @@ public class MessageConsumer {
                 null,
                 command.senderId()
         ));
+        kafkaTemplate.send(SSE_TOPIC, command.channel().toString(), org.faust.sse.Message.globalNotify(command.channel().toString()));
     }
 
     @KafkaHandler
@@ -61,6 +60,7 @@ public class MessageConsumer {
             return;
         }
         messageRepository.editMessage(command.messageId(), command.newMessage(), command.editTime());
+        kafkaTemplate.send(SSE_TOPIC, command.channel().toString(), org.faust.sse.Message.globalNotify(command.channel().toString()));
     }
 
     @KafkaHandler
@@ -86,6 +86,7 @@ public class MessageConsumer {
         }
 
         messageRepository.deleteMessage(command.messageId());
+        kafkaTemplate.send(SSE_TOPIC, command.channel().toString(), org.faust.sse.Message.globalNotify(command.channel().toString()));
     }
 
 }

@@ -4,6 +4,7 @@ import org.faust.chat.exception.WrongOrderException;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.OrderField;
+import org.jooq.Record;
 import org.jooq.SortField;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
@@ -66,7 +67,7 @@ public class MessageRepository {
                 .orderBy(order)
                 .limit(limit)
                 .fetch()
-                .map(Message::mapToMessage);
+                .map(MessageRepository::mapToMessage);
 
         if (before != null && after != null && result.isEmpty()) {
             Message beforeMessage = getMessage(before);
@@ -103,7 +104,19 @@ public class MessageRepository {
                 .where(
                         DSL.field("\"id\"").eq(messageId)
                 ).fetch()
-                .map(Message::mapToMessage);
+                .map(MessageRepository::mapToMessage);
         return messages.isEmpty() ? null: messages.get(0);
+    }
+
+    private static Message mapToMessage(Record record) {
+        return new Message(
+                record.get("id", UUID.class),
+                record.get("channelId", UUID.class),
+                record.get("sender", String.class),
+                record.get("message", String.class),
+                record.get("serverTime", LocalDateTime.class),
+                record.get("editTime", LocalDateTime.class),
+                record.get("senderId", UUID.class)
+        );
     }
 }

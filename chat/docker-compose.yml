@@ -1,0 +1,157 @@
+services:
+  discovery:
+    image: discovery-local:latest
+    expose:
+      - 8091
+    healthcheck:
+      test: curl --head -fsS http://localhost:8091
+      interval: 60s
+      retries: 1000
+      start_period: 20s
+      timeout: 10s
+
+  configuration-server:
+    image: shared-config-local:latest
+    environment:
+      EUREKA_URL: http://discovery:8091/eureka/
+    expose:
+      - 8092
+    healthcheck:
+      test: curl --head -fsS http://localhost:8092
+      interval: 60s
+      retries: 1000
+      start_period: 20s
+      timeout: 10s
+    depends_on:
+      discovery:
+        condition: service_healthy
+
+  channel-controller:
+    image: channel-controller-local:latest
+    environment:
+      EUREKA_URL: http://discovery:8091/eureka/
+    expose:
+      - 8012
+    depends_on:
+      discovery:
+        condition: service_healthy
+      configuration-server:
+        condition: service_healthy
+
+  channel-repository:
+    image: channel-repository-local:latest
+    environment:
+      EUREKA_URL: http://discovery:8091/eureka/
+    expose:
+      - 8022
+    depends_on:
+      discovery:
+        condition: service_healthy
+      configuration-server:
+        condition: service_healthy
+
+  chat-controller:
+    image: chat-controller-local:latest
+    environment:
+      EUREKA_URL: http://discovery:8091/eureka/
+    expose:
+      - 8011
+    depends_on:
+      discovery:
+        condition: service_healthy
+      configuration-server:
+        condition: service_healthy
+
+  chat-repository:
+    image: chat-repository-local:latest
+    environment:
+      EUREKA_URL: http://discovery:8091/eureka/
+    expose:
+      - 8021
+    depends_on:
+      discovery:
+        condition: service_healthy
+      configuration-server:
+        condition: service_healthy
+
+  chat-request-filter:
+    image: chat-request-filter-local:latest
+    environment:
+      EUREKA_URL: http://discovery:8091/eureka/
+    expose:
+      - 8031
+    depends_on:
+      discovery:
+        condition: service_healthy
+      configuration-server:
+        condition: service_healthy
+
+  keycloak-repository:
+    image: keycloak-repository-local:latest
+    environment:
+      EUREKA_URL: http://discovery:8091/eureka/
+    expose:
+      - 8023
+    depends_on:
+      discovery:
+        condition: service_healthy
+      configuration-server:
+        condition: service_healthy
+
+  sse:
+    image: sse-local:latest
+    environment:
+      EUREKA_URL: http://discovery:8091/eureka/
+    expose:
+      - 8099
+    depends_on:
+      discovery:
+        condition: service_healthy
+      configuration-server:
+        condition: service_healthy
+
+  user-repository:
+    image: user-repository-local:latest
+    environment:
+      EUREKA_URL: http://discovery:8091/eureka/
+    expose:
+      - 8024
+    depends_on:
+      discovery:
+        condition: service_healthy
+      configuration-server:
+        condition: service_healthy
+
+  user-sse:
+    image: user-sse-local:latest
+    environment:
+      EUREKA_URL: http://discovery:8091/eureka/
+    expose:
+      - 8013
+    depends_on:
+      discovery:
+        condition: service_healthy
+      configuration-server:
+        condition: service_healthy
+
+  gateway:
+    image: gateway-local:latest
+    environment:
+      EUREKA_URL: http://discovery:8091/eureka/
+      EUREKA_ROUTE_URL: http://discovery:8091
+    expose:
+      - 8001
+    ports:
+      - 8001:8001
+    depends_on:
+      - discovery
+      - configuration-server
+      - channel-controller
+      - channel-repository
+      - chat-controller
+      - chat-repository
+      - chat-request-filter
+      - keycloak-repository
+      - sse
+      - user-repository
+      - user-sse

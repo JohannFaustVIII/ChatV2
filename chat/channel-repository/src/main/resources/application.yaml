@@ -1,0 +1,42 @@
+server:
+  port: ${PORT:8022}
+
+spring:
+  application:
+    name: channel-repository
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: CONFIG-SERVER
+  config:
+    import: optional:configserver:RANDOMVALUE?
+  kafka:
+    consumer:
+      clientId: ${spring.application.name}
+      groupId: ${spring.application.name}-group
+      keyDeserializer: org.apache.kafka.common.serialization.StringDeserializer
+      valueDeserializer: org.faust.channel.command.CommandDeserializer
+      auto-offset-reset: earliest
+    producer:
+      clientId: ${spring.application.name}-stream
+      keySerializer: org.apache.kafka.common.serialization.StringSerializer
+      valueSerializer: org.faust.sse.MessageSerializer
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/postgres}
+  jpa:
+    hibernate:
+      ddlAuto: validate
+  jooq:
+    sqlDialect: POSTGRES
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8091/eureka/}
+  instance:
+    instanceId: ${random.value}
+    preferIpAddress: true

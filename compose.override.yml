@@ -1,0 +1,57 @@
+services:
+  init-kafka:
+    image: confluentinc/cp-kafka:6.1.1
+    depends_on:
+      - kafka
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server kafka:29092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic ADD_CHANNEL --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic CHAT_REQUEST --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic CHAT_COMMAND --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic SSE_EVENTS --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic USER_ACTIVITY --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server kafka:29092 --list
+      "
+  discovery:
+    depends_on:
+      postgres:
+        condition: service_started
+      init-kafka:
+        condition: service_completed_successfully
+      keycloak:
+        condition: service_healthy
+
+  channel-repository:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/postgres
+
+  chat-repository:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/postgres
+
+  gateway:
+    environment:
+      JWT_PROVIDER_URI: http://keycloak:8080/realms/ChatV2Realm/protocol/openid-connect/certs
+
+  keycloak-repository:
+    environment:
+      KEYCLOAK_URI: http://keycloak:8080
+      KEYCLOAK_REALM: ChatV2Realm
+      KEYCLOAK_ID: cv2-backend
+      KEYCLOAK_SECRET: GJJuJksZfQUpiAV4X8QprPXmMDx0B0Dq
+
+  configuration-server:
+    environment:
+      KAFKA_HOSTNAME: kafka
+      KAFKA_PORT: 29092

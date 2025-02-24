@@ -1,0 +1,20 @@
+server:
+  port: ${PORT:8023}
+
+spring:
+  application:
+    name: keycloak-repository
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8091/eureka/}
+  instance:
+    instanceId: ${random.value}
+    preferIpAddress: true
+
+keycloak:
+  url: ${KEYCLOAK_URI:http://localhost:8180}
+  realm: ${KEYCLOAK_REALM:ChatV2Realm}
+  clientId: ${KEYCLOAK_ID:cv2-backend}
+  clientSecret: ${KEYCLOAK_SECRET:GJJuJksZfQUpiAV4X8QprPXmMDx0B0Dq}

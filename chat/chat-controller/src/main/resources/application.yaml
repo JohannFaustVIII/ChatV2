@@ -1,0 +1,26 @@
+server:
+  port: ${PORT:8011}
+
+spring:
+  application:
+    name: chat-controller
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: CONFIG-SERVER
+  config:
+    import: optional:configserver:RANDOMVALUE?
+  kafka:
+    producer:
+      clientId: ${spring.application.name}
+      keySerializer: org.apache.kafka.common.serialization.StringSerializer
+      valueSerializer: org.faust.chat.command.CommandSerializer
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8091/eureka/}
+  instance:
+    instanceId: ${random.value}
+    preferIpAddress: true

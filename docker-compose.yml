@@ -1,0 +1,6 @@
+include:
+  - kafka/docker-compose.yml
+  - keycloak/docker-compose.yml
+  - postgres/docker-compose.yml
+  - chat/docker-compose.yml
+  - chat-front/docker-compose.yml

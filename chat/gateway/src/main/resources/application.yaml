@@ -1,0 +1,81 @@
+front:
+  origin: ${FRONT_URL:http://localhost:4200}
+
+server:
+  port: ${PORT:8001}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8091/eureka/}
+  instance:
+    instanceId: ${random.value}
+    preferIpAddress: true
+
+spring:
+  application:
+    name: gateway
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          jwk-set-uri: ${JWT_PROVIDER_URI:http://localhost:8180/realms/ChatV2Realm/protocol/openid-connect/certs}
+  cloud:
+    gateway:
+      routes:
+        - id: eureka
+          uri: ${EUREKA_ROUTE_URL:http://localhost:8091}
+          predicates:
+            - Path=/eureka/**
+            - Method=GET, OPTIONS
+          filters:
+            - RewritePath=/eureka(?<remaining>/?.*), /$\{remaining}
+        - id: channel-controller
+          uri: lb://channel-controller
+          predicates:
+            - Path=/channels/**
+            - Method= POST
+        - id: channel-repository
+          uri: lb://channel-repository
+          predicates:
+            - Path=/channels/**
+            - Method=GET, OPTIONS
+        - id: chat-controller
+          uri: lb://chat-controller
+          predicates:
+            - Path=/chat/**
+            - Method=POST, PUT, DELETE
+        - id: chat-repository
+          uri: lb://chat-repository
+          predicates:
+            - Path=/chat/message/**
+            - Method=GET, OPTIONS
+        - id: chat-request-filter
+          uri: lb://chat-request-filter
+          predicates:
+            - Path=/chat/**
+            - Method=GET, OPTIONS
+        - id: keycloak-repository
+          uri: lb://keycloak-repository
+          predicates:
+            - Path=/keycloak/**
+            - Method=GET, OPTIONS
+        - id: sse-events
+          uri: lb://sse
+          predicates:
+            - Path=/events
+            - Method=GET, OPTIONS
+          metadata:
+            response-timeout: -1
+        - id: user-sse
+          uri: lb://user-sse
+          predicates:
+            - Path=/users/**
+            - Method=POST
+          metadata:
+            response-timeout: -1
+        - id: user-repository
+          uri: lb://user-repository
+          predicates:
+            - Path=/users**
+            - Method=GET, OPTIONS

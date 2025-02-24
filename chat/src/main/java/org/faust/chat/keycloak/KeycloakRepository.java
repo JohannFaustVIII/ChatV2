@@ -17,7 +17,7 @@ public class KeycloakRepository {
 
     private final Keycloak keycloak;
 
-    private String realm;
+    private final String realm;
 
     public KeycloakRepository(Keycloak keycloak, String keycloakRealm) {
         this.keycloak = keycloak;

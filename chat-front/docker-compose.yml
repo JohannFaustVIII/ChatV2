@@ -1,0 +1,7 @@
+services:
+  chat-front:
+    image: chat-front-local:latest
+    expose:
+      - 4200
+    ports:
+      - 4200:4200

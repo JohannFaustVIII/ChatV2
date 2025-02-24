@@ -44,10 +44,14 @@ export class ChannelSingleComponent extends Listener {
   }
 
   getNewMessages() {
-    this.messageService.getMessagesAfter(this.id, this.messages.at(0).id).subscribe(data => {
-      this.messages = [...data, ...this.messages]
-      this.changeDetector.detectChanges();
-    });
+    if (this.messages?.length) {
+      this.messageService.getMessagesAfter(this.id, this.messages.at(0).id).subscribe(data => {
+        this.messages = [...data, ...this.messages]
+        this.changeDetector.detectChanges();
+      });
+    } else {
+      this.getMessages();
+    }
   }
 
   getOlderMessages() {

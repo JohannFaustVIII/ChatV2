@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:config
+        overrides:
+          spring:
+            kafka:
+              bootstrapServers: ${KAFKA_HOSTNAME:localhost}:${KAFKA_PORT:29092}
+  profiles:
+    active: native
+
+server:
+  port: ${PORT:8092}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8091/eureka/}
+  instance:
+    instanceId: ${random.value}
+    preferIpAddress: true

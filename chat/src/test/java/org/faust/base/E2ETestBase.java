@@ -220,7 +220,7 @@ public abstract class E2ETestBase {
 
         String userId = k.realm(KEYCLOAK_REALM)
                 .users()
-                .create(user).getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");;
+                .create(user).getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
 
         KEYCLOAK_USER_ID = UUID.fromString(userId);
 

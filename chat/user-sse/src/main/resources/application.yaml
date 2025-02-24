@@ -1,0 +1,25 @@
+server:
+  port: ${PORT:8013}
+
+spring:
+  application:
+    name: user-sse
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: CONFIG-SERVER
+  config:
+    import: optional:configserver:RANDOMVALUE?
+  kafka:
+    producer:
+      clientId: ${spring.application.name}
+      keySerializer: org.apache.kafka.common.serialization.StringSerializer
+      valueSerializer: org.faust.user.command.CommandSerializer
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8091/eureka/}
+  instance:
+    instanceId: ${random.value}
+    preferIpAddress: true

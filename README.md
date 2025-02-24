@@ -1,5 +1,7 @@
 # ChatV2
 
+TODO: README need to be updated, backend was split to microservices.
+
 Simple chat application. Main focus is put on backend side. Frontend side is kept simple and may not implement all possibilities given by backen.
 
 ## Environment Variables

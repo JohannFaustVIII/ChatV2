@@ -83,6 +83,17 @@ docker compose rm -f && docker volume rm $(docker volume ls -q)
 
 
 
-## What microservices are defined?
+## What microservices are defined on backend?
 
-TODO: to add
+- `gateway` - entrypoint for outside applications
+- `discovery` - discovery service for microservices inside
+- `shared-config` - keeps configuration shared between microservices (for now, Kafka url)
+- `sse` - handles Server-Sent Events about events on the backend, notifies about changes inside channels, messages or errors
+- `channel-controller` - handles all commands modifying channels (for now, only adding)
+- `channel-repository` - handles saving changes and queries
+- `chat-controller` - handles all commands modifying messages (adding/editing/deleting)
+- `chat-request-filter` - checks correctness of message's commands, and pass them further or returns error (Kafka Stream)
+- `chat-repository` - handles saving changes and queries about messages
+- `keycloak-repository` - access point to keycloak to read users by other microservices
+- `user-sse` - handles all commands changing user state and SSE checking user activity
+- `user-repository` - handles saving changes and queries about user activity

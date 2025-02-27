@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'; 
 import { EnvService } from './env.service';
 import { Observable } from 'rxjs';
+import 'node_modules/event-source-polyfill/src/eventsource.min.js';
+
+declare var EventSourcePolyfill: any; // TODO: not found
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiHttpService {
-
 
   headers = new HttpHeaders({'Content-Type':'application/json; charset=utf-8'});
 
@@ -30,13 +32,20 @@ export class ApiHttpService {
     const url = this.env.getApiUrl() + path;
     return new Observable(
       observer => {
-        let source = new EventSource(url);
 
-        source.onmessage = event => {
+        var EventSource = EventSourcePolyfill; 
+        let source = new EventSource(url,{
+          // headers: {
+          //   'Authorization': 'my secret jwt token'
+          // }
+        });
+        console.log(source.withCredentials);
+
+        source.onmessage = function(event: { data: unknown; }) {
           observer.next(event.data);
         }
 
-        source.onerror = event => {
+        source.onerror = function(event: { data: unknown; }) {
           observer.error(event);
         }
       }

@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'; 
 import { EnvService } from './env.service';
 import { Observable } from 'rxjs';
-import 'node_modules/event-source-polyfill/src/eventsource.min.js';
-
-declare var EventSourcePolyfill: any; // TODO: not found
+import { EventSourcePolyfill } from 'event-source-polyfill';
+import { KeycloakService } from 'keycloak-angular';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +12,7 @@ export class ApiHttpService {
 
   headers = new HttpHeaders({'Content-Type':'application/json; charset=utf-8'});
 
-  constructor(private http: HttpClient, private env: EnvService) { }
+  constructor(private http: HttpClient, private env: EnvService, private ks: KeycloakService) { }
 
   public get<T>(path: string, options? : any) {
     const url = this.env.getApiUrl() + path;
@@ -28,24 +27,24 @@ export class ApiHttpService {
     });
   }
 
-  public getStream<T>(path: string) {
+  public async getStream<T>(path: string) {
+    const token = await this.ks.getToken();
     const url = this.env.getApiUrl() + path;
     return new Observable(
       observer => {
 
         var EventSource = EventSourcePolyfill; 
         let source = new EventSource(url,{
-          // headers: {
-          //   'Authorization': 'my secret jwt token'
-          // }
+          headers: {
+            'Authorization': 'Bearer ' + token 
+          }
         });
-        console.log(source.withCredentials);
 
         source.onmessage = function(event: { data: unknown; }) {
           observer.next(event.data);
         }
 
-        source.onerror = function(event: { data: unknown; }) {
+        source.onerror = function(event) {
           observer.error(event);
         }
       }

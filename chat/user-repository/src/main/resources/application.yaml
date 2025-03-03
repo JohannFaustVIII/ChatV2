@@ -18,6 +18,10 @@ spring:
       keyDeserializer: org.apache.kafka.common.serialization.StringDeserializer
       valueDeserializer: org.faust.user.command.CommandDeserializer
       auto-offset-reset: earliest
+    producer:
+      clientId: ${spring.application.name}-stream
+      keySerializer: org.apache.kafka.common.serialization.StringSerializer
+      valueSerializer: org.faust.sse.MessageSerializer
 
 eureka:
   client:

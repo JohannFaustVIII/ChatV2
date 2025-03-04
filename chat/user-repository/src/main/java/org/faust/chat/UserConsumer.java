@@ -17,6 +17,8 @@ public class UserConsumer {
     public UserConsumer(UserRepository userRepository, KafkaTemplate<String, org.faust.sse.Message> kafkaTemplate) {
         this.userRepository = userRepository;
         this.kafkaTemplate = kafkaTemplate;
+
+        this.userRepository.addListener(this::notifyAboutUsers);
     }
 
     @KafkaHandler
@@ -32,18 +34,22 @@ public class UserConsumer {
     @KafkaHandler
     public void setOnline(SetOnline command) {
         userRepository.setActive(command.userId(), command.username());
-        kafkaTemplate.send(SSE_TOPIC, org.faust.sse.Message.globalNotify("users"));
+        this.notifyAboutUsers();
     }
 
     @KafkaHandler
     public void setAfk(SetAfk command) {
         userRepository.setAfk(command.userId(), command.username());
-        kafkaTemplate.send(SSE_TOPIC, org.faust.sse.Message.globalNotify("users"));
+        this.notifyAboutUsers();
     }
 
     @KafkaHandler
     public void setOffline(SetOffline command) {
         userRepository.setOffline(command.userId(), command.username());
+        this.notifyAboutUsers();
+    }
+
+    private void notifyAboutUsers() {
         kafkaTemplate.send(SSE_TOPIC, org.faust.sse.Message.globalNotify("users"));
     }
 }

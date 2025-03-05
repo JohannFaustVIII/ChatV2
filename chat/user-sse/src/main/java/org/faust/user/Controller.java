@@ -30,7 +30,7 @@ public class Controller {
     }
 
     @PostMapping("/hook")
-    public Flux<Void> setActiveHook(@RequestHeader("GW_USER") String username, @RequestHeader("GW_USER_ID") UUID userId) {
+    public Flux<String> setActiveHook(@RequestHeader("GW_USER") String username, @RequestHeader("GW_USER_ID") UUID userId) {
         return service.setActivityHook(userId);
     }
 }

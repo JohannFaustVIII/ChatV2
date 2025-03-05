@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
+import java.time.Duration;
 import java.util.UUID;
 
 @Service
@@ -34,9 +35,10 @@ public class UserService {
         kafkaTemplate.send(ACTIVITY_TOPIC, id.toString(), new SetOffline(id, username));
     }
 
-    public Flux<Void> setActivityHook(UUID userId) {
+    public Flux<String> setActivityHook(UUID userId) {
+        // TODO: Change it to not send "ping" every 30 seconds and keep the hook working
         kafkaTemplate.send(ACTIVITY_TOPIC, userId.toString(), new IncreaseHook(userId));
-        return this.hookSink.asFlux().doOnCancel(() -> {
+        return Flux.interval(Duration.ofSeconds(30)).map(l -> "ping").doOnCancel(() -> {
             kafkaTemplate.send(ACTIVITY_TOPIC, userId.toString(), new DecreaseHook(userId));
         });
     }

@@ -4,6 +4,7 @@ import { EnvService } from './env.service';
 import { Observable } from 'rxjs';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { KeycloakService } from 'keycloak-angular';
+import { SseService } from './sse.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,7 @@ export class ApiHttpService {
     });
   }
 
-  public async getStream<T>(path: string) {
+  public async getStream<T>(path: string, sseService: SseService) {
     const token = await this.ks.getToken();
     const url = this.env.getApiUrl() + path;
     return new Observable(
@@ -46,6 +47,7 @@ export class ApiHttpService {
 
         source.onerror = function(event) {
           observer.error(event);
+          // sseService.rebuildSSE(); // TODO: FIX IT, IT DOESN'T WORK AS EXPECTED
         }
       }
     )

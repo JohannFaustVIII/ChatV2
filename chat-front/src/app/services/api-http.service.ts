@@ -47,7 +47,8 @@ export class ApiHttpService {
 
         source.onerror = function(event) {
           observer.error(event);
-          // sseService.rebuildSSE(); // TODO: FIX IT, IT DOESN'T WORK AS EXPECTED
+          source.close()
+          sseService.rebuildSSE();
         }
       }
     )

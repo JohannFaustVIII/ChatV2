@@ -37,7 +37,7 @@ public class WebConfig implements WebFluxConfigurer {
                 .cors(
                         corsSpec -> corsSpec.configurationSource(exchange -> {
                             CorsConfiguration corsConfiguration=new CorsConfiguration();
-                            corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+                            corsConfiguration.setAllowedOrigins(List.of(frontDomain));
                             corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
                             corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
                             corsConfiguration.setExposedHeaders(Collections.singletonList("*"));

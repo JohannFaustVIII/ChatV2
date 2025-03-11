@@ -48,10 +48,11 @@ export class IdleUserService {
 
   private reset(): any {
     clearTimeout(this.timeoutId);
-    if (!this.isOnline) {
+    const oldState = this.isOnline;
+    this.isOnline = true;
+    if (!oldState) {
       this.updateState();
     }
-    this.isOnline = true;
     this.startIdleTimer();
   }
 

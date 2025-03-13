@@ -16,11 +16,8 @@ public class UserService {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    private final Sinks.Many<Void> hookSink;
-
     public UserService(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
-        this.hookSink =  Sinks.many().multicast().directBestEffort();
     }
 
     public void setActive(UUID id, String username) {

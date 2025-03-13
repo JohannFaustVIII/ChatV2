@@ -29,8 +29,6 @@ public class WebConfig implements WebFluxConfigurer {
     @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
     String jwkSetUri;
 
-    // TODO: The config below causes problem with CORS
-
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http

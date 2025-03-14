@@ -6,11 +6,21 @@ Simple chat application. Main focus is put on backend side - split to microservi
 
 ### Backend
 
+TODO: Update below + describe for what service it has to be defined.
+
  - `FRONT_URL` - frontend URL to enable CORS, default is `http://localhost:4200`
  - `JWT_PROVIDER_URI` - Keycloak's URL to certificates, default is `http://localhost:8180/realms/ChatV2Realm/protocol/openid-connect/certs`
  - `POSTGRES_URL` - URL to database in JDBC format, default is `jdbc:postgresql://localhost:5432/postgres`
  - `POSTGRES_USER` - username to database, default is `postgres`
  - `POSTGRES_PASSWORD` - password to database, default is `postgres`
+ - `KEYCLOAK_URI`: http://keycloak:8080
+ - `KEYCLOAK_REALM`: ChatV2Realm 
+ - `KEYCLOAK_ID`: cv2-backend
+ - `KEYCLOAK_SECRET`: GJJuJksZfQUpiAV4X8QprPXmMDx0B0Dq 
+ - `KAFKA_HOSTNAME`: kafka
+ - `KAFKA_PORT`: 29092
+ - `EUREKA_URL`: http://discovery:8091/eureka/
+ - `EUREKA_ROUTE_URL`: http://discovery:8091
 
 ## Technologies
 

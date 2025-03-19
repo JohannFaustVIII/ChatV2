@@ -104,41 +104,6 @@ class MessageConsumerTest {
         Assertions.assertEquals("Requested message to edit is unknown.", result.message());
     }
 
-    // TODO: to-filter
-//    @Test
-//    public void whenEditMessageToNotExistingChannelThenException() {
-//        // given
-//        String original = "Original message";
-//        String message = "Edited message 1";
-//        UUID channel = UUID.randomUUID();
-//        UUID channel2 = UUID.randomUUID();
-//        UUID messageId = UUID.randomUUID();
-//        UUID user = UUID.randomUUID();
-//
-//        AtomicReference<Message> originalMessage = new AtomicReference<>(new Message(messageId, channel2, "User", original, null, null, user));
-//
-//        when(messageRepository.getAllMessages(channel2, null, null, 10)).thenAnswer(inv -> {
-//            List<Message> messages = new ArrayList<>();
-//            messages.add(originalMessage.get());
-//            return messages;
-//        });
-//        when(channelService.existsChannel(channel)).thenReturn(false);
-//        when(channelService.existsChannel(channel2)).thenReturn(true);
-//
-//        // when
-//        Assertions.assertThrows(ChannelUnknownException.class, () -> testedConsumer.editMessage(channel, messageId, user, message));
-//
-//        // then
-//        Collection<Message> resultMessages = testedConsumer.getMessages(channel2);
-//        Assertions.assertEquals(resultMessages.size(), 1);
-//
-//        Message resultMessage = resultMessages.iterator().next();
-//        Assertions.assertEquals(resultMessage.message(), original);
-//        Assertions.assertEquals(resultMessage.channelId(), channel2);
-//        Assertions.assertEquals(resultMessage.id(), messageId);
-//        Assertions.assertEquals(resultMessage.senderId(), user);
-//    }
-
     @Test
     public void whenEditMessageToWrongChannelThenException() {
         // given

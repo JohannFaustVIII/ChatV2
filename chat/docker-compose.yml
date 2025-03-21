@@ -17,7 +17,7 @@ services:
     expose:
       - 8092
     healthcheck:
-      test: curl --head -fsS http://localhost:8092
+      test: curl --head -fsS http://localhost:8092/xyz/default
       interval: 60s
       retries: 1000
       start_period: 20s

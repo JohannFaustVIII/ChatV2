@@ -3,11 +3,13 @@ import { ApiHttpService } from './api-http.service';
 import { Listener } from '../models/listener';
 import { HttpDownloadProgressEvent, HttpEventType } from '@angular/common/http';
 import { Observable, Subscription } from 'rxjs';
+import { SSEKeeper } from './sse-keeper';
+
 
 @Injectable({
   providedIn: 'root'
 })
-export class SseService {
+export class SseService implements SSEKeeper {
 
   listeners : {[id : string] : any} = {}
   sseSubscription : Subscription | null = null;

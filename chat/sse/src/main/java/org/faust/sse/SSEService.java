@@ -11,7 +11,6 @@ public class SSEService {
 
     private final Sinks.Many<Message> processor;
 
-
     public SSEService() {
         this.processor =  Sinks.many().multicast().directBestEffort();
     }

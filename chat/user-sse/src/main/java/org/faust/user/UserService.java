@@ -14,10 +14,13 @@ public class UserService {
 
     private static final String ACTIVITY_TOPIC = "USER_ACTIVITY";
 
+    private final Sinks.Many<String> processor;
+
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public UserService(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
+        this.processor =  Sinks.many().multicast().directBestEffort();
     }
 
     public void setActive(UUID id, String username) {
@@ -35,7 +38,7 @@ public class UserService {
     public Flux<String> setActivityHook(UUID userId) {
         // TODO: Change it to not send "ping" every 30 seconds and keep the hook working
         kafkaTemplate.send(ACTIVITY_TOPIC, userId.toString(), new IncreaseHook(userId));
-        return Flux.interval(Duration.ofSeconds(30)).map(l -> "ping").doOnCancel(() -> {
+        return this.processor.asFlux().doOnCancel(() -> {
             kafkaTemplate.send(ACTIVITY_TOPIC, userId.toString(), new DecreaseHook(userId));
         });
     }

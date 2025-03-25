@@ -4,7 +4,7 @@ import { EnvService } from './env.service';
 import { Observable } from 'rxjs';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { KeycloakService } from 'keycloak-angular';
-import { SseService } from './sse.service';
+import { SSEKeeper } from './sse-keeper';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +28,7 @@ export class ApiHttpService {
     });
   }
 
-  public async getStream<T>(path: string, sseService: SseService) {
+  public async getStream<T>(path: string, sseService: SSEKeeper) {
     const token = await this.ks.getToken();
     const url = this.env.getApiUrl() + path;
     return new Observable(

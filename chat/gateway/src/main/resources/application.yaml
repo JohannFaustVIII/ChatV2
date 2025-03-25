@@ -67,6 +67,13 @@ spring:
             - Method=GET, OPTIONS
           metadata:
             response-timeout: -1
+        - id: user-sse-hook
+          uri: lb://user-sse
+          predicates:
+            - Path=/users/hook
+            - Method=GET
+          metadata:
+            response-timeout: -1
         - id: user-sse
           uri: lb://user-sse
           predicates:

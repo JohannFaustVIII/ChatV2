@@ -44,6 +44,12 @@ services:
       EUREKA_URL: http://discovery:8091/eureka/
     expose:
       - 8022
+    healthcheck:
+      test: curl --head -fsS http://localhost:8022/channels
+      interval: 60s
+      retries: 1000
+      start_period: 20s
+      timeout: 10s
     depends_on:
       discovery:
         condition: service_healthy
@@ -72,6 +78,8 @@ services:
       discovery:
         condition: service_healthy
       configuration-server:
+        condition: service_healthy
+      channel-repository:
         condition: service_healthy
 
   chat-request-filter:

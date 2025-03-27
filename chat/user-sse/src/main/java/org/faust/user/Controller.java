@@ -30,8 +30,6 @@ public class Controller {
         service.setOffline(userId, username);
     }
 
-
-    // TODO: What if... replace to GET, and switch to EventSource on front to avoid sending ping from backend
     @GetMapping(path = "/hook",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> setActiveHook(@RequestHeader("GW_USER") String username, @RequestHeader("GW_USER_ID") UUID userId) {
         return service.setActivityHook(userId);

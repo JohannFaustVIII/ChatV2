@@ -37,8 +37,11 @@ export class ApiHttpService {
         var EventSource = EventSourcePolyfill; 
         let source = new EventSource(url,{
           headers: {
-            'Authorization': 'Bearer ' + token 
-          }
+            'Authorization': 'Bearer ' + token ,
+            'Connection': 'keep-alive',
+            'Cache-Control': 'no-cache'
+          },
+          heartbeatTimeout: 60*60*1000,
         });
 
         source.onmessage = function(event: { data: unknown; }) {

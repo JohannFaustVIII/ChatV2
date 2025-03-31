@@ -24,9 +24,6 @@ import reactor.test.StepVerifier;
 @AutoConfigureWebTestClient
 class SSEControllerTest extends E2ETestBase {
 
-    // TODO: test timeouts, but in this case, it is needed to read content of flux
-    // TO THINK: what if replace the whole SSE with Kafka?
-
     @Autowired
     private WebTestClient webTestClient;
 
@@ -68,7 +65,7 @@ class SSEControllerTest extends E2ETestBase {
                 .create(sse)
                 .expectNext("channel")
                 .expectNext("channel")
-//                .expectNext("user") // TODO: it causes the code to hang, instead of failure, something is wrong here
+//                .expectNext("user")
                 .thenCancel()
                 .verify();
 

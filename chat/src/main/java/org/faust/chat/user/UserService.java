@@ -34,7 +34,7 @@ public class UserService {
 
     public Flux<Void> setActivityHook(UUID userId) {
         repository.incrementUserActivity(userId);
-        return this.hookSink.asFlux().doOnCancel(() -> { // TODO: think about it? solves problem of timeout during test but does it work?
+        return this.hookSink.asFlux().doOnCancel(() -> {
             repository.decrementUserActivity(userId);
         });
     }

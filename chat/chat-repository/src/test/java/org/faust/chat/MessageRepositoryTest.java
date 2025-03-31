@@ -344,6 +344,53 @@ class MessageRepositoryTest {
         Assertions.assertThrows(WrongOrderException.class, () -> testedRepository.getAllMessages(channel, beforeMessage.id(), afterMessage.id(),10));
     }
 
+    // TODO: IMPLEMENT BELOW, maybe add a spy on context?
+
+    @Test
+    public void whenAddMessageThenAdded() {
+        MessageRepository testedRepository = new MessageRepository(context);
+    }
+
+    @Test
+    public void whenAddMessageThenReturnedForWholeChannel() {
+        MessageRepository testedRepository = new MessageRepository(context);
+    }
+
+    @Test
+    public void whenAddMessageThenNotReturnedForOtherChannel() {
+        MessageRepository testedRepository = new MessageRepository(context);
+    }
+
+    @Test
+    public void whenEditMessageThenEdited() {
+        MessageRepository testedRepository = new MessageRepository(context);
+    }
+
+    @Test
+    public void whenEditMessageThenReturnedForWholeChannel() {
+        MessageRepository testedRepository = new MessageRepository(context);
+    }
+
+    @Test
+    public void whenEditMessageThenNotReturnedForOtherChannel() {
+        MessageRepository testedRepository = new MessageRepository(context);
+    }
+
+    @Test
+    public void whenDeleteMessageThenDeleted() {
+        MessageRepository testedRepository = new MessageRepository(context);
+    }
+
+    @Test
+    public void whenDeleteMessageThenNotReturnedForWholeChannel() {
+        MessageRepository testedRepository = new MessageRepository(context);
+    }
+
+    @Test
+    public void whenDeleteMessageThenOtherChannelKeptIntact() {
+        MessageRepository testedRepository = new MessageRepository(context);
+    }
+
     private void addMessages(MessageRepository messageRepository, Message... messages) {
         for (Message m : messages) {
             messageRepository.addMessage(m);

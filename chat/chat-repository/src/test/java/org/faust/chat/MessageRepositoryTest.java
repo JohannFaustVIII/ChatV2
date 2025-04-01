@@ -11,6 +11,7 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -348,17 +349,125 @@ class MessageRepositoryTest {
 
     @Test
     public void whenAddMessageThenAdded() {
-        MessageRepository testedRepository = new MessageRepository(context);
+        // given
+        DSLContext spyContext = Mockito.spy(context);
+        MessageRepository testedRepository = new MessageRepository(spyContext);
+
+        UUID channelId = UUID.randomUUID();
+        String sender = "Random sender";
+        String message = "Random message";
+        UUID senderId = UUID.randomUUID();
+        Message messageToAdd = new Message(
+                null,
+                channelId,
+                sender,
+                message,
+                LocalDateTime.now(),
+                null,
+                senderId);
+
+        // when
+        testedRepository.addMessage(messageToAdd);
+
+        // then
+        Mockito.verify(spyContext).insertInto(DSL.table(DSL.name("messageTable")));
     }
 
     @Test
     public void whenAddMessageThenReturnedForWholeChannel() {
+        // given
         MessageRepository testedRepository = new MessageRepository(context);
+
+        UUID channelId = UUID.randomUUID();
+        String sender = "Random sender";
+        String message = "Random message";
+        UUID senderId = UUID.randomUUID();
+
+
+        Message[] previousMessages = new Message[7];
+        for (int i = 0; i != 7; i++) {
+            previousMessages[i] = new Message(
+                            null,
+                            channelId,
+                            "Sender" + i,
+                            "Message" + i,
+                            LocalDateTime.now(),
+                            null,
+                            UUID.randomUUID()
+                    );
+
+        }
+
+        addMessages(testedRepository, previousMessages);
+
+        Message messageToAdd = new Message(
+                null,
+                channelId,
+                sender,
+                message,
+                LocalDateTime.now(),
+                null,
+                senderId);
+        // when
+        testedRepository.addMessage(messageToAdd);
+
+        // then
+        Collection<Message> allMessages = testedRepository.getAllMessages(channelId, null, null, 10);
+        Iterator<Message> it = allMessages.iterator();
+        Message lastMessage = it.next();
+
+        Assertions.assertEquals(message, lastMessage.message());
+        Assertions.assertEquals(channelId, lastMessage.channelId());
+        Assertions.assertEquals(sender, lastMessage.sender());
+        Assertions.assertEquals(senderId, lastMessage.senderId());
     }
 
     @Test
     public void whenAddMessageThenNotReturnedForOtherChannel() {
+        // given
         MessageRepository testedRepository = new MessageRepository(context);
+
+        UUID channelId = UUID.randomUUID();
+        String sender = "Random sender";
+        String message = "Random message";
+        UUID senderId = UUID.randomUUID();
+
+
+        UUID otherChannel = UUID.randomUUID();
+        while (otherChannel.equals(channelId)) {
+            otherChannel = UUID.randomUUID();
+        }
+
+        Message[] previousMessages = new Message[7];
+        for (int i = 1; i !=8 ; i++) {
+            previousMessages[7 - i] = new Message(
+                    null,
+                    otherChannel,
+                    "Sender" + i,
+                    "Message" + i,
+                    LocalDateTime.now(),
+                    null,
+                    UUID.randomUUID()
+            );
+
+        }
+
+        addMessages(testedRepository, previousMessages);
+
+        Message messageToAdd = new Message(
+                null,
+                channelId,
+                sender,
+                message,
+                LocalDateTime.now(),
+                null,
+                senderId);
+        // when
+        testedRepository.addMessage(messageToAdd);
+
+        // then
+        Collection<Message> otherChannelMessages = testedRepository.getAllMessages(otherChannel, null, null, 10);
+        assertMessages(otherChannelMessages, previousMessages);
     }
 
     @Test

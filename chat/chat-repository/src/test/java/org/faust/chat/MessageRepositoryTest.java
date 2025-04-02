@@ -472,17 +472,131 @@ class MessageRepositoryTest {
 
     @Test
     public void whenEditMessageThenEdited() {
-        MessageRepository testedRepository = new MessageRepository(context);
+        // given
+        DSLContext spyContext = Mockito.spy(context);
+        MessageRepository testedRepository = new MessageRepository(spyContext);
+
+        UUID channelId = UUID.randomUUID();
+        String sender = "Random sender";
+        String message = "Random message";
+        UUID senderId = UUID.randomUUID();
+        Message messageToAdd = new Message(
+                null,
+                channelId,
+                sender,
+                message,
+                LocalDateTime.now(),
+                null,
+                senderId);
+
+        testedRepository.addMessage(messageToAdd);
+        Message addedMessage = findMessage(testedRepository, channelId, message);
+        String editMessage = "Edited message";
+        // when
+        testedRepository.editMessage(addedMessage.id(), editMessage, LocalDateTime.now());
+
+        // then
+        Mockito.verify(spyContext).update(DSL.table("\"messageTable\""));
+        Message editedMessage = findMessage(testedRepository, channelId, editMessage);
+        Assertions.assertNotNull(editedMessage);
+        Assertions.assertEquals(sender, editedMessage.sender());
+        Assertions.assertEquals(senderId, editedMessage.senderId());
+        Assertions.assertEquals(channelId, editedMessage.channelId());
+        Assertions.assertEquals(editMessage, editedMessage.message());
     }
 
     @Test
     public void whenEditMessageThenReturnedForWholeChannel() {
+        // given
         MessageRepository testedRepository = new MessageRepository(context);
+
+        UUID channelId = UUID.randomUUID();
+
+        Message[] previousMessages = new Message[7];
+        for (int i = 0; i != 7; i++) {
+            previousMessages[i] = new Message(
+                    null,
+                    channelId,
+                    "Sender" + i,
+                    "Message" + i,
+                    LocalDateTime.now(),
+                    null,
+                    UUID.randomUUID()
+            );
+
+        }
+
+        addMessages(testedRepository, previousMessages);
+
+        Message message = findMessage(testedRepository, channelId, "Message3");
+        String editMessage = "Edited message";
+        // when
+        testedRepository.editMessage(message.id(), editMessage, LocalDateTime.now());
+
+        // then
+        Collection<Message> allMessages = testedRepository.getAllMessages(channelId, null, null, 10);
+        Iterator<Message> it = allMessages.iterator();
+        it.next();
+        it.next();
+        it.next();
+
+        Message editedMessage = it.next();
+        Assertions.assertNotNull(editedMessage);
+        Assertions.assertEquals("Sender3", editedMessage.sender());
+        Assertions.assertEquals(channelId, editedMessage.channelId());
+        Assertions.assertEquals(editMessage, editedMessage.message());
     }
 
     @Test
     public void whenEditMessageThenNotReturnedForOtherChannel() {
+        // given
         MessageRepository testedRepository = new MessageRepository(context);
+
+        UUID channelId = UUID.randomUUID();
+        String sender = "Random sender";
+        String message = "Random message";
+        UUID senderId = UUID.randomUUID();
+
+
+        UUID otherChannel = UUID.randomUUID();
+        while (otherChannel.equals(channelId)) {
+            otherChannel = UUID.randomUUID();
+        }
+
+        Message[] previousMessages = new Message[7];
+        for (int i = 1; i !=8 ; i++) {
+            previousMessages[7 - i] = new Message(
+                    null,
+                    otherChannel,
+                    "Sender" + i,
+                    "Message" + i,
+                    LocalDateTime.now(),
+                    null,
+                    UUID.randomUUID()
+            );
+
+        }
+
+        addMessages(testedRepository, previousMessages);
+
+        Message messageToAdd = new Message(
+                null,
+                channelId,
+                sender,
+                message,
+                LocalDateTime.now(),
+                null,
+                senderId);
+
+        testedRepository.addMessage(messageToAdd);
+        Message addedMessage = findMessage(testedRepository, channelId, message);
+        String editMessage = "Edited message";
+        // when
+        testedRepository.editMessage(addedMessage.id(), editMessage, LocalDateTime.now());
+
+        // then
+        Collection<Message> otherChannelMessages = testedRepository.getAllMessages(otherChannel, null, null, 10);
+        assertMessages(otherChannelMessages, previousMessages);
     }
 
     @Test

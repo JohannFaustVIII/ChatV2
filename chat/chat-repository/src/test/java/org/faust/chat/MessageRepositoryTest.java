@@ -554,7 +554,7 @@ class MessageRepositoryTest {
 
         UUID channelId = UUID.randomUUID();
         String sender = "Random sender";
-        String message = "Random message";
+        String message = "Message2";
         UUID senderId = UUID.randomUUID();
 
 
@@ -601,17 +601,118 @@ class MessageRepositoryTest {
 
     @Test
     public void whenDeleteMessageThenDeleted() {
-        MessageRepository testedRepository = new MessageRepository(context);
+        // given
+        DSLContext spyContext = Mockito.spy(context);
+        MessageRepository testedRepository = new MessageRepository(spyContext);
+
+        UUID channelId = UUID.randomUUID();
+        String sender = "Random sender";
+        String message = "Random message";
+        UUID senderId = UUID.randomUUID();
+        Message messageToAdd = new Message(
+                null,
+                channelId,
+                sender,
+                message,
+                LocalDateTime.now(),
+                null,
+                senderId);
+
+        testedRepository.addMessage(messageToAdd);
+        Message addedMessage = findMessage(testedRepository, channelId, message);
+        // when
+        testedRepository.deleteMessage(addedMessage.id());
+
+        // then
+        Mockito.verify(spyContext).deleteFrom(DSL.table("\"messageTable\""));
+        Assertions.assertThrows(NoSuchElementException.class, () -> findMessage(testedRepository, channelId, message));
     }
 
     @Test
     public void whenDeleteMessageThenNotReturnedForWholeChannel() {
+        // given
         MessageRepository testedRepository = new MessageRepository(context);
+
+        UUID channelId = UUID.randomUUID();
+
+        Message[] previousMessages = new Message[7];
+        for (int i = 0; i != 7; i++) {
+            previousMessages[i] = new Message(
+                    null,
+                    channelId,
+                    "Sender" + i,
+                    "Message" + i,
+                    LocalDateTime.now(),
+                    null,
+                    UUID.randomUUID()
+            );
+
+        }
+
+        addMessages(testedRepository, previousMessages);
+
+        Message message = findMessage(testedRepository, channelId, "Message3");
+        // when
+        testedRepository.deleteMessage(message.id());
+
+        // then
+        Collection<Message> allMessages = testedRepository.getAllMessages(channelId, null, null, 10);
+
+        for (Message m : allMessages) {
+            Assertions.assertNotEquals("Message3", m.message());
+            Assertions.assertEquals(channelId, m.channelId());
+        }
     }
 
     @Test
     public void whenDeleteMessageThenOtherChannelKeptIntact() {
+        // given
         MessageRepository testedRepository = new MessageRepository(context);
+
+        UUID channelId = UUID.randomUUID();
+        String sender = "Random sender";
+        String message = "Message2";
+        UUID senderId = UUID.randomUUID();
+
+
+        UUID otherChannel = UUID.randomUUID();
+        while (otherChannel.equals(channelId)) {
+            otherChannel = UUID.randomUUID();
+        }
+
+        Message[] previousMessages = new Message[7];
+        for (int i = 1; i !=8 ; i++) {
+            previousMessages[7 - i] = new Message(
+                    null,
+                    otherChannel,
+                    "Sender" + i,
+                    "Message" + i,
+                    LocalDateTime.now(),
+                    null,
+                    UUID.randomUUID()
+            );
+
+        }
+
+        addMessages(testedRepository, previousMessages);
+
+        Message messageToAdd = new Message(
+                null,
+                channelId,
+                sender,
+                message,
+                LocalDateTime.now(),
+                null,
+                senderId);
+
+        testedRepository.addMessage(messageToAdd);
+        Message addedMessage = findMessage(testedRepository, channelId, message);
+        // when
+        testedRepository.deleteMessage(addedMessage.id());
+
+        // then
+        Collection<Message> otherChannelMessages = testedRepository.getAllMessages(otherChannel, null, null, 10);
+        assertMessages(otherChannelMessages, previousMessages);
     }
 
     private void addMessages(MessageRepository messageRepository, Message... messages) {

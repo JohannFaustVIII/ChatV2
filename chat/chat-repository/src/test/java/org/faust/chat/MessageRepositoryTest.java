@@ -22,8 +22,6 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// TODO: add tests for adding/editing/deleting messages
-
 class MessageRepositoryTest {
 
     static JdbcDatabaseContainer databaseContainer;
@@ -344,8 +342,6 @@ class MessageRepositoryTest {
         // when-then
         Assertions.assertThrows(WrongOrderException.class, () -> testedRepository.getAllMessages(channel, beforeMessage.id(), afterMessage.id(),10));
     }
-
-    // TODO: IMPLEMENT BELOW, maybe add a spy on context?
 
     @Test
     public void whenAddMessageThenAdded() {

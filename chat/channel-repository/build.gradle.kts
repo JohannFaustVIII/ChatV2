@@ -29,6 +29,8 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
     testImplementation("org.testcontainers:testcontainers")
+    testImplementation("org.testcontainers:kafka:1.20.6")
+    testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
 }
 

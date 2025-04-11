@@ -1,20 +1,24 @@
 package org.faust.channel;
 
+import base.E2ETestBase;
+import base.E2ETestExtension;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.faust.channel.command.AddChannel;
 import org.faust.channel.command.CommandSerializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.*;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,21 +28,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import org.testcontainers.utility.DockerImageName;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.UncheckedIOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static java.lang.Thread.sleep;
 
 // TODO: add postgres and liquibase files and setup
 
 @RunWith(SpringRunner.class)
+@ExtendWith(E2ETestExtension.class)
 @Import(ChannelControllerTest.KafkaConfiguration.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
@@ -46,7 +46,7 @@ import java.util.Map;
 )
 @AutoConfigureMockMvc
 @Testcontainers
-class ChannelControllerTest {
+class ChannelControllerTest extends E2ETestBase {
 
     @Container
     public static KafkaContainer kafka =
@@ -55,42 +55,54 @@ class ChannelControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    KafkaTemplate<String, AddChannel> kafkaTemplate = new KafkaTemplate<>(KafkaConfiguration.greetingProducerFactory());
+
     @Test
     public void givenChannelAddedWhenGettingChannelsThenReturned() throws Exception {
         // given
-        // use kafka producer
-        KafkaProducer<String, Object> producer = new KafkaProducer<>(
-                ImmutableMap.of(
-                        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers()
-                ),
-                new StringSerializer(),
-                new CommandSerializer()
-        );
+        Channel channel = new Channel(null, "Test Channel");
+        UUID tokenid = UUID.randomUUID();
+
+        kafkaTemplate.send("ADD_CHANNEL", new AddChannel(tokenid, channel));
+
+        sleep(1000);
         // when
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.get("/channels"));
         Collection<Channel> result = readContent(act.andReturn().getResponse().getContentAsByteArray());
 
         // then
-        Assertions.assertTrue(result.isEmpty());
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals("Test Channel", result.iterator().next().name());
     }
 
     @Test
-    public void givenChannelAddedWhenCheckingExistenceThenTrue() {
+    public void givenChannelAddedWhenCheckingExistenceThenTrue() throws Exception {
+        // given
+        Channel channel = new Channel(null, "Test Channel");
+        UUID tokenid = UUID.randomUUID();
 
+        kafkaTemplate.send("ADD_CHANNEL", new AddChannel(tokenid, channel));
+
+        sleep(1000);
+
+        ResultActions prev = mockMvc.perform(MockMvcRequestBuilders.get("/channels"));
+        Collection<Channel> prevResult = readContent(prev.andReturn().getResponse().getContentAsByteArray());
+        UUID id = prevResult.iterator().next().id();
+
+        // when
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.get("/channels/exists/" + id.toString()));
+        boolean result = Boolean.parseBoolean(act.andReturn().getResponse().getContentAsString());
+
+        // then
+        Assertions.assertTrue(result);
     }
 
-    private static Collection<Channel> readContent(byte[] data) {
-        ByteArrayInputStream bais = new ByteArrayInputStream(data);
-        try (ObjectInputStream ois = new ObjectInputStream(bais)) {
-            return (Collection<Channel>) ois.readObject();
-        }
-        catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
+    private static Collection<Channel> readContent(byte[] data) throws IOException {
+        CollectionType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, Channel.class);
+        return new ObjectMapper().readValue(data, type);
     }
+
+
 
     @DynamicPropertySource
     static void neo4jProperties(DynamicPropertyRegistry registry) {
@@ -108,6 +120,14 @@ class ChannelControllerTest {
             configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
             // more standard configuration
             return new DefaultKafkaConsumerFactory<>(configProps);
+        }
+
+        public static ProducerFactory<String, AddChannel> greetingProducerFactory() {
+            Map<String, Object> configProps = new HashMap<>();
+            configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
+            configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+            configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, CommandSerializer.class);
+            return new DefaultKafkaProducerFactory<>(configProps);
         }
     }
 }

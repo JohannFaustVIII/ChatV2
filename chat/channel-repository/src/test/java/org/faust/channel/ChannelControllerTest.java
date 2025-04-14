@@ -9,7 +9,9 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.faust.channel.command.AddChannel;
 import org.faust.channel.command.CommandSerializer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -31,6 +33,9 @@ import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 import static java.lang.Thread.sleep;
@@ -57,6 +62,15 @@ class ChannelControllerTest extends E2ETestBase {
 
     KafkaTemplate<String, AddChannel> kafkaTemplate = new KafkaTemplate<>(KafkaConfiguration.greetingProducerFactory());
 
+    @BeforeEach
+    @AfterEach
+    public void cleanDb() throws SQLException {
+        try (Connection connection = databaseContainer.createConnection("")) {
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate("DELETE FROM \"channelTable\"");
+        }
+    }
+
     @Test
     public void givenChannelAddedWhenGettingChannelsThenReturned() throws Exception {
         // given
@@ -65,7 +79,7 @@ class ChannelControllerTest extends E2ETestBase {
 
         kafkaTemplate.send("ADD_CHANNEL", new AddChannel(tokenid, channel));
 
-        sleep(1000);
+        sleep(3000);
         // when
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.get("/channels"));
         Collection<Channel> result = readContent(act.andReturn().getResponse().getContentAsByteArray());
@@ -78,16 +92,18 @@ class ChannelControllerTest extends E2ETestBase {
     @Test
     public void givenChannelAddedWhenCheckingExistenceThenTrue() throws Exception {
         // given
-        Channel channel = new Channel(null, "Test Channel");
+        Channel channel = new Channel(null, "Test Channel 2");
         UUID tokenid = UUID.randomUUID();
 
         kafkaTemplate.send("ADD_CHANNEL", new AddChannel(tokenid, channel));
 
-        sleep(1000);
+        sleep(3000);
 
         ResultActions prev = mockMvc.perform(MockMvcRequestBuilders.get("/channels"));
         Collection<Channel> prevResult = readContent(prev.andReturn().getResponse().getContentAsByteArray());
-        UUID id = prevResult.iterator().next().id();
+
+        Channel addedChannel = prevResult.iterator().next();
+        UUID id = addedChannel.id();
 
         // when
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.get("/channels/exists/" + id.toString()));

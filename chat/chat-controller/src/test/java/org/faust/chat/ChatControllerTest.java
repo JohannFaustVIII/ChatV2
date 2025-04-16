@@ -25,7 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -59,6 +61,13 @@ class ChatControllerTest {
 
 
         // when
+        ResultActions act = mockMvc.perform(post("/chat/" + channelId.toString())
+                .header("GW_TOKEN_ID", userToken.toString())
+                .header("GW_USER_ID", userId.toString())
+                .header("GW_USER", username)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message));
+        act.andExpect(status().isOk());
 
         // then
 
@@ -75,6 +84,12 @@ class ChatControllerTest {
 
 
         // when
+        ResultActions act = mockMvc.perform(put("/channels" + channelId + "/" + messageId)
+                .header("GW_TOKEN_ID", userToken.toString())
+                .header("GW_USER_ID", userId.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(message));
+        act.andExpect(status().isOk());
 
         // then
 
@@ -90,6 +105,10 @@ class ChatControllerTest {
 
 
         // when
+        ResultActions act = mockMvc.perform(delete("/channels" + channelId+ "/" + messageId)
+                .header("GW_TOKEN_ID", userToken.toString())
+                .header("GW_USER_ID", userId.toString()));
+        act.andExpect(status().isOk());
 
         // then
 

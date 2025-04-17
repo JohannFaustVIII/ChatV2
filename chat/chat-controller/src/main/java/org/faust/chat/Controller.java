@@ -4,8 +4,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-// TODO: for E2E to check passing, or at least Kafka container
-
 @RestController
 @RequestMapping("/chat/{channel}")
 public class Controller {
@@ -23,7 +21,7 @@ public class Controller {
 
     @DeleteMapping("/{id}")
     public void deleteMessage(@PathVariable("channel") UUID channel, @PathVariable("id") UUID messageId, @RequestHeader("GW_USER_ID") UUID userId, @RequestHeader("GW_TOKEN_ID") UUID tokenId) {
-        chatService.deleteMessage(channel, messageId, tokenId, userId);
+        chatService.deleteMessage(channel, messageId, userId, tokenId);
     }
 
     @PutMapping("/{id}")

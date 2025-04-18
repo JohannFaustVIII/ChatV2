@@ -40,8 +40,6 @@ import java.util.*;
 
 import static java.lang.Thread.sleep;
 
-// TODO: add postgres and liquibase files and setup
-
 @RunWith(SpringRunner.class)
 @ExtendWith(E2ETestExtension.class)
 @Import(ChannelControllerTest.KafkaConfiguration.class)

@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 import java.util.UUID;
 
-// TODO: for E2E to check passing, or at least Kafka container
-
 @RestController
 @RequestMapping("/channels")
 public class ChannelController {

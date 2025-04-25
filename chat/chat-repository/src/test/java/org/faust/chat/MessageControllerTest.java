@@ -8,6 +8,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.faust.chat.command.CommandSerializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,51 @@ class MessageControllerTest extends E2ETestBase {
             Statement stmt = connection.createStatement();
             stmt.executeUpdate("DELETE FROM \"messageTable\"");
         }
+    }
+
+    @Test
+    public void givenMessageAddedWhenGettingMessagesThenReturned() {
+
+    }
+
+    @Test
+    public void givenMessageAddedWhenGettingSingleMessageThenReturned() {
+
+    }
+
+    @Test
+    public void givenMessageAddedAndEditedWhenGettingMessagesThenReturned() {
+
+    }
+
+    @Test
+    public void givenMessageAddedAndEditedWhenGettingSingleMessageThenReturned() {
+
+    }
+
+    @Test
+    public void givenMessageAddedAndDeletedWhenGettingMessagesThenNotReturned() {
+
+    }
+
+    @Test
+    public void givenMessageAddedAndDeletedWhenGettingSingleMessageThenNotReturned() {
+
+    }
+
+    @Test
+    public void givenMessageAddedWhenGettingMessagesFromOtherChannelThenNotReturned() {
+
+    }
+
+    @Test
+    public void givenMessageAddedAndEditedWhenGettingMessagesFromOtherChannelThenNotReturned() {
+
+    }
+
+    @Test
+    public void givenMessageAddedAndDeletedWhenGettingMessagesFromOtherChannelThenNotReturned() {
+
     }
 
     @DynamicPropertySource

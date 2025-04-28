@@ -2,11 +2,15 @@ package org.faust.chat;
 
 import base.E2ETestBase;
 import base.E2ETestExtension;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.faust.chat.command.AddMessage;
 import org.faust.chat.command.CommandSerializer;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,20 +25,25 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
+import static java.lang.Thread.sleep;
 import static org.junit.jupiter.api.Assertions.*;
 
 // TODO: there is endpoint to get all messages, and via kafka to edit data; so put data via kafka and then check existence? clean db between calls
+// more tests may be needed as in some cases, messages are sent to SSE
 @RunWith(SpringRunner.class)
 @ExtendWith(E2ETestExtension.class)
 @Import(MessageControllerTest.KafkaConfiguration.class)
@@ -65,8 +74,29 @@ class MessageControllerTest extends E2ETestBase {
     }
 
     @Test
-    public void givenMessageAddedWhenGettingMessagesThenReturned() {
+    public void givenMessageAddedWhenGettingMessagesThenReturned() throws Exception {
+        // given
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "Random sender";
+        String message = "Random message";
+        LocalDateTime time = LocalDateTime.now();
 
+        kafkaTemplate.send("CHAT_COMMAND", new AddMessage(tokenId, channelId, senderName, senderId, message, time));
+
+        sleep(3000);
+        // when
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.get("/chat/" + channelId));
+        Collection<Message> result = readContent(act.andReturn().getResponse().getContentAsByteArray());
+
+        // then
+        Assertions.assertFalse(result.isEmpty());
+        Message resultMessage = result.iterator().next();
+        Assertions.assertEquals(channelId, resultMessage.channelId());
+        Assertions.assertEquals(senderName, resultMessage.sender());
+        Assertions.assertEquals(senderId, resultMessage.senderId());
+        Assertions.assertEquals(message, resultMessage.message());
     }
 
     @Test
@@ -109,6 +139,10 @@ class MessageControllerTest extends E2ETestBase {
 
     }
 
+    private static Collection<Message> readContent(byte[] data) throws IOException {
+        CollectionType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, Message.class);
+        return new ObjectMapper().readValue(data, type);
+    }
     @DynamicPropertySource
     static void neo4jProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.kafka.bootstrapServers", kafka::getBootstrapServers);

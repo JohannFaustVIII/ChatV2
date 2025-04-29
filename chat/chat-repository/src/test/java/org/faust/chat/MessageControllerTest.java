@@ -100,8 +100,31 @@ class MessageControllerTest extends E2ETestBase {
     }
 
     @Test
-    public void givenMessageAddedWhenGettingSingleMessageThenReturned() {
+    public void givenMessageAddedWhenGettingSingleMessageThenReturned() throws Exception {
+        // given
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "Random sender";
+        String message = "Random message";
+        LocalDateTime time = LocalDateTime.now();
 
+        kafkaTemplate.send("CHAT_COMMAND", new AddMessage(tokenId, channelId, senderName, senderId, message, time));
+
+        sleep(3000);
+        // when
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.get("/chat/" + channelId));
+        Collection<Message> result = readContent(act.andReturn().getResponse().getContentAsByteArray());
+        UUID messageId = result.iterator().next().id();
+
+        act = mockMvc.perform(MockMvcRequestBuilders.get("/chat/message/" + messageId));
+        Message resultMessage = readSingleMessage(act.andReturn().getResponse().getContentAsByteArray());
+
+        // then
+        Assertions.assertEquals(channelId, resultMessage.channelId());
+        Assertions.assertEquals(senderName, resultMessage.sender());
+        Assertions.assertEquals(senderId, resultMessage.senderId());
+        Assertions.assertEquals(message, resultMessage.message());
     }
 
     @Test
@@ -139,10 +162,45 @@ class MessageControllerTest extends E2ETestBase {
 
     }
 
+    @Test
+    public void whenEditingNotExistingMessageThenSSEError() {
+
+    }
+
+    @Test
+    public void whenEditingMessageInWrongChannelThenSSEError() {
+
+    }
+
+    @Test
+    public void whenEditingMessageByNotPermittedUserThenSSEError() {
+
+    }
+
+    @Test
+    public void whenDeletingNotExistingMessageThenSSEError() {
+
+    }
+
+    @Test
+    public void whenDeletingMessageInWrongChannelThenSSEError() {
+
+    }
+
+    @Test
+    public void whenDeletingMessageByNotPermittedUserThenSSEError() {
+
+    }
+
     private static Collection<Message> readContent(byte[] data) throws IOException {
         CollectionType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, Message.class);
         return new ObjectMapper().readValue(data, type);
     }
+
+    private static Message readSingleMessage(byte[] data) throws IOException {
+        return new ObjectMapper().readValue(data, Message.class);
+    }
+
     @DynamicPropertySource
     static void neo4jProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.kafka.bootstrapServers", kafka::getBootstrapServers);

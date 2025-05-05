@@ -9,6 +9,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.faust.chat.command.AddMessage;
 import org.faust.chat.command.CommandSerializer;
+import org.faust.chat.command.EditMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -128,13 +129,70 @@ class MessageControllerTest extends E2ETestBase {
     }
 
     @Test
-    public void givenMessageAddedAndEditedWhenGettingMessagesThenReturned() {
+    public void givenMessageAddedAndEditedWhenGettingMessagesThenReturned() throws Exception {
+        // TODO: is it fine? tests look really long
+        // given
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "Random sender";
+        String message = "Random message";
+        LocalDateTime time = LocalDateTime.now();
 
+        kafkaTemplate.send("CHAT_COMMAND", new AddMessage(tokenId, channelId, senderName, senderId, message, time));
+
+        sleep(3000);
+        ResultActions givenRetrieve = mockMvc.perform(MockMvcRequestBuilders.get("/chat/" + channelId));
+        UUID messageId =  readContent(givenRetrieve.andReturn().getResponse().getContentAsByteArray()).iterator().next().id();
+
+        String editedMessage = "Edited message";
+        kafkaTemplate.send("CHAT_COMMAND", new EditMessage(tokenId, channelId, messageId, senderId, editedMessage, time.plusMinutes(1)));
+
+        sleep(3000);
+
+        // when
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.get("/chat/" + channelId));
+        Collection<Message> result = readContent(act.andReturn().getResponse().getContentAsByteArray());
+
+        // then
+        Assertions.assertFalse(result.isEmpty());
+        Message resultMessage = result.iterator().next();
+        Assertions.assertEquals(channelId, resultMessage.channelId());
+        Assertions.assertEquals(senderName, resultMessage.sender());
+        Assertions.assertEquals(senderId, resultMessage.senderId());
+        Assertions.assertEquals(editedMessage, resultMessage.message());
     }
 
     @Test
-    public void givenMessageAddedAndEditedWhenGettingSingleMessageThenReturned() {
+    public void givenMessageAddedAndEditedWhenGettingSingleMessageThenReturned() throws Exception {
+        // given
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "Random sender";
+        String message = "Random message";
+        LocalDateTime time = LocalDateTime.now();
 
+        kafkaTemplate.send("CHAT_COMMAND", new AddMessage(tokenId, channelId, senderName, senderId, message, time));
+
+        sleep(3000);
+        ResultActions givenRetrieve = mockMvc.perform(MockMvcRequestBuilders.get("/chat/" + channelId));
+        UUID messageId =  readContent(givenRetrieve.andReturn().getResponse().getContentAsByteArray()).iterator().next().id();
+
+        String editedMessage = "Edited message";
+        kafkaTemplate.send("CHAT_COMMAND", new EditMessage(tokenId, channelId, messageId, senderId, editedMessage, time.plusMinutes(1)));
+
+        sleep(3000);
+        // when
+
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.get("/chat/message/" + messageId));
+        Message resultMessage = readSingleMessage(act.andReturn().getResponse().getContentAsByteArray());
+
+        // then
+        Assertions.assertEquals(channelId, resultMessage.channelId());
+        Assertions.assertEquals(senderName, resultMessage.sender());
+        Assertions.assertEquals(senderId, resultMessage.senderId());
+        Assertions.assertEquals(editedMessage, resultMessage.message());
     }
 
     @Test

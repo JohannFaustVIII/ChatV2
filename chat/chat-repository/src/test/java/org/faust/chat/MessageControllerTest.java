@@ -9,6 +9,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.faust.chat.command.AddMessage;
 import org.faust.chat.command.CommandSerializer;
+import org.faust.chat.command.DeleteMessage;
 import org.faust.chat.command.EditMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -196,13 +197,62 @@ class MessageControllerTest extends E2ETestBase {
     }
 
     @Test
-    public void givenMessageAddedAndDeletedWhenGettingMessagesThenNotReturned() {
+    public void givenMessageAddedAndDeletedWhenGettingMessagesThenNotReturned() throws Exception {
+        // given
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "Random sender";
+        String message = "Random message";
+        LocalDateTime time = LocalDateTime.now();
 
+        kafkaTemplate.send("CHAT_COMMAND", new AddMessage(tokenId, channelId, senderName, senderId, message, time));
+
+        sleep(3000);
+        ResultActions givenRetrieve = mockMvc.perform(MockMvcRequestBuilders.get("/chat/" + channelId));
+        UUID messageId =  readContent(givenRetrieve.andReturn().getResponse().getContentAsByteArray()).iterator().next().id();
+
+        String editedMessage = "Edited message";
+        kafkaTemplate.send("CHAT_COMMAND", new DeleteMessage(tokenId, channelId, messageId, senderId));
+
+        sleep(3000);
+
+        // when
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.get("/chat/" + channelId));
+        Collection<Message> result = readContent(act.andReturn().getResponse().getContentAsByteArray());
+
+        // then
+        Assertions.assertTrue(result.isEmpty());
     }
 
     @Test
-    public void givenMessageAddedAndDeletedWhenGettingSingleMessageThenNotReturned() {
+    public void givenMessageAddedAndDeletedWhenGettingSingleMessageThenNotReturned() throws Exception {
+        // given
+        UUID tokenId = UUID.randomUUID();
+        UUID channelId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        String senderName = "Random sender";
+        String message = "Random message";
+        LocalDateTime time = LocalDateTime.now();
 
+        kafkaTemplate.send("CHAT_COMMAND", new AddMessage(tokenId, channelId, senderName, senderId, message, time));
+
+        sleep(3000);
+        ResultActions givenRetrieve = mockMvc.perform(MockMvcRequestBuilders.get("/chat/" + channelId));
+        UUID messageId =  readContent(givenRetrieve.andReturn().getResponse().getContentAsByteArray()).iterator().next().id();
+
+        String editedMessage = "Edited message";
+        kafkaTemplate.send("CHAT_COMMAND", new DeleteMessage(tokenId, channelId, messageId, senderId));
+
+        sleep(3000);
+
+        // when
+
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.get("/chat/message/" + messageId));
+        byte[] content = act.andReturn().getResponse().getContentAsByteArray();
+
+        // then
+        Assertions.assertEquals(0, content.length);
     }
 
     @Test
